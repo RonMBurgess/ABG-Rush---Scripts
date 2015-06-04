@@ -13,8 +13,11 @@ public class InteractableObject : MonoBehaviour
     private Manager manager;
     private int hash_Hover = Animator.StringToHash("Hover");
     private int hash_Active = Animator.StringToHash("Active");
+    private Patient patient;
 
     #endregion
+
+
     /// <summary>
     /// Return True for Active, false for idle.
     /// </summary>
@@ -23,6 +26,17 @@ public class InteractableObject : MonoBehaviour
         get { return state_active; }
         set { state_active = value; anim.SetBool(hash_Active, state_active); }
     }
+
+    public Vector2 Location_Nurse
+    {
+        get { return position_Nurse; }
+    }
+
+    public Vector2 Location_Patient
+    {
+        get { return position_Patient; }
+    }
+
 
     /// <summary>
     /// Prepare the object for use.
@@ -49,6 +63,7 @@ public class InteractableObject : MonoBehaviour
     {
         anim.SetBool(hash_Hover, isHovering);
     }
+
 
     
 }
