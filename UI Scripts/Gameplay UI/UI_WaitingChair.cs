@@ -19,8 +19,8 @@ public class UI_WaitingChair : UI_Patient
     {
         if (MyManager != null)
         {
-            button_Choices[0].interactable = (MyManager.Manager_Empty_ExamRoom() != null);
-            button_Choices[1].interactable = (MyManager.Manager_Empty_WaitingChair() != null);
+            button_Choices[0].interactable = (MyManager.Manager_Empty_WaitingChair() != null);
+            button_Choices[1].interactable = (MyPatient.Patient_Pacify_AmountLeft() > 0);
         }
     }
 
@@ -42,39 +42,37 @@ public class UI_WaitingChair : UI_Patient
         
     }
 
-    /// <summary>
-    /// Send the patient to an open exam room. Only called by a button click
-    /// </summary>
-    public void Send_ExamRoom()
-    {
-        //verify that there is an open room
-        ExamRoom e = MyManager.Manager_Empty_ExamRoom();
-        if (e != null)
-        {
-            //add the patient to it's new hotspot
-            e.PatientObject_Patient_Add(MyPatient);
+    ///// <summary>
+    ///// Send the patient to an open exam room. Only called by a button click
+    ///// </summary>
+    //public void Send_ExamRoom()
+    //{
+    //    //verify that there is an open room
+    //    ExamRoom e = MyManager.Manager_Empty_ExamRoom();
+    //    if (e != null)
+    //    {
+    //        //add the patient to it's new hotspot
+    //        e.PatientObject_Patient_Add(MyPatient);
 
-            //make the patient move to the proper location of it's new hotspot
-            MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
+    //        //make the patient move to the proper location of it's new hotspot
+    //        MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
 
-            //remove my patient from it's current hotspot
-            MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
-            Debug.Log("Patient has been given to: " + e.name);
+    //        //remove my patient from it's current hotspot
+    //        MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
+    //        Debug.Log("Patient has been given to: " + e.name);
 
-            Close();
-        }
-    }
+    //        Close();
+    //    }
+    //}
 
-    public void Pacify()
-    {
-        MyPatient.Patient_Pacify();
-
-    }
-
-
-    private void Close()
-    {
-        MyPatient.Patient_ToggleCountdown(false);
-        gameObject.SetActive(false);
-    }
+    //public void Pacify()
+    //{
+    //    if (MyPatient.Patient_Pacify_AmountLeft() > 0)
+    //    {
+    //        MyPatient.Patient_Pacify();
+    //        Debug.Log(MyPatient.name + " has been pacified");
+    //        Close();
+    //    }
+        
+    //}
 }

@@ -4,7 +4,7 @@ using System.Collections;
 public class Patient : Person {
 
     private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Delay_Pacification, timer_Current;
-    private int pacifiy_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
+    private int pacify_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
     private string patient_Name, patient_Story;
     private PatientObject hotspot;
     private bool timer_Halted;
@@ -70,6 +70,8 @@ public class Patient : Person {
         timer_WaitingRoom = 10f;
         timer_ExamRoom = 10f;
         timer_Current = 10f;
+        timer_Delay_Pacification = 10f;
+        pacify_AmountLeft = 2;
     }
 
     /// <summary>
@@ -77,10 +79,20 @@ public class Patient : Person {
     /// </summary>
     public void Patient_Pacify()
     {
-        if (pacifiy_AmountLeft > 0)
+        if (pacify_AmountLeft > 0)
         {
             timer_Current += timer_Delay_Pacification;
+            pacify_AmountLeft--;
         }
+    }
+
+    /// <summary>
+    /// Return the amount of times a patient can be pacified.
+    /// </summary>
+    /// <returns></returns>
+    public int Patient_Pacify_AmountLeft()
+    {
+        return pacify_AmountLeft;
     }
 
 

@@ -25,4 +25,9 @@ public class MainMenuUIScript : MonoBehaviour {
     {
         Application.LoadLevel("Scn_Help");
     }
+
+    public void Play()
+    {
+        Application.LoadLevel("Scn_Play");
+    }
 }

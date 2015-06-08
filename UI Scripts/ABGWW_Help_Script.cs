@@ -7,9 +7,9 @@ public class ABGWW_Help_Script : MonoBehaviour {
 
     public Animator anim_Loading;//This is the animator controller on the loading object.
     public List<Button> menuButtons; //all of the buttons found on the menu.
-    public GameObject contentArea;//This is the gameobject that holds the content for the different screens.
+    public GameObject contentArea, navPanel;//This is the gameobject that holds the content for the different screens.
     public ABGToolManagerScript ABGTool;//the script of the ABG tool
-
+   
     private int loadingHash = Animator.StringToHash("Loading"), curScreen = 0;
 
 	// Use this for initialization
@@ -87,8 +87,8 @@ public class ABGWW_Help_Script : MonoBehaviour {
                 case 0:  //break;
                 case 1:
                 case 2:
-                case 3: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); contentArea.SetActive(true); break;
-                case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); ABGTool.gameObject.SetActive(true); ABGTool.Reset(); break;
+                case 3: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); contentArea.SetActive(true); navPanel.SetActive(true); break;
+                case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); ABGTool.gameObject.SetActive(true); navPanel.SetActive(false); ABGTool.Reset(); break;
 
             }
 

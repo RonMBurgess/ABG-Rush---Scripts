@@ -40,63 +40,63 @@ public class UI_Triage : UI_Patient {
         
     }
 
-    /// <summary>
-    /// Send the patient to an open exam room. Only called by a button click
-    /// </summary>
-    public void Send_ExamRoom()
-    {
-        //verify that there is an open room
-        ExamRoom e = MyManager.Manager_Empty_ExamRoom();
-        if (e != null)
-        {
-            //add the patient to it's new hotspot
-            e.PatientObject_Patient_Add(MyPatient);
+    ///// <summary>
+    ///// Send the patient to an open exam room. Only called by a button click
+    ///// </summary>
+    //public void Send_ExamRoom()
+    //{
+    //    //verify that there is an open room
+    //    ExamRoom e = MyManager.Manager_Empty_ExamRoom();
+    //    if (e != null)
+    //    {
+    //        //remove my patient from it's current hotspot
+    //        MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
 
-            //make the patient move to the proper location of it's new hotspot
-            MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
+    //        //add the patient to it's new hotspot
+    //        e.PatientObject_Patient_Add(MyPatient);
+
+    //        //make the patient move to the proper location of it's new hotspot
+    //        MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
             
-            //remove my patient from it's current hotspot
-            MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
-            Debug.Log("Patient has been given to: " + e.name);
+            
+    //        Debug.Log("Patient has been given to: " + e.name);
 
-            Close();
-        }
-    }
+    //        Close();
+    //    }
+    //}
 
-    public void Send_WaitingRoom()
-    {
-        //verify that there is an open waiting chair
-        WaitingChair wc = MyManager.Manager_Empty_WaitingChair();
-        if (wc != null)
-        {
-            //add patient to it's new hotspot
-            wc.PatientObject_Patient_Add(MyPatient);
+    //public void Send_WaitingRoom()
+    //{
+    //    //verify that there is an open waiting chair
+    //    WaitingChair wc = MyManager.Manager_Empty_WaitingChair();
+    //    if (wc != null)
+    //    {
+    //        //remove my patient from it's current hotspot
+    //        MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
 
-            //move the patient to the proper location of it's new hotspot
-            MyPatient.Person_Move(wc.PatientObject_LocationPatient(), wc.tag);
+    //        //add patient to it's new hotspot
+    //        wc.PatientObject_Patient_Add(MyPatient);
 
-            //remove my patient from it's current hotspot
-            MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
-            Debug.Log("Patient has been given to: " + wc.name);
+    //        //move the patient to the proper location of it's new hotspot
+    //        MyPatient.Person_Move(wc.PatientObject_LocationPatient(), wc.tag);
 
-            Close();
-        }
+            
+    //        Debug.Log("Patient has been given to: " + wc.name);
 
-    }
+    //        Close();
+    //    }
 
-    /// <summary>
-    /// Called by button press to send a patient home
-    /// </summary>
-    public void Send_Home()
-    {
-        MyPatient.Patient_Leave();
-        Close();
-    }
+    //}
+
+    ///// <summary>
+    ///// Called by button press to send a patient home
+    ///// </summary>
+    //public void Send_Away()
+    //{
+    //    MyPatient.Patient_Leave();
+    //    Close();
+    //}
 
 
-    private void Close()
-    {
-        MyPatient.Patient_ToggleCountdown(false);
-        gameObject.SetActive(false);
-    }
+    
 }
