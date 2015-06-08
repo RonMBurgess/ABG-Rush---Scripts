@@ -5,8 +5,9 @@ public class Patient : Person {
 
     private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Delay_Pacification, timer_Current;
     private int pacifiy_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
-    private string patient_Name;
+    private string patient_Name, patient_Story;
     private PatientObject hotspot;
+    private bool timer_Halted;
  
 
 	// Use this for initialization
@@ -18,7 +19,10 @@ public class Patient : Person {
 	
 	// Update is called once per frame
 	void Update () {
-        Patient_PatienceCountdown();
+        if (!Moving() /*and not currently in UI*/ && !timer_Halted)
+        {
+            Patient_PatienceCountdown();
+        }
 	}
 
     /// <summary>
@@ -36,9 +40,21 @@ public class Patient : Person {
         }
     }
 
+    /// <summary>
+    /// Set this patient's current Hotspot
+    /// </summary>
+    /// <param name="po"></param>
     public void Patient_Hotspot(PatientObject po)
     {
         hotspot = po;
+    }
+
+    /// <summary>
+    /// Return this patient's hotspot
+    /// </summary>
+    public PatientObject Patient_Hotspot_Get()
+    {
+        return hotspot;
     }
 
 
@@ -78,14 +94,44 @@ public class Patient : Person {
             timer_Current -= Time.deltaTime;
             if (timer_Current <= 0)
             {
-                //inform current hotspot
-                hotspot.PatientObject_Patient_Remove();
-                //inform manager
-                Manager.Manager_Patient_StormOut(this);
-                //storm out
-                //manager should inform me of where the exit is.
+                Patient_StormOut();
             }
         }
         
+    }
+
+    /// <summary>
+    /// Called to stop the patient's current countdown clock.
+    /// </summary>
+    /// <param name="stop">True - Stop, False - Resume/Start</param>
+    public void Patient_ToggleCountdown(bool halt)
+    {
+        timer_Halted = halt;
+    }
+
+
+    /// <summary>
+    /// Leave angrily
+    /// </summary>
+    private void Patient_StormOut()
+    {
+        //inform current hotspot
+        hotspot.PatientObject_Patient_Remove();
+        //inform manager
+        Manager.Manager_Patient_StormOut(this);
+        //storm out
+        //manager should inform me of where the exit is.
+    }
+
+    /// <summary>
+    /// Leave after either finishing treatment or being told I cannot be helped here.
+    /// </summary>
+    public void Patient_Leave()
+    {
+        //inform current hotspot
+        hotspot.PatientObject_Patient_Remove();
+        //inform manager
+        Manager.Manager_Patient_Leave(this);
+        //leave
     }
 }

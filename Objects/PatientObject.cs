@@ -6,12 +6,22 @@ public class PatientObject : OfficeObject {
 
     public Vector2 location_Patient;
     private Patient patient;
+    private UI_Patient ui;
 
     #region Patient
 
     public Patient MyPatient
     {
         get { return patient; }
+    }
+
+    public UI_Patient MyUI
+    {
+        get { return ui; }
+        set { Debug.Log(value.name);
+            ui = value; 
+            ui.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -52,5 +62,18 @@ public class PatientObject : OfficeObject {
     public Vector2 PatientObject_LocationPatient()
     {
         return location_Patient;
+    }
+
+
+    /// <summary>
+    /// Open up the UI for whatever the player has recently clicked on.
+    /// </summary>
+    public void PatientObject_OpenUI()
+    {
+        //set the patient information for the UI
+        Debug.Log("Patient's name is " + patient.name);
+        ui.MyPatient = patient;
+        //turn the UI on.
+        ui.gameObject.SetActive(true);
     }
 }

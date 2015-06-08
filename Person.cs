@@ -12,6 +12,8 @@ public class Person : MonoBehaviour {
     private PolyNavAgent agent;
     private string destinationName;
     private Manager manager;
+    private bool moving, patientObject;
+    private OfficeObject officeObject;
 
 
     public Manager Manager
@@ -29,6 +31,7 @@ public class Person : MonoBehaviour {
         agent = GetComponent<PolyNavAgent>();
         destinationName = "";
         if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
+        moving = false;
     }
 
 
@@ -37,7 +40,7 @@ public class Person : MonoBehaviour {
     /// </summary>
     /// <param name="m">Location to move to</param>
     /// <param name="destinationName">Tag of destination</param>
-    public void Person_Move(Vector2 m, string dName)
+    public void Person_Move(Vector2 m, string dName, bool pObject = true, OfficeObject officeobject = null)
     {
         if (agent == null)
         {
@@ -45,6 +48,8 @@ public class Person : MonoBehaviour {
         }
         agent.SetDestination(m, Person_MovementStatus);
         destinationName = dName;
+        if (officeobject) { patientObject = pObject; officeObject = officeobject; }
+        moving = true;
     }
 
     /// <summary>
@@ -60,6 +65,25 @@ public class Person : MonoBehaviour {
             {
                 (this as Patient).Patient_LocationChange(destinationName);
             }
+            else if (gameObject.CompareTag("Nurse"))
+            {
+                if (patientObject)
+                {
+                    //open the UI of the object
+                    (officeObject as PatientObject).PatientObject_OpenUI();
+                    Debug.Log("Opened the UI for " + officeObject.name);
+                }
+                patientObject = false;
+                officeObject = null;
+            }
+            
         }
+
+        moving = false;
+    }
+
+    public bool Moving()
+    {
+        return moving;
     }
 }

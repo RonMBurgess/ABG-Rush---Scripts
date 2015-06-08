@@ -3,10 +3,13 @@ using System.Collections;
 
 public class WaitingChair : PatientObject {
 
+    public UI_WaitingChair ui_waitingchair;
+
 	// Use this for initialization
 	void Start () {
         tag = "WaitingChair";
         OfficeObject_Initialize();
+        MyUI = ui_waitingchair;
 	}
 	
 
@@ -17,17 +20,8 @@ public class WaitingChair : PatientObject {
         {
             if (Input.GetMouseButtonDown(0))
             {
-                //Debug.Log("Clicked on");
-                ExamRoom e = Manager.Manager_Empty_ExamRoom();
-                if (e != null)
-                {
-                    //tell patient to move to next hotspot
-                    MyPatient.Person_Move(e.PatientObject_LocationPatient(), "ExamRoom");
-
-                    e.PatientObject_Patient_Add(MyPatient);
-                    //remove my current patient
-                    PatientObject_Patient_Remove();
-                }
+                //tell the nurse to move to location
+                Manager.MyNurse.Person_Move(location_Nurse, tag, true, this);
             }
             
         }
