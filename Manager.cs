@@ -8,7 +8,7 @@ public class Manager : MonoBehaviour {
     //change this later to private and load from resource folder
     public GameObject prefab_Patient;
     public Vector2 location_Exit;
-
+    public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
     private Triage triage;
     private List<Patient> list_Patients;
     private List<WaitingChair> list_WaitingChairs;
@@ -138,5 +138,23 @@ public class Manager : MonoBehaviour {
         p.Person_Move(triage.location_Patient, "Triage");
         //Debug.Log("Adding Patient to the triage");
         triage.PatientObject_Patient_Add(p);
+    }
+
+    /// <summary>
+    /// Change the cursor based on what is currently moused over.
+    /// </summary>
+    /// <param name="enter"></param>
+    public void Manager_MouseOver(bool enter)
+    {
+        //come back and update this later to accept parameters to use multiple cursors. Will most likely accept a string and look through a dictionary.
+        if (enter)
+        {
+            Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
+        }
+        else
+        {
+            Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+        }
+        
     }
 }

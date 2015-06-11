@@ -20,18 +20,18 @@ public class Triage : PatientObject {
 	
 	}
 
-    void OnMouseOver()
-    {
-        if (OfficeObject_Ready() && OfficeObject_MousedOver())
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                //tell the nurse to move to location
-                Manager.MyNurse.Person_Move(location_Nurse,tag,true,this);
-            }
+    //void OnMouseOver()
+    //{
+    //    if (OfficeObject_Ready() && OfficeObject_MousedOver())
+    //    {
+    //        if (Input.GetMouseButtonDown(0))
+    //        {
+    //            //tell the nurse to move to location
+    //            Manager.MyNurse.Person_Move(location_Nurse,tag,true,this);
+    //        }
 
-        }
-    }
+    //    }
+    //}
 
     
 }

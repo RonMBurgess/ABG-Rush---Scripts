@@ -19,6 +19,7 @@ public class Patient : Person {
 	
 	// Update is called once per frame
 	void Update () {
+        Person_Update();
         if (!Moving() /*and not currently in UI*/ && !timer_Halted)
         {
             Patient_PatienceCountdown();
@@ -145,5 +146,43 @@ public class Patient : Person {
         //inform manager
         Manager.Manager_Patient_Leave(this);
         //leave
+    }
+
+    void OnMouseEnter()
+    {
+        if (hotspot)
+        {
+            Manager.Manager_MouseOver(true);
+            hotspot.OfficeObject_MouseEnter();
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if (hotspot)
+        {
+            Manager.Manager_MouseOver(false);
+            hotspot.OfficeObject_MouseExit();
+        
+        }
+        
+        
+    }
+
+    void OnMouseOver()
+    {
+        if (hotspot)
+        {
+            if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver())
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //tell the nurse to move to location
+                    Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), tag, true, hotspot);
+                }
+
+            }
+        }
+        
     }
 }

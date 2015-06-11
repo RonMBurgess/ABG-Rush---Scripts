@@ -3,6 +3,7 @@ using System.Collections;
 
 
 [RequireComponent(typeof(PolyNavAgent))]
+[RequireComponent(typeof(SpriteRenderer))]
 
 /// <summary>
 /// The purpose of this class is to be the parent of both the nurse and patients. This will contain functions or variables that both will use.
@@ -14,6 +15,7 @@ public class Person : MonoBehaviour {
     private Manager manager;
     private bool moving, patientObject;
     private OfficeObject officeObject;
+    private SpriteRenderer sr;
 
 
     public Manager Manager
@@ -29,6 +31,7 @@ public class Person : MonoBehaviour {
     {
         Debug.Log("Initializing Person");
         agent = GetComponent<PolyNavAgent>();
+        sr = GetComponent<SpriteRenderer>();
         destinationName = "";
         if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
         moving = false;
@@ -39,7 +42,9 @@ public class Person : MonoBehaviour {
     /// Move to specified location. Called by Hotspot or Manager
     /// </summary>
     /// <param name="m">Location to move to</param>
-    /// <param name="destinationName">Tag of destination</param>
+    /// <param name="dName">Tag of destination</param>
+    /// <param name="pObject">Is this a Patient Object?</param>
+    /// <param name="officeobject">The class</param>
     public void Person_Move(Vector2 m, string dName, bool pObject = true, OfficeObject officeobject = null)
     {
         if (agent == null)
@@ -85,5 +90,15 @@ public class Person : MonoBehaviour {
     public bool Moving()
     {
         return moving;
+    }
+
+    public void Person_Update()
+    {
+        //if (moving)
+        //{
+        //Debug.Log("Person Update from " + name);
+            sr.sortingOrder = -1 * (Mathf.CeilToInt(transform.position.y * 100f));
+
+        //}
     }
 }

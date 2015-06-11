@@ -57,7 +57,10 @@ public class OfficeObject : MonoBehaviour {
         
     }
 
-    private void OnMouseEnter()
+    /// <summary>
+    /// Inform the OfficeObject that it's patient is currently being moused over.
+    /// </summary>
+    public void OfficeObject_MouseEnter()
     {
         state_MouseOver = true;
         if (anim != null)
@@ -67,7 +70,10 @@ public class OfficeObject : MonoBehaviour {
         
     }
 
-    private void OnMouseExit()
+    /// <summary>
+    /// Inform the OfficeObject that it's patient is no longer being moused over.
+    /// </summary>
+    public void OfficeObject_MouseExit()
     {
         state_MouseOver = false;
         if (anim != null)

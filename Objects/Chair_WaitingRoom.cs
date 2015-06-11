@@ -13,13 +13,13 @@ public class Chair_WaitingRoom : InteractableObject{
         if (Input.GetKeyUp(KeyCode.A)) { State_Active = !State_Active; }
 	}
 
-    void OnMouseEnter()
+    public void MouseEnter()
     {
         Debug.Log("mouse has entered " + gameObject.name);
         Hover(true);
     }
 
-    void OnMouseExit()
+    public void MouseExit()
     {
         Debug.Log("mouse has exited " + gameObject.name);
         Hover(false);

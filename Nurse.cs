@@ -11,6 +11,6 @@ public class Nurse : Person {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        Person_Update();
 	}
 }
