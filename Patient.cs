@@ -175,7 +175,7 @@ public class Patient : Person {
         {
             if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver())
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonUp(0))
                 {
                     //tell the nurse to move to location
                     Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), tag, true, hotspot);

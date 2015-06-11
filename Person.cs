@@ -64,24 +64,22 @@ public class Person : MonoBehaviour {
     private void Person_MovementStatus(bool moved)
     {
         //inform self that my status has changed, so if I'm a nurse, I should now be either waiting at triage, waiting at waiting room, or waiting in patient room
-        if (moved)
+        if (moved && gameObject.CompareTag("Patient"))
         {
-            if (gameObject.CompareTag("Patient"))
-            {
-                (this as Patient).Patient_LocationChange(destinationName);
-            }
-            else if (gameObject.CompareTag("Nurse"))
-            {
-                if (patientObject)
-                {
-                    //open the UI of the object
-                    (officeObject as PatientObject).PatientObject_OpenUI();
-                    Debug.Log("Opened the UI for " + officeObject.name);
-                }
-                patientObject = false;
-                officeObject = null;
-            }
             
+            (this as Patient).Patient_LocationChange(destinationName);            
+        }
+
+        else if (gameObject.CompareTag("Nurse"))
+        {
+            if (patientObject)
+            {
+                //open the UI of the object
+                (officeObject as PatientObject).PatientObject_OpenUI();
+                Debug.Log("Opened the UI for " + officeObject.name);
+            }
+            patientObject = false;
+            officeObject = null;
         }
 
         moving = false;
