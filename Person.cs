@@ -32,6 +32,10 @@ public class Person : MonoBehaviour {
         Debug.Log("Initializing Person");
         agent = GetComponent<PolyNavAgent>();
         sr = GetComponent<SpriteRenderer>();
+        if (CompareTag("Patient"))
+        {
+            sr.color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
+        }
         destinationName = "";
         if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
         moving = false;
@@ -51,6 +55,7 @@ public class Person : MonoBehaviour {
         {
             agent = GetComponent<PolyNavAgent>();
         }
+        agent.enabled = true;
         agent.SetDestination(m, Person_MovementStatus);
         destinationName = dName;
         if (officeobject) { patientObject = pObject; officeObject = officeobject; }
@@ -66,20 +71,26 @@ public class Person : MonoBehaviour {
         //inform self that my status has changed, so if I'm a nurse, I should now be either waiting at triage, waiting at waiting room, or waiting in patient room
         if (moved && gameObject.CompareTag("Patient"))
         {
-            
-            (this as Patient).Patient_LocationChange(destinationName);            
+            (this as Patient).Patient_LocationChange(destinationName);
+            if ((this as Patient).Patient_Hotspot_Get())
+            {
+                (this as Patient).Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
+            }
+                        
         }
 
         else if (gameObject.CompareTag("Nurse"))
         {
-            if (patientObject)
+            if (patientObject && destinationName != "Triage")
             {
+
                 //open the UI of the object
                 (officeObject as PatientObject).PatientObject_OpenUI();
                 Debug.Log("Opened the UI for " + officeObject.name);
             }
             patientObject = false;
             officeObject = null;
+            agent.enabled = false;
         }
 
         moving = false;

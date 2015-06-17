@@ -8,6 +8,8 @@ public class Patient : Person {
     private string patient_Name, patient_Story;
     private PatientObject hotspot;
     private bool timer_Halted;
+    private Animator anim;
+    private Collider2D collider;
  
 
 	// Use this for initialization
@@ -34,9 +36,9 @@ public class Patient : Person {
     {
         switch (location)
         {
-            case "Triage": timer_Current = timer_Triage; break;
-            case "WaitingChair": timer_Current = timer_WaitingRoom; break;
-            case "ExamRoom": timer_Current = timer_ExamRoom; break;
+            case "Triage": Patient_ToggleCountdown(true); break;
+            case "WaitingChair": timer_Current = timer_WaitingRoom; collider.enabled = true; break;
+            case "ExamRoom": timer_Current = timer_ExamRoom; collider.enabled = true; break;
             case "Exit": Destroy(gameObject); break;
         }
     }
@@ -73,6 +75,13 @@ public class Patient : Person {
         timer_Current = 10f;
         timer_Delay_Pacification = 10f;
         pacify_AmountLeft = 2;
+        anim = GetComponent<Animator>();
+        collider = GetComponent<Collider2D>();
+        if (collider)
+        {
+            //turn collider off
+            collider.enabled = false;
+        }
     }
 
     /// <summary>
@@ -116,7 +125,7 @@ public class Patient : Person {
     /// <summary>
     /// Called to stop the patient's current countdown clock.
     /// </summary>
-    /// <param name="stop">True - Stop, False - Resume/Start</param>
+    /// <param name="halt">True - Stop, False - Resume/Start</param>
     public void Patient_ToggleCountdown(bool halt)
     {
         timer_Halted = halt;
@@ -173,7 +182,7 @@ public class Patient : Person {
     {
         if (hotspot)
         {
-            if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver())
+            if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver() && hotspot.tag != "Triage" && !Moving())
             {
                 if (Input.GetMouseButtonUp(0))
                 {
@@ -184,5 +193,23 @@ public class Patient : Person {
             }
         }
         
+    }
+
+    /// <summary>
+    /// Called outside of the class.
+    /// </summary>
+    /// <param name="animationName">Name of the Animation: Talking</param>
+    /// <param name="trigger">Is this animation a trigger?</param>
+    /// <param name="tru">On or Off</param>
+    public void Patient_Animation(string animationName, bool trigger, bool tru)
+    {
+        if (trigger)
+        {
+            anim.SetTrigger(animationName);
+        }
+        else
+        {
+            anim.SetBool(animationName, tru);
+        }
     }
 }

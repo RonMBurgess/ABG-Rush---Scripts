@@ -19,8 +19,10 @@ public class PatientObject : OfficeObject {
     {
         get { return ui; }
         set { Debug.Log(value.name);
-            ui = value; 
-            ui.gameObject.SetActive(false);
+            ui = value;
+            if (ui != null) { 
+                ui.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -32,7 +34,9 @@ public class PatientObject : OfficeObject {
     {
         patient = p;
         p.Patient_Hotspot(this);
-        OfficeObject_SetReadyState(true);
+        p.Person_Move(location_Patient, tag, true, this);
+
+        //OfficeObject_SetReadyState(true); //handled inside of the person class now.
     }
 
     /// <summary>
@@ -74,6 +78,10 @@ public class PatientObject : OfficeObject {
         Debug.Log("Patient's name is " + patient.name);
         ui.MyPatient = patient;
         //turn the UI on.
-        ui.gameObject.SetActive(true);
+        if (ui != null)
+        {
+            ui.gameObject.SetActive(true);
+        }
+        
     }
 }

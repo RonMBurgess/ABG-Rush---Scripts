@@ -7,7 +7,7 @@ public class Manager : MonoBehaviour {
 
     //change this later to private and load from resource folder
     public GameObject prefab_Patient;
-    public Vector2 location_Exit;
+    public Transform location_Entrance, location_Exit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
     private Triage triage;
     private List<Patient> list_Patients;
@@ -49,7 +49,7 @@ public class Manager : MonoBehaviour {
 
         //Perform some kind of animation
         //deduct points
-        p.Person_Move(location_Exit,"Exit");
+        p.Person_Move(location_Exit.position,"Exit");
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public class Manager : MonoBehaviour {
         list_Patients.Remove(p);
         //perform some kind of animation
         //deduct points
-        p.Person_Move(location_Exit, "Exit");
+        p.Person_Move(location_Exit.position, "Exit");
     }
 
     #endregion
@@ -132,12 +132,13 @@ public class Manager : MonoBehaviour {
 
     private void Manager_PatientSpawn()
     {
-        Patient p = (Instantiate(prefab_Patient) as GameObject).GetComponent<Patient>();
+        Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
-        p.Person_Move(triage.location_Patient, "Triage");
+        //p.Person_Move(triage.location_Patient, "Triage");
         //Debug.Log("Adding Patient to the triage");
-        triage.PatientObject_Patient_Add(p);
+        //triage.PatientObject_Patient_Add(p);
+        triage.Triage_Patient_Add(p);
     }
 
     /// <summary>
