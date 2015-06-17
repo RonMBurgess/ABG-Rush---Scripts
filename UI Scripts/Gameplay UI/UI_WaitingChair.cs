@@ -19,7 +19,7 @@ public class UI_WaitingChair : UI_Patient
     {
         if (MyManager != null)
         {
-            button_Choices[0].interactable = (MyManager.Manager_Empty_WaitingChair() != null);
+            button_Choices[0].interactable = (MyManager.Manager_Empty_ExamRoom() != null);
             button_Choices[1].interactable = (MyPatient.Patient_Pacify_AmountLeft() > 0);
         }
     }

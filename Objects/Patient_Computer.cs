@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Sink : OfficeObject {
+public class Patient_Computer : OfficeObject {
 
 	// Use this for initialization
 	void Start () {
@@ -10,7 +10,7 @@ public class Sink : OfficeObject {
 	
 	// Update is called once per frame
 	void Update () {
-	
+	   
 	}
 
     void OnMouseOver()
@@ -18,7 +18,7 @@ public class Sink : OfficeObject {
         Manager.Manager_MouseOver(true);
         if (Input.GetMouseButtonUp(0))
         {
-            Manager.MyNurse.Person_Move(location_Nurse, "Sink",false);
+            Manager.MyNurse.Person_Move(location_Nurse, "Sink", false);
         }
     }
 
