@@ -5,7 +5,8 @@ public class Patient : Person {
 
     private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Delay_Pacification, timer_Current;
     private int pacify_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
-    private string patient_Name, patient_Story;
+    private string patient_Name;
+    private Diagnosis diagnosis;
     private PatientObject hotspot;
     private bool timer_Halted;
     private Animator anim;

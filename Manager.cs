@@ -133,6 +133,7 @@ public class Manager : MonoBehaviour {
     private void Manager_PatientSpawn()
     {
         Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
+        
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
         //p.Person_Move(triage.location_Patient, "Triage");

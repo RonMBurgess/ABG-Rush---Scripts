@@ -22,10 +22,11 @@ public class ABGToolManagerScript : MonoBehaviour {
     private List<Text> textAnswers;//all of the answer texts
     private List<Image> imageAnswers;//all of the answer images
     private bool ready = false;
+    
 
 	// Use this for initialization
 	void Start () {
-
+        
         Setup();
 
         //if practice mode, create a new problem
@@ -205,16 +206,14 @@ public class ABGToolManagerScript : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Called by the submit button
+    /// take in all the answers provided by the player and send them to the ABG logic controller/manager
+    /// if in practice mode, send the information to functions in this script
+    /// 
+    /// </summary>
     public void SubmitDiagnosis()
     {
-        /// <summary>
-        /// Called by the submit button
-        /// take in all the answers provided by the player and send them to the ABG logic controller/manager
-        /// if in practice mode, send the information to functions in this script
-        /// 
-        /// </summary>
-        /// 
 
         if (practiceMode)
         {
