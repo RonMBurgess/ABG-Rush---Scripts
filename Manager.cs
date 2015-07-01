@@ -65,8 +65,8 @@ public class Manager : MonoBehaviour {
     }
 
     #endregion
-
-    /// <summary>
+	#region Check Hotspots
+	/// <summary>
     /// Determine if there is an empty examination room
     /// </summary>
     /// <returns>Empty room or null</returns>
@@ -99,9 +99,9 @@ public class Manager : MonoBehaviour {
         }
         return null;
     }
+	#endregion
 
-
-    /// <summary>
+	/// <summary>
     /// Set up the manager
     /// </summary>
     private void Manager_Initialize()

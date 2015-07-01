@@ -15,11 +15,16 @@ public class Sink : OfficeObject {
 
     void OnMouseOver()
     {
-        Manager.Manager_MouseOver(true);
-        if (Input.GetMouseButtonUp(0))
-        {
-            Manager.MyNurse.Person_Move(location_Nurse, "Sink",false);
-        }
+		//check to see if the nurse is currently busy. If the nurse is not busy...
+		if (!Manager.MyNurse.IsBusy())
+		{
+			Manager.Manager_MouseOver(true);
+			if (Input.GetMouseButtonUp(0))
+			{
+				Manager.MyNurse.Person_Move(location_Nurse, "Sink", false, this);
+			}
+		}
+        
     }
 
     void OnMouseExit()

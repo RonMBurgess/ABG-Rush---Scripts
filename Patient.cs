@@ -3,9 +3,9 @@ using System.Collections;
 
 public class Patient : Person {
 
-    private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Delay_Pacification, timer_Current;
+    private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Vitals, timer_Bloodwork, timer_Diagnosis, timer_Delay_Pacification, timer_Current;
     private int pacify_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
-    private string patient_Name;
+    private string patient_Name, status;//The current status of the patient: (Triage, Waiting, Exam Room, Vitals, etc...)
     private Diagnosis diagnosis;
     private PatientObject hotspot;
     private bool timer_Halted;
@@ -30,18 +30,23 @@ public class Patient : Person {
 	}
 
     /// <summary>
-    /// Inform the patient of it's new location
+    /// Inform the patient of it's new Status
     /// </summary>
-    /// <param name="location">Triage, WaitingRoom, ExamRoom</param>
-    public void Patient_LocationChange(string location)
+    /// <param name="location">Triage, WaitingRoom, ExamRoom, Vitals, Bloodwork, Diagnosis, Leave</param>
+    public void Patient_StatusUpdate(string stat)
     {
-        switch (location)
+        switch (stat)
         {
-            case "Triage": Patient_ToggleCountdown(true); break;
+			case "Triage": Patient_ToggleCountdown(true); collider.enabled = false; break;
             case "WaitingChair": timer_Current = timer_WaitingRoom; collider.enabled = true; break;
-            case "ExamRoom": timer_Current = timer_ExamRoom; collider.enabled = true; break;
+            case "ExamRoom": timer_Current = timer_ExamRoom; collider.enabled = false; break;
+			case "Vitals": timer_Current = timer_Vitals; collider.enabled = true; break;
+			case "VitalsComplete": timer_Current = timer_Vitals; break;//countdown will re-enable after a decision is made in UI
+			case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
+			case "Diagnosis": timer_Current = timer_Diagnosis; collider.enabled = true; break;
             case "Exit": Destroy(gameObject); break;
         }
+		status = stat;
     }
 
     /// <summary>
@@ -70,9 +75,12 @@ public class Patient : Person {
         //It could be done here either immediately on startup or after the manager has given input, and each patient can be self inclusive
         //This information could be created/generated entirely through the manager as well, and this patient just holds the data.
 
-        timer_Triage = 10f;
-        timer_WaitingRoom = 10f;
-        timer_ExamRoom = 10f;
+        timer_Triage = 10f;//how long I will wait at the triage before leaving
+        timer_WaitingRoom = 10f;//how long I will wait in the waiting room before leaving
+        timer_ExamRoom = 10f;//how long I will wait in the exam room before leaving
+		timer_Vitals = 10f;
+		timer_Bloodwork = 15f;
+		timer_Diagnosis = 20f;
         timer_Current = 10f;
         timer_Delay_Pacification = 10f;
         pacify_AmountLeft = 2;
@@ -160,7 +168,8 @@ public class Patient : Person {
 
     void OnMouseEnter()
     {
-        if (hotspot)
+		//if I am on a hotspot, and the nurse is not busy.
+        if (hotspot && !Manager.MyNurse.IsBusy())
         {
             Manager.Manager_MouseOver(true);
             hotspot.OfficeObject_MouseEnter();
@@ -173,7 +182,6 @@ public class Patient : Person {
         {
             Manager.Manager_MouseOver(false);
             hotspot.OfficeObject_MouseExit();
-        
         }
         
         
@@ -181,14 +189,27 @@ public class Patient : Person {
 
     void OnMouseOver()
     {
-        if (hotspot)
+        if (hotspot && !Manager.MyNurse.IsBusy())
         {
             if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver() && hotspot.tag != "Triage" && !Moving())
             {
                 if (Input.GetMouseButtonUp(0))
                 {
-                    //tell the nurse to move to location
-                    Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), tag, true, hotspot);
+					if (status == "ExamRoom" || status == "Vitals")
+					{
+						//tell the nurse to move to the proper location
+						//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
+						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
+					}
+					else if (status == "Bloodwork" || status == "Diagnosis" || status == "VitalsComplete")
+					{
+						//tell the nurse to move to the exam room computer
+						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, hotspot);
+					}
+					else if(status == "WaitingChair")
+					{
+						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), hotspot.tag, true, hotspot);
+					}
                 }
 
             }
@@ -213,4 +234,22 @@ public class Patient : Person {
             anim.SetBool(animationName, tru);
         }
     }
+
+	/// <summary>
+	/// The status of the patient.
+	/// </summary>
+	/// <returns>Triage, WaitingChair, ExamRoom, Vitals, Bloodwork, Diagnosis, Exit</returns>
+	public string Status()
+	{
+		return status;
+	}
+
+	/// <summary>
+	/// Return the Diagnosis
+	/// </summary>
+	/// <returns></returns>
+	public Diagnosis MyDiagnosis()
+	{
+		return diagnosis;
+	}
 }

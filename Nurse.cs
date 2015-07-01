@@ -3,14 +3,290 @@ using System.Collections;
 
 public class Nurse : Person {
 
+	private bool clean = false;
+	private Animator anim;
+	private int hash_Talking = Animator.StringToHash("Talking");
+	private int busy;//Busy is an int and not a bool because it's possible that more than one update to the busy state to occur within a short period of time. So using an integer and checking for 0 will be most efficient.
+	private OfficeObject current_OfficeObject;
+	private Patient current_Patient;
+
+	#region Initialization
+	void Awake()
+	{
+		anim = GetComponent<Animator>();
+	}
+
 	// Use this for initialization
 	void Start () {
         Person_Initialize();
+		busy = 0;
         tag = "Nurse";
 	}
-	
+
+	#endregion
+
 	// Update is called once per frame
 	void Update () {
         Person_Update();
 	}
+
+	#region Actions
+
+	/// <summary>
+	/// A copy of the Function found in the Patient Class. 
+	/// </summary>
+	/// <param name="animation">Name of the Animation</param>
+	/// <param name="isTrigger">Is the animation a trigger</param>
+	/// <param name="tru">On or Off</param>
+	private void Nurse_Animation(string animation, bool isTrigger, bool tru)
+	{
+		if (anim)
+		{
+			if (isTrigger)
+			{
+				anim.SetTrigger(animation);
+			}
+			else
+			{
+				anim.SetBool(animation, tru);
+			}
+		}
+		
+	}
+
+	/// <summary>
+	/// Called when the nurse needs to perform an action of some kind. Make the nurse wash their hands.
+	/// <param name="action">Name of the Action: Wash Hands, Vitals, ExamRoomSetup</param>
+	/// </summary>
+	public void Nurse_PerformAction(string action, OfficeObject o = null, Patient p = null)
+	{
+		if (action == "Wash Hands")
+		{
+			StartCoroutine("WashHands");
+		}
+		else if (action == "Vitals")
+		{
+			current_OfficeObject = o;
+			current_Patient = p;
+			StartCoroutine("CheckVitals");
+		}
+		else if (action == "ExamRoomSetup")
+		{
+			current_OfficeObject = o;
+			current_Patient = p;
+			StartCoroutine("ExamRoomSetup");
+		}
+	}
+
+	/// <summary>
+	/// Converse with the patient for a period of time, and then open UI
+	/// </summary>
+	/// <returns></returns>
+	IEnumerator ExamRoomSetup()
+	{
+		//This is virtually the same as check vitals except for 1-2 differences. If there is no need to keep them differentiated at the end, change them.
+		//set busy to true so no actions can be taken/made
+		IsBusy(1);
+
+		//tell the patient to stop losing patience
+		current_Patient.Patient_ToggleCountdown(true);
+
+		//check if hands are clean. Gain/Lose points based on result.
+		//RON COME BACK AND UPDATE THIS
+
+		for (int i = 0; i < 2; i++)
+		{
+			//make sure the patient's speech bubble is off.
+			current_Patient.Patient_Animation("Talking", false, false);
+
+			//Nurse says something to patient
+			Nurse_Animation("Talking", false, true);
+
+			//wait for time
+			yield return new WaitForSeconds(1f);
+
+			//make sure the nurse's speech bubble is off
+			Nurse_Animation("Talking", false, false);
+
+			//patient responds to nurse
+			current_Patient.Patient_Animation("Talking", false, true);
+
+			//wait for time
+			yield return new WaitForSeconds(1f);
+		}
+
+		//turn both animations off just in case.
+		current_Patient.Patient_Animation("Talking", false, false);
+		Nurse_Animation("Talking", false, false);
+
+		//set hands to dirty
+		IsClean(-1);
+
+		//update the patient's status
+		current_Patient.Patient_StatusUpdate("Vitals");
+
+		//Open the ExamRoom Computer Interface
+		
+		//remove a busy counter
+		IsBusy(-1);
+
+		current_OfficeObject = null;
+		current_Patient = null;
+
+	}
+
+
+	/// <summary>
+	/// Converse with the patient for a period of time, and then open UI
+	/// </summary>
+	/// <returns></returns>
+	IEnumerator CheckVitals()
+	{
+		//set busy to true so no actions can be taken/made
+		IsBusy(1);
+
+		//tell the patient to stop losing patience
+		current_Patient.Patient_ToggleCountdown(true);
+
+		//check if hands are clean. Gain/Lose points based on result.
+		//RON COME BACK AND UPDATE THIS
+
+		for (int i = 0; i < 3; i++)
+		{
+			//make sure the patient's speech bubble is off.
+			current_Patient.Patient_Animation("Talking", false, false);
+
+			//Nurse says something to patient
+			Nurse_Animation("Talking", false, true);
+			
+			//wait for time
+			yield return new WaitForSeconds(1f);
+			
+			//make sure the nurse's speech bubble is off
+			Nurse_Animation("Talking", false, false);
+			
+			//patient responds to nurse
+			current_Patient.Patient_Animation("Talking", false, true);
+			
+			//wait for time
+			yield return new WaitForSeconds(1f);
+		}
+		
+		//turn both animations off just in case.
+		current_Patient.Patient_Animation("Talking", false, false);
+		Nurse_Animation("Talking", false, false);
+
+		//set hands to dirty
+		IsClean(-1);
+		
+		//update the patient's status
+		current_Patient.Patient_StatusUpdate("VitalsComplete");
+
+		//Move over to Exam Room Computer, and open the popup.
+		Person_Move(current_OfficeObject.OfficeObject_LocationNurse(),"ExamRoomComputer",false, current_OfficeObject);
+		//remove a busy counter
+		IsBusy(-1);
+
+		current_OfficeObject = null;
+		current_Patient = null;
+		
+	}
+
+
+	/// <summary>
+	/// //wait period of time, set hands clean = true
+	/// </summary>
+	/// <returns></returns>
+	IEnumerator WashHands()
+	{
+		IsBusy(1);
+		if (anim)
+		{
+			//turn to face the sink
+			//Ron Come Back and Update This!!!
+		}
+		//wait for time
+		yield return new WaitForSeconds(.75f);
+		//set clean hands to true.
+		IsClean(1);
+		//return to normal animation
+		//Ron Come Back and Update This!!!!
+		//remove a counter from busy
+		IsBusy(-1);
+
+	}
+
+
+	#endregion
+
+
+	#region Statuses
+	/// <summary>
+	/// Set the whether or not the nurse is busy, and return the status.
+	/// </summary>
+	/// <param name="b"> 0 = Just Checking. -1 = Set Busy to false. 1 = Set Busy to true.</param>
+	/// <returns> True - Yes, False - No.</returns>
+	public bool IsBusy(int b = 0)
+	{
+		//*To further explain the reason that busy is an integer:
+		/// Movement can determine whether or not the Nurse is busy
+		/// Interfaces/popups can also determine whether or not the nurse is busy.
+		/// 
+		/// If busy was a bool:
+		/// (1) Opening an Interface would set busy to true.
+		/// While this interface is open, the player may click a button that moves the nurse to another location.
+		/// (2) This movement would then set the nurse to busy.
+		/// (3) After the interface is finished executing all of it's statements, it will close, and tell the nurse it's no longer busy.
+		/// In this situation, the nurse would be moving, but no longer be busy. Since it's no longer busy, the player could attempt to take other actions as well and these actions would be allowed since the nurse is indeed not busy.
+		/// (4) However, the nurse should remain busy until they have stopped moving/arrived at their destination at which point, busy will again be set to true.
+		/// 
+		/// This above situation essentially does:
+		/// (1) Busy = true.
+		/// (2) Busy = true.
+		/// (3) Busy = false
+		/// (4) Busy = false.
+		/// 
+		/// However, this situation should, and now does yield:
+		/// (1) Busy = true.
+		/// (2) Busy = true.
+		/// (3) Busy = true.
+		/// (4) Busy = false.
+		//*
+	
+		if (b == 0)
+		{
+			//do nothing, 
+		}
+		else if (b < 0)
+		{
+			busy--;
+		}
+		else if (b > 0)
+		{
+			busy++; ;
+		}
+
+		return !(busy == 0);
+	}
+
+	/// <summary>
+	/// Return whether or not the Nurse's hands are clean.
+	/// </summary>
+	/// <param name="c">1 = clean, -1 = dirty, 0 = Just Checking</param>
+	/// <returns>True for clean, false for dirty.</returns>
+	public bool IsClean(int c = 0)
+	{
+		if (c > 0)
+		{
+			clean = true;
+		}
+		else if (c < 0)
+		{
+			clean = false;
+		}
+
+		return clean;
+	}
+
+	#endregion
 }

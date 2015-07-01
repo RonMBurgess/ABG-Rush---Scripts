@@ -26,6 +26,12 @@ public class UI_WaitingChair : UI_Patient
 
     void OnEnable()
     {
+		//tell the nurse that they are busy.
+		if (MyManager != null)
+		{
+			MyManager.MyNurse.IsBusy(1);
+		}
+
         if (button_Choices.Length < 1)
         {
             Debug.LogWarning(name + " is missing buttons in it's UI_Triage Script");
@@ -41,6 +47,15 @@ public class UI_WaitingChair : UI_Patient
         if (MyPatient != null) { MyPatient.Patient_ToggleCountdown(true); }
         
     }
+
+	void OnDisable()
+	{
+		//inform the nurse they are no longer busy.
+		if (MyManager != null)
+		{
+			MyManager.MyNurse.IsBusy(-1);
+		}
+	}
 
     ///// <summary>
     ///// Send the patient to an open exam room. Only called by a button click

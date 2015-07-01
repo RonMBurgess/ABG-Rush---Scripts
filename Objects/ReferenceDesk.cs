@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ReferenceDesk : MonoBehaviour {
+public class ReferenceDesk : OfficeObject {
 
 	// Use this for initialization
 	void Start () {

@@ -21,4 +21,22 @@ public class UI_ExamRoom : UI_Patient {
 	
 	}
 
+
+	void OnEnable()
+	{
+		//tell the nurse that they are busy.
+		if (MyManager != null)
+		{
+			MyManager.MyNurse.IsBusy(1);
+		}
+	}
+
+	void OnDisable()
+	{
+		//inform the nurse they are no longer busy.
+		if (MyManager != null)
+		{
+			MyManager.MyNurse.IsBusy(-1);
+		}
+	}
 }

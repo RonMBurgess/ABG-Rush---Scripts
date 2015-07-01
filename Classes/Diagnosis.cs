@@ -161,5 +161,21 @@ public class Diagnosis {
 
     }
 
+	/// <summary>
+	/// Return the story
+	/// </summary>
+	/// <param name="w">L = Long, S = Short</param>
+	/// <returns></returns>
+	public string Story(string w)
+	{
+		if (w == "L")
+		{
+			return story_Long;
+		}
+		else
+		{
+			return story_Short;
+		}
+	}
     #endregion
 }

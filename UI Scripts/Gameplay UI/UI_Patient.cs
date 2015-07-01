@@ -103,6 +103,8 @@ public class UI_Patient : MonoBehaviour {
             //make the patient move to the proper location of it's new hotspot
             MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
 
+			//make the nurse move to the proper location of the exam room's computer.
+			manager.MyNurse.Person_Move(e.Computer().OfficeObject_LocationNurse(),e.Computer().tag, false, e.Computer());
             
             Debug.Log("Patient has been given to: " + e.name);
 
