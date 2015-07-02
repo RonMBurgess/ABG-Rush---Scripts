@@ -5,16 +5,39 @@ using UnityEngine.UI;
 public class ExamRoomComputer : OfficeObject {
 
 	private ExamRoom er;
+	public float bloodworkTimeAlloted;
+	private float bloodworkTimeUsed;
+	private bool bloodworkSent;
 
 	// Use this for initialization
 	void Start () {
-		tag = "ExamRoomComputer";
+		
+		
         OfficeObject_Initialize();
+		InitializeExamRoomComputer();
 	}
-	
+
+	private void InitializeExamRoomComputer()
+	{
+		tag = "ExamRoomComputer";
+		bloodworkTimeUsed = 0;
+		bloodworkSent = false;
+	}
+
 	// Update is called once per frame
 	void Update () {
-	   
+		if (bloodworkSent)
+		{
+			bloodworkTimeUsed += Time.deltaTime;
+			if (bloodworkTimeUsed >= bloodworkTimeAlloted)
+			{
+				//reset bloodwork sent
+				bloodworkSent = false;
+
+				//inform the patient of status change/update.
+				MyExamRoom().MyPatient.Patient_StatusUpdate("Diagnosis");
+			}
+		}
 	}
 
     void OnMouseOver()
@@ -25,7 +48,8 @@ public class ExamRoomComputer : OfficeObject {
 			Manager.Manager_MouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
-				Manager.MyNurse.Person_Move(location_Nurse, tag, false);
+				Debug.Log("Telling the Nurse to move to me: " + this);
+				Manager.MyNurse.Person_Move(location_Nurse, tag, false, this);
 			}
 		}
         
@@ -47,5 +71,15 @@ public class ExamRoomComputer : OfficeObject {
 			er = e;
 		}
 		return er;
+	}
+
+	/// <summary>
+	/// Begin the countdown for bloodwork
+	/// </summary>
+	public void SendBloodwork()
+	{
+		bloodworkTimeUsed = 0;
+		bloodworkSent = true;
+		MyExamRoom().MyPatient.Patient_StatusUpdate("BloodWorkWaiting");
 	}
 }

@@ -11,37 +11,42 @@ public class GameplayUIScript : MonoBehaviour {
     public ABGToolManagerScript abgTool;
     public NotificationManagerScript notifications;
     public SatisfactionBarScript satisfaction;
-    public MeetAndGreetScript meetandgreet;
+	public UI_ExamRoomComputer examroomComputer;
 
 
 
 	// Use this for initialization
 	void Start () {
-        meetandgreet.gameObject.SetActive(false);
+        examroomComputer.gameObject.SetActive(false);
         abgTool.gameObject.SetActive(false);
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            satisfaction.SatisfactionModify(Random.Range(1, 4));
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            satisfaction.SatisfactionModify(Random.Range(-4, 1));
-        }
-        else if (Input.GetKeyUp(KeyCode.N))
-        {
-            notifications.NewNotification();
-        }
+		//if (Input.GetKeyUp(KeyCode.RightArrow))
+		//{
+		//	satisfaction.SatisfactionModify(Random.Range(1, 4));
+		//}
+		//else if (Input.GetKeyUp(KeyCode.LeftArrow))
+		//{
+		//	satisfaction.SatisfactionModify(Random.Range(-4, 1));
+		//}
+		//else if (Input.GetKeyUp(KeyCode.N))
+		//{
+		//	notifications.NewNotification();
+		//}
 
 	}
 
-    public void ABGToolUse(bool t)
-    {
-        abgTool.gameObject.SetActive(t);
+	//public void ABGToolUse(bool t)
+	//{
+	//	abgTool.gameObject.SetActive(t);
 
-    }
+	//}
+
+	public UI_ExamRoomComputer ExamRoomComputerUI()
+	{
+		return examroomComputer;
+	}
 }

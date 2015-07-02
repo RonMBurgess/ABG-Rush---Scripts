@@ -18,6 +18,8 @@ public class Diagnosis {
         //set the diagnosis answers
         diag_RespMet = diag_RM; diag_AcidAlk = diag_AA; diag_Comp = diag_C;
         //set the story
+		//Debug.Log(story_L);
+		//Debug.Log(story_S);
         story_Long = story_L; story_Short = story_S;
         //set the extra information
         medications = meds; symptoms = sympts; conditions = conds;
@@ -84,7 +86,7 @@ public class Diagnosis {
                 }
                 else if(i == medications.Count - 1)
                 {
-                    m += medications[i] + ".";
+					m += ", " + medications[i] + ".";
                 }
                 else
                 {
@@ -116,7 +118,7 @@ public class Diagnosis {
                 }
                 else if (i == symptoms.Count - 1)
                 {
-                    s += medications[i] + ".";
+                    s += ", " + symptoms[i] + ".";
                 }
                 else
                 {
@@ -148,7 +150,7 @@ public class Diagnosis {
                 }
                 else if (i == conditions.Count - 1)
                 {
-                    c += conditions[i] + ".";
+                    c += ", " + conditions[i] + ".";
                 }
                 else
                 {

@@ -23,6 +23,7 @@ public class ABG{
     public ABG()
     {
         diagnoses = new List<Diagnosis>();
+		
         CreateDiagnoses();
     }
 	
@@ -172,12 +173,21 @@ public class ABG{
     /// </summary>
     private void CreateDiagnoses()
     {
+		Debug.Log("ABG is creating Diagnoses");
         //Come back and change this to read in from a file later.
 
 
-        //Test Samples
-        test_Stories_L.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident. "); test_Stories_L.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach.");
-        test_Stories_S.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); test_Stories_S.Add("I woke up int he middle of the night wit stomach cramps");
+        //Initialize Test Sample lists.
+
+		test_Stories_L = new List<string>(); test_Stories_S = new List<string>();
+		test_Symptoms_1 = new List<string>(); test_Symptoms_2 = new List<string>();
+		test_Conditions_1 = new List<string>(); test_Conditions_2 = new List<string>();
+		test_Medications_1 = new List<string>(); test_Medications_2 = new List<string>();
+
+		//populate the test sample lists.
+
+        test_Stories_L.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident."); test_Stories_L.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach.");
+        test_Stories_S.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); test_Stories_S.Add("I woke up in the middle of the night with stomach cramps");
         test_Symptoms_1.Add("Severe Pain"); test_Symptoms_1.Add("Cyanotic Fingers");
         test_Symptoms_2.Add("Stomach Cramps"); test_Symptoms_2.Add("Weak & Fainty");
         test_Conditions_1.Add("Asthma"); test_Conditions_1.Add("Lung Disease");
@@ -211,5 +221,15 @@ public class ABG{
         DiagnosisAnswerValues(d);
         return d;
     }
+
+	/// <summary>
+	/// Return a random diagnosis for game mode.
+	/// </summary>
+	/// <returns></returns>
+	public Diagnosis PatientDiagnosis()
+	{
+		//return a random diagnosis for a patient.
+		return diagnoses[Random.Range(0, diagnoses.Count)];
+	}
 
 }

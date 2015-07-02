@@ -3,12 +3,14 @@ using System.Collections;
 
 public class Nurse : Person {
 
-	private bool clean = false;
+	private bool clean = false, waitingAtExamRoom;//Are hands clean. //Is the nurse waiting at the exam room for the patient?
 	private Animator anim;
 	private int hash_Talking = Animator.StringToHash("Talking");
 	private int busy;//Busy is an int and not a bool because it's possible that more than one update to the busy state to occur within a short period of time. So using an integer and checking for 0 will be most efficient.
 	private OfficeObject current_OfficeObject;
 	private Patient current_Patient;
+
+
 
 	#region Initialization
 	void Awake()
@@ -21,6 +23,7 @@ public class Nurse : Person {
         Person_Initialize();
 		busy = 0;
         tag = "Nurse";
+		waitingAtExamRoom = false;
 	}
 
 	#endregion
@@ -82,7 +85,7 @@ public class Nurse : Person {
 	/// Converse with the patient for a period of time, and then open UI
 	/// </summary>
 	/// <returns></returns>
-	IEnumerator ExamRoomSetup()
+	private IEnumerator ExamRoomSetup()
 	{
 		//This is virtually the same as check vitals except for 1-2 differences. If there is no need to keep them differentiated at the end, change them.
 		//set busy to true so no actions can be taken/made
@@ -126,12 +129,15 @@ public class Nurse : Person {
 		current_Patient.Patient_StatusUpdate("Vitals");
 
 		//Open the ExamRoom Computer Interface
-		
+		Manager.GamePlayUI().ExamRoomComputerUI().SetPatient(current_Patient);
+		Manager.GamePlayUI().ExamRoomComputerUI().gameObject.SetActive(true);
+
 		//remove a busy counter
 		IsBusy(-1);
 
 		current_OfficeObject = null;
 		current_Patient = null;
+		waitingAtExamRoom = false;
 
 	}
 
@@ -140,7 +146,7 @@ public class Nurse : Person {
 	/// Converse with the patient for a period of time, and then open UI
 	/// </summary>
 	/// <returns></returns>
-	IEnumerator CheckVitals()
+	private IEnumerator CheckVitals()
 	{
 		//set busy to true so no actions can be taken/made
 		IsBusy(1);
@@ -183,7 +189,8 @@ public class Nurse : Person {
 		current_Patient.Patient_StatusUpdate("VitalsComplete");
 
 		//Move over to Exam Room Computer, and open the popup.
-		Person_Move(current_OfficeObject.OfficeObject_LocationNurse(),"ExamRoomComputer",false, current_OfficeObject);
+		Person_Move((current_OfficeObject as ExamRoom).Computer().OfficeObject_LocationNurse(),"ExamRoomComputer",false, (current_OfficeObject as ExamRoom).Computer());
+		
 		//remove a busy counter
 		IsBusy(-1);
 
@@ -197,7 +204,7 @@ public class Nurse : Person {
 	/// //wait period of time, set hands clean = true
 	/// </summary>
 	/// <returns></returns>
-	IEnumerator WashHands()
+	private IEnumerator WashHands()
 	{
 		IsBusy(1);
 		if (anim)
@@ -216,7 +223,32 @@ public class Nurse : Person {
 
 	}
 
+	/// <summary>
+	/// Set the Nurse and Patient that have arrived at the Exam Room.
+	/// </summary>
+	/// <param name="p">Patient or Nurse</param>
+	/// <param name="o">ExamRoom</param>
+	public void Nurse_ExamRoomArrival(Person p, OfficeObject o = null)
+	{
+		if (p.tag == "Patient")
+		{
+			Debug.Log("ExamRoomArrival : Patient " + p.gameObject + " for the Nurse " + gameObject);
+			current_Patient = (p as Patient);
+			if (o) { current_OfficeObject = o; }
+		}
+		else if (p.tag == "Nurse")
+		{
+			Debug.Log("ExamRoomArrival : Nurse " + gameObject);
+			waitingAtExamRoom = true;
+			if (o) { current_OfficeObject = o; }
+		}
 
+		if (current_Patient && waitingAtExamRoom)
+		{
+			Debug.Log("ExamRoomArrival: Both Conditions have been met");
+			Nurse_PerformAction("ExamRoomSetup", current_OfficeObject, current_Patient);
+		}
+	}
 	#endregion
 
 

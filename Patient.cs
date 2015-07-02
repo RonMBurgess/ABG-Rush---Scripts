@@ -41,8 +41,9 @@ public class Patient : Person {
             case "WaitingChair": timer_Current = timer_WaitingRoom; collider.enabled = true; break;
             case "ExamRoom": timer_Current = timer_ExamRoom; collider.enabled = false; break;
 			case "Vitals": timer_Current = timer_Vitals; collider.enabled = true; break;
-			case "VitalsComplete": timer_Current = timer_Vitals; break;//countdown will re-enable after a decision is made in UI
-			case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
+			case "VitalsComplete": timer_Current = timer_Vitals; Patient_ToggleCountdown(true); collider.enabled = false; break;//countdown will re-enable after a decision is made in UI
+			//case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
+			case "BloodworkWaiting": timer_Current = timer_Bloodwork; collider.enabled = false; break;
 			case "Diagnosis": timer_Current = timer_Diagnosis; collider.enabled = true; break;
             case "Exit": Destroy(gameObject); break;
         }
@@ -201,10 +202,10 @@ public class Patient : Person {
 						//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
 						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
 					}
-					else if (status == "Bloodwork" || status == "Diagnosis" || status == "VitalsComplete")
+					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete")
 					{
 						//tell the nurse to move to the exam room computer
-						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, hotspot);
+						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
 					}
 					else if(status == "WaitingChair")
 					{
@@ -251,5 +252,17 @@ public class Patient : Person {
 	public Diagnosis MyDiagnosis()
 	{
 		return diagnosis;
+	}
+
+
+	public void Patient_Setup(string n, string dob, Diagnosis d){
+		name = n;
+		patient_Name = n;
+
+		//COME BACK AND SET DOB
+
+		diagnosis = d;
+		Debug.Log(name + "'s Diagnosis is: " + d.Answer_Respiratory_Metabolic + " " + d.Answer_Acidosis_Alkalosis + " " + d.Answer_Compensation);
+		Debug.Log(name + "'s Story is: " + d.Story("S"));
 	}
 }

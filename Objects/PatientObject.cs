@@ -36,6 +36,7 @@ public class PatientObject : OfficeObject {
         p.Patient_Hotspot(this);
         p.Person_Move(location_Patient, tag, true, this);
 
+		Debug.Log(gameObject + " has added patient " + p);
         //OfficeObject_SetReadyState(true); //handled inside of the person class now.
     }
 

@@ -62,13 +62,18 @@ public class Person : MonoBehaviour {
         {
             agent = GetComponent<PolyNavAgent>();
         }
-		//make sure that the agent is enabled, and then set the agent's destination.
-        agent.enabled = true;
-        agent.SetDestination(m, Person_MovementStatus);
+		
 
         destinationName = dName;
+		Debug.Log("OfficeObject = " + officeobject);
         if (officeobject) { patientObject = pObject; officeObject = officeobject; }
+
+		//make sure that the agent is enabled, and then set the agent's destination.
+		agent.enabled = true;
+		
         moving = true;
+
+		agent.SetDestination(m, Person_MovementStatus);
     }
 
     /// <summary>
@@ -81,11 +86,18 @@ public class Person : MonoBehaviour {
         //inform self that my status has changed, so if I'm a nurse, I should now be either waiting at triage, waiting at waiting room, or waiting in patient room
         if (moved && gameObject.CompareTag("Patient"))
         {
-            (this as Patient).Patient_StatusUpdate(destinationName);
-            if ((this as Patient).Patient_Hotspot_Get())
+			Patient p = (this as Patient);
+            p.Patient_StatusUpdate(destinationName);
+            if (p.Patient_Hotspot_Get())
             {
-                (this as Patient).Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
+                p.Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
             }
+
+			if (p.Status() == "ExamRoom")
+			{
+				manager.MyNurse.Nurse_ExamRoomArrival(p, officeObject);
+			
+			}
                         
         }
 
@@ -128,20 +140,28 @@ public class Person : MonoBehaviour {
 			}
 			else
 			{
+				Debug.Log("DestinationName : " + destinationName);
 				if (destinationName == "ExamRoomComputer")
 				{
 					//get the patient
+					Debug.Log("OfficeObject = " + officeObject);
 					Patient p = (officeObject as ExamRoomComputer).MyExamRoom().MyPatient;
-					
-					//If the status is exam room, then the nurse must setup and prepare the computer.
-					if (p.Status() == "ExamRoom")
+					Debug.Log("The patient the nurse is seeing is: " + p + " and their status is " + p.Status());
+
+					//If the status is exam room or waiting chair, the patient is on their way and the nurse must setup and prepare the computer.
+					if (p.Status() == "ExamRoom" || p.Status() == "WaitingChair")
 					{
 						//same /similar process as vitals
-						(this as Nurse).Nurse_PerformAction("ExamRoomSetup", officeObject, p);
+						//(this as Nurse).Nurse_PerformAction("ExamRoomSetup", officeObject, p);
+						Debug.Log("Nurse setting up arrival");
+						(this as Nurse).Nurse_ExamRoomArrival(this, officeObject);
+						
 					}
 					else
 					{
 						//Open up the Interface for the computer.
+						manager.GamePlayUI().ExamRoomComputerUI().SetPatient((officeObject as ExamRoomComputer).MyExamRoom().MyPatient);
+						manager.GamePlayUI().ExamRoomComputerUI().gameObject.SetActive(true);
 					}
 
 					//open up the examroom computer with the proper information

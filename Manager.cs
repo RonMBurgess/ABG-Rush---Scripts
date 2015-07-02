@@ -9,6 +9,7 @@ public class Manager : MonoBehaviour {
     public GameObject prefab_Patient;
     public Transform location_Entrance, location_Exit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
+	public GameplayUIScript gameplayUI;
     private Triage triage;
     private List<Patient> list_Patients;
     private List<WaitingChair> list_WaitingChairs;
@@ -16,7 +17,7 @@ public class Manager : MonoBehaviour {
     private int score_Patients_Total;
     private float score_Satisfaction;
     private Nurse nurse;
-
+	private ABG abg;
 
     public Nurse MyNurse
     {
@@ -106,26 +107,35 @@ public class Manager : MonoBehaviour {
     /// </summary>
     private void Manager_Initialize()
     {
+		//Initialize the ABG class and prepare all the diagnoses
+		abg = new ABG();
+
+		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
         list_WaitingChairs = new List<WaitingChair>();
         list_ExamRooms = new List<ExamRoom>();
         list_Patients = new List<Patient>();
 
+		//Populate the list of waiting chairs.
         GameObject[] wc = GameObject.FindGameObjectsWithTag("WaitingChair");
         foreach (GameObject w in wc)
         {
             list_WaitingChairs.Add(w.GetComponent<WaitingChair>());
         }
 
+		//Populate the list of exam rooms.
         GameObject[] er = GameObject.FindGameObjectsWithTag("ExamRoom");
         foreach (GameObject e in er)
         {
             list_ExamRooms.Add(e.GetComponent<ExamRoom>());
         }
 
+		//Find the triage
         triage = GameObject.FindGameObjectWithTag("Triage").GetComponent<Triage>();
 
+		//Find the nurse
         nurse = GameObject.FindGameObjectWithTag("Nurse").GetComponent<Nurse>();
 
+		//Reset the score
         score_Patients_Total = 0;
         score_Satisfaction = 100f;
     }
@@ -133,7 +143,7 @@ public class Manager : MonoBehaviour {
     private void Manager_PatientSpawn()
     {
         Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
-        
+		p.Patient_Setup("Jack N. A'Box", "1952", abg.PatientDiagnosis());
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
         //p.Person_Move(triage.location_Patient, "Triage");
@@ -159,4 +169,13 @@ public class Manager : MonoBehaviour {
         }
         
     }
+
+
+
+
+
+	public GameplayUIScript GamePlayUI()
+	{
+		return gameplayUI;
+	}
 }
