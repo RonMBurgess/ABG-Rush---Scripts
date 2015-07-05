@@ -11,6 +11,8 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	public Text text_name, text_DOB, text_History, text_Symptoms, text_Conditions, text_Medications, text_PH, text_HCO3, text_CO2;
 	public Image image_Patient;
 	public GameObject screen_PatientHistory, screen_Diagnosis;
+	public DiagnosisTool diagnosisTool;
+
 	private Manager manager;
 	private bool init = false;
 
@@ -152,6 +154,12 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 
 				if (status == "Diagnosis")
 				{
+					if (diagnosisTool)
+					{
+						//supply the diagnosis tool with the required information
+						diagnosisTool.Reset(patient.MyDiagnosis());
+					}
+
 					if (button_Diagnose)
 					{
 						button_Diagnose.interactable = true;
@@ -181,6 +189,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 
 		//make sure that the diagnose button is uninteractable
 		button_Diagnose.interactable = false;
+
 		//inform the patient to resume counting down
 		patient.Patient_ToggleCountdown(false);
 
@@ -289,7 +298,35 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			manager = GameObject.Find("Manager").GetComponent<Manager>();
 		}
 		
+		//initialize the diagnosis tool
+		diagnosisTool.Initialize(true,this);
 
 		init = true;
+
+	}
+
+
+	/// <summary>
+	/// Tell the Patient to leave.
+	/// Close Self/Turn Self off.
+	/// </summary>
+	public void FinishDiagnosis()
+	{
+		Debug.Log("FinishDiagnosis");
+		patient.Patient_StatusUpdate("DiagnosisComplete");
+		//patient.Patient_Leave(); // this is now handled inside the patient.
+
+		//close since the diagnosis is complete
+		//StartCoroutine("Deactivate", 1f);
+		gameObject.SetActive(false);
+	}
+
+	private IEnumerator Deactivate(float delay)
+	{
+		yield return new WaitForSeconds(delay);
+		if (gameObject.activeInHierarchy)
+		{
+			gameObject.SetActive(false);
+		}
 	}
 }

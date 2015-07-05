@@ -10,6 +10,9 @@ public class Manager : MonoBehaviour {
     public Transform location_Entrance, location_Exit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
 	public GameplayUIScript gameplayUI;
+
+	public static Manager manager;
+
     private Triage triage;
     private List<Patient> list_Patients;
     private List<WaitingChair> list_WaitingChairs;
@@ -18,6 +21,8 @@ public class Manager : MonoBehaviour {
     private float score_Satisfaction;
     private Nurse nurse;
 	private ABG abg;
+
+
 
     public Nurse MyNurse
     {
@@ -49,7 +54,7 @@ public class Manager : MonoBehaviour {
         list_Patients.Remove(p);
 
         //Perform some kind of animation
-        //deduct points
+        //decrease points based on level of satisfaction
         p.Person_Move(location_Exit.position,"Exit");
     }
 
@@ -61,7 +66,8 @@ public class Manager : MonoBehaviour {
     {
         list_Patients.Remove(p);
         //perform some kind of animation
-        //deduct points
+
+        //gain/increase points based on level of satisfaction
         p.Person_Move(location_Exit.position, "Exit");
     }
 
@@ -138,6 +144,9 @@ public class Manager : MonoBehaviour {
 		//Reset the score
         score_Patients_Total = 0;
         score_Satisfaction = 100f;
+
+		//set the manager
+		manager = this;
     }
 
     private void Manager_PatientSpawn()

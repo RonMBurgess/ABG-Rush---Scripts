@@ -45,6 +45,7 @@ public class Patient : Person {
 			//case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
 			case "BloodworkWaiting": timer_Current = timer_Bloodwork; collider.enabled = false; break;
 			case "Diagnosis": timer_Current = timer_Diagnosis; collider.enabled = true; break;
+			case "DiagnosisComplete": timer_Current = 999f; collider.enabled = false; Patient_Leave(); break;
             case "Exit": Destroy(gameObject); break;
         }
 		status = stat;
@@ -160,6 +161,7 @@ public class Patient : Person {
     /// </summary>
     public void Patient_Leave()
     {
+		Debug.Log("Patient_Leave");
         //inform current hotspot
         hotspot.PatientObject_Patient_Remove();
         //inform manager
