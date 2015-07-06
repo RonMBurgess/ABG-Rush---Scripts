@@ -18,7 +18,9 @@ public class Sink : OfficeObject {
 		//check to see if the nurse is currently busy. If the nurse is not busy...
 		if (!Manager.MyNurse.IsBusy())
 		{
-			Manager.Manager_MouseOver(true);
+			//highlight this object.
+			Highlight(true);
+			//Manager.Manager_MouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
 				Manager.MyNurse.Person_Move(location_Nurse, "Sink", false, this);
@@ -29,6 +31,8 @@ public class Sink : OfficeObject {
 
     void OnMouseExit()
     {
-        Manager.Manager_MouseOver(false);
+        //Manager.Manager_MouseOver(false);
+		//stop being highlighted
+		Highlight(false);
     }
 }

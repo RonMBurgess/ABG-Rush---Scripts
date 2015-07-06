@@ -81,6 +81,10 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 				text_Medications.text = d.Medications();
 			}
 			
+			//display the initial patient history screen, and make sure diagnosis screen is off.
+			PatientHistoryDiagnosisTabSwitch(true);
+			button_Diagnose.interactable = false;
+
 
 			//determine what needs to be displayed.
 			string status = patient.Status();
@@ -232,6 +236,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	{
 		//turn the diagnosis screen off.
 		screen_Diagnosis.SetActive(!pHistory);
+
 		//turn the patient history screen on.
 		screen_PatientHistory.SetActive(pHistory);
 

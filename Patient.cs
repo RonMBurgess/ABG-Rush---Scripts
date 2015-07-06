@@ -175,7 +175,7 @@ public class Patient : Person {
         if (hotspot && !Manager.MyNurse.IsBusy())
         {
             Manager.Manager_MouseOver(true);
-            hotspot.OfficeObject_MouseEnter();
+            //hotspot.OfficeObject_MouseEnter();
         }
     }
 
@@ -184,7 +184,7 @@ public class Patient : Person {
         if (hotspot)
         {
             Manager.Manager_MouseOver(false);
-            hotspot.OfficeObject_MouseExit();
+            //hotspot.OfficeObject_MouseExit();
         }
         
         
@@ -194,7 +194,7 @@ public class Patient : Person {
     {
         if (hotspot && !Manager.MyNurse.IsBusy())
         {
-            if (hotspot.OfficeObject_Ready() && hotspot.OfficeObject_MousedOver() && hotspot.tag != "Triage" && !Moving())
+            if (hotspot.OfficeObject_Ready()/* && hotspot.OfficeObject_MousedOver()*/ && hotspot.tag != "Triage" && !Moving())
             {
                 if (Input.GetMouseButtonUp(0))
                 {

@@ -90,7 +90,7 @@ public class Person : MonoBehaviour {
             p.Patient_StatusUpdate(destinationName);
             if (p.Patient_Hotspot_Get())
             {
-                p.Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
+                //p.Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
             }
 
 			if (p.Status() == "ExamRoom")
