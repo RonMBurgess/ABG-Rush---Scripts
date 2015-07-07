@@ -259,6 +259,9 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 		(patient.Patient_Hotspot_Get() as ExamRoom).Computer().SendBloodwork();
 
 		//inform the patient to stop/begin counting down. Not sure which at the moment, or if they should just be halted.
+
+		//Close this window
+		Close();
 	}
 
 	/// <summary>

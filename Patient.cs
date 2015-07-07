@@ -1,28 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Patient : Person {
 
-    private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Vitals, timer_Bloodwork, timer_Diagnosis, timer_Delay_Pacification, timer_Current;
+	public SpriteRenderer highlightRenderer = null;
+
+    private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Vitals, timer_Bloodwork, timer_Diagnosis, timer_Delay_Pacification, timer_Current, timer_CurrentSet;
     private int pacify_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
     private string patient_Name, status;//The current status of the patient: (Triage, Waiting, Exam Room, Vitals, etc...)
     private Diagnosis diagnosis;
     private PatientObject hotspot;
     private bool timer_Halted;
-    private Animator anim;
     private Collider2D collider;
+
+	//Animator/animation stuff
+	private Animator anim;
+	private List<int> animationPositions;
+	private int hash_Talking = Animator.StringToHash("Talking");
+	private int hash_Walking = Animator.StringToHash("Walking");
+	private int hash_Sitting = Animator.StringToHash("Sitting");
+	private int hash_Turned = Animator.StringToHash("Turned");
+	private int hash_Patience = Animator.StringToHash("Patience");
+	private int hash_Highlight = Animator.StringToHash("Highlight");
+	private int hash_Waiting = Animator.StringToHash("Waiting");
  
 
 	// Use this for initialization
 	void Start () {
-        Person_Initialize();
-        Patient_Initalize();
-        tag = "Patient";
+        //Person_Initialize();
+        //Patient_Initalize();
+        //tag = "Patient";
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        Person_Update();
+        Person_Update(highlightRenderer);
         if (!Moving() /*and not currently in UI*/ && !timer_Halted)
         {
             Patient_PatienceCountdown();
@@ -37,15 +50,15 @@ public class Patient : Person {
     {
         switch (stat)
         {
-			case "Triage": Patient_ToggleCountdown(true); collider.enabled = false; break;
-            case "WaitingChair": timer_Current = timer_WaitingRoom; collider.enabled = true; break;
-            case "ExamRoom": timer_Current = timer_ExamRoom; collider.enabled = false; break;
-			case "Vitals": timer_Current = timer_Vitals; collider.enabled = true; break;
-			case "VitalsComplete": timer_Current = timer_Vitals; Patient_ToggleCountdown(true); collider.enabled = false; break;//countdown will re-enable after a decision is made in UI
+			case "Triage": Patient_ToggleCountdown(true); collider.enabled = false; Patient_Animation("Turned", false, true); break;
+			case "WaitingChair": timer_Current = timer_WaitingRoom; timer_CurrentSet = timer_WaitingRoom; Patient_ToggleCountdown(false); collider.enabled = true; Patient_Animation("Waiting", false, true); Patient_Animation("Highlight", false, true); break;
+			case "ExamRoom": timer_Current = timer_ExamRoom; timer_CurrentSet = timer_ExamRoom; collider.enabled = false; Patient_Animation("Sitting", false, true); break;
+			case "Vitals": timer_Current = timer_Vitals; timer_CurrentSet = timer_Vitals; collider.enabled = true; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, true); break;
+			case "VitalsComplete": timer_Current = timer_Vitals; timer_CurrentSet = timer_Vitals; Patient_ToggleCountdown(true); collider.enabled = false; Patient_Animation("Sitting", false, true); break;//countdown will re-enable after a decision is made in UI
 			//case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
-			case "BloodworkWaiting": timer_Current = timer_Bloodwork; collider.enabled = false; break;
-			case "Diagnosis": timer_Current = timer_Diagnosis; collider.enabled = true; break;
-			case "DiagnosisComplete": timer_Current = 999f; collider.enabled = false; Patient_Leave(); break;
+			case "BloodworkWaiting": timer_Current = timer_Bloodwork; timer_CurrentSet = timer_Bloodwork; collider.enabled = false; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, false); break;
+			case "Diagnosis": timer_Current = timer_Diagnosis; timer_CurrentSet = timer_Diagnosis; collider.enabled = true; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, true); break;
+			case "DiagnosisComplete": timer_Current = 999f; collider.enabled = false; Patient_Animation("Highlight", false, false); Patient_Leave(); break;
             case "Exit": Destroy(gameObject); break;
         }
 		status = stat;
@@ -78,13 +91,13 @@ public class Patient : Person {
         //This information could be created/generated entirely through the manager as well, and this patient just holds the data.
 
         timer_Triage = 10f;//how long I will wait at the triage before leaving
-        timer_WaitingRoom = 10f;//how long I will wait in the waiting room before leaving
-        timer_ExamRoom = 10f;//how long I will wait in the exam room before leaving
-		timer_Vitals = 10f;
-		timer_Bloodwork = 15f;
-		timer_Diagnosis = 20f;
+        timer_WaitingRoom = 30f;//how long I will wait in the waiting room before leaving
+        timer_ExamRoom = 30f;//how long I will wait in the exam room before leaving
+		timer_Vitals = 30f;
+		timer_Bloodwork = 30f;
+		timer_Diagnosis = 60f;
         timer_Current = 10f;
-        timer_Delay_Pacification = 10f;
+        timer_Delay_Pacification = 20f;
         pacify_AmountLeft = 2;
         anim = GetComponent<Animator>();
         collider = GetComponent<Collider2D>();
@@ -93,6 +106,19 @@ public class Patient : Person {
             //turn collider off
             collider.enabled = false;
         }
+
+		if (anim)
+		{
+			anim.SetBool(hash_Highlight, false);
+			anim.SetBool(hash_Sitting, false);
+			anim.SetBool(hash_Talking, false);
+			anim.SetBool(hash_Waiting, false);
+			anim.SetBool(hash_Walking, false);
+			anim.SetFloat(hash_Patience, 1f);
+
+			animationPositions = new List<int>();
+			animationPositions.Add(hash_Sitting); animationPositions.Add(hash_Walking); animationPositions.Add(hash_Waiting); animationPositions.Add(hash_Turned);
+		}
     }
 
     /// <summary>
@@ -125,6 +151,10 @@ public class Patient : Person {
         if (timer_Current > 0)
         {
             timer_Current -= Time.deltaTime;
+			if (anim)
+			{
+				anim.SetFloat(hash_Patience, timer_Current / timer_CurrentSet);
+			}
             if (timer_Current <= 0)
             {
                 Patient_StormOut();
@@ -174,7 +204,7 @@ public class Patient : Person {
 		//if I am on a hotspot, and the nurse is not busy.
         if (hotspot && !Manager.MyNurse.IsBusy())
         {
-            Manager.Manager_MouseOver(true);
+            //Manager.Manager_MouseOver(true);
             //hotspot.OfficeObject_MouseEnter();
         }
     }
@@ -183,7 +213,7 @@ public class Patient : Person {
     {
         if (hotspot)
         {
-            Manager.Manager_MouseOver(false);
+            //Manager.Manager_MouseOver(false);
             //hotspot.OfficeObject_MouseExit();
         }
         
@@ -198,21 +228,30 @@ public class Patient : Person {
             {
                 if (Input.GetMouseButtonUp(0))
                 {
+					//bool nextStep = false;
 					if (status == "ExamRoom" || status == "Vitals")
 					{
 						//tell the nurse to move to the proper location
 						//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
 						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
+						//nextStep = true;
 					}
 					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete")
 					{
 						//tell the nurse to move to the exam room computer
 						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
+						//nextStep = true;
 					}
 					else if(status == "WaitingChair")
 					{
 						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), hotspot.tag, true, hotspot);
+						//nextStep = true;
 					}
+					//if (nextStep && !timer_Halted)
+					//{
+					//	if (timer_Current / timer_CurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
+					//	else if (timer_Current / timer_CurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
+					//}
                 }
 
             }
@@ -220,22 +259,57 @@ public class Patient : Person {
         
     }
 
+	/// <summary>
+	/// Update the score based on how long you waited.
+	/// </summary>
+	public void Patient_PatienceScore()
+	{
+		if (status != "ExamRoom" && status != "Triage")
+		{
+			if (timer_Current / timer_CurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
+			else if (timer_Current / timer_CurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
+		}
+	}
+
     /// <summary>
     /// Called outside of the class.
     /// </summary>
     /// <param name="animationName">Name of the Animation: Talking</param>
     /// <param name="trigger">Is this animation a trigger?</param>
-    /// <param name="tru">On or Off</param>
-    public void Patient_Animation(string animationName, bool trigger, bool tru)
+    /// <param name="on">On or Off</param>
+    public void Patient_Animation(string animationName, bool trigger, bool on)
     {
-        if (trigger)
-        {
-            anim.SetTrigger(animationName);
-        }
-        else
-        {
-            anim.SetBool(animationName, tru);
-        }
+		//if (trigger)
+		//{
+		//	anim.SetTrigger(animationName);
+		//}
+		//else
+		//{
+		//	anim.SetBool(animationName, tru);
+		//}
+		if (anim)
+		{
+			Debug.Log("Setting " + animationName + " to " + on);
+			if (animationName == "Waiting" || animationName == "Sitting" || animationName == "Walking" || animationName == "Turned")
+			{
+				foreach (int i in animationPositions)
+				{
+					anim.SetBool(i, false);
+				}
+				
+				anim.SetBool(animationName, on);
+			}
+			if (animationName == "Talking")
+			{
+				anim.SetBool(hash_Talking, on);
+			}
+			
+			else if (animationName == "Highlight")
+			{
+				anim.SetBool(hash_Highlight, on);
+			}
+		}
+		
     }
 
 	/// <summary>
@@ -258,6 +332,10 @@ public class Patient : Person {
 
 
 	public void Patient_Setup(string n, string dob, Diagnosis d){
+		Person_Initialize();
+		Patient_Initalize();
+		tag = "Patient";
+
 		name = n;
 		patient_Name = n;
 

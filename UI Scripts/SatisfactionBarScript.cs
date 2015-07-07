@@ -24,16 +24,16 @@ public class SatisfactionBarScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            SatisfactionModify(Random.Range(-5, 6));
-        }
+		//if (Input.GetKeyUp(KeyCode.Space))
+		//{
+		//	SatisfactionModify(Random.Range(-5, 6));
+		//}
 	}
 
     public void SatisfactionUpdate(float value)
     {
         satisfactionbar.value = value;
-        displayText.text = value.ToString();
+		displayText.text = Mathf.FloorToInt(value).ToString();
     }
 
     /// <summary>

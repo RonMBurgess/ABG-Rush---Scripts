@@ -73,9 +73,9 @@ public class Diagnosis {
     /// <returns>String of medications</returns>
     public string Medications()
     {
-        string m = "";
+        string m = "None.";
 
-        if (medications.Count > 0)
+        if (medications.Count > 1)
         {
 
             for(int i = 0; i < medications.Count; i++)
@@ -95,6 +95,10 @@ public class Diagnosis {
                 
             }
         }
+		else if (medications.Count == 1)
+		{
+			m = medications[0] + "."; ;
+		}
         return m;
         
     }
@@ -105,9 +109,9 @@ public class Diagnosis {
     /// <returns>String of symptoms</returns>
     public string Symptoms()
     {
-        string s = "";
+        string s = "None.";
 
-        if (symptoms.Count > 0)
+        if (symptoms.Count > 1)
         {
 
             for (int i = 0; i < symptoms.Count; i++)
@@ -127,6 +131,10 @@ public class Diagnosis {
 
             }
         }
+		else if (symptoms.Count == 1)
+		{
+			s = symptoms[0] + "."; ;
+		}
         return s;
 
     }
@@ -137,9 +145,9 @@ public class Diagnosis {
     /// <returns>String of Conditions</returns>
     public string Conditions()
     {
-        string c = "";
+        string c = "None.";
 
-        if (conditions.Count > 0)
+        if (conditions.Count > 1)
         {
 
             for (int i = 0; i < conditions.Count; i++)
@@ -159,6 +167,10 @@ public class Diagnosis {
 
             }
         }
+		else if (conditions.Count == 1)
+		{
+			c = conditions[0] + ".";
+		}
         return c;
 
     }

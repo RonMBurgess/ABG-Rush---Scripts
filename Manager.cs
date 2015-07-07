@@ -10,7 +10,7 @@ public class Manager : MonoBehaviour {
     public Transform location_Entrance, location_Exit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
 	public GameplayUIScript gameplayUI;
-
+	public float timerSpawn = 15f;
 	public static Manager manager;
 
     private Triage triage;
@@ -19,6 +19,7 @@ public class Manager : MonoBehaviour {
     private List<ExamRoom> list_ExamRooms;
     private int score_Patients_Total;
     private float score_Satisfaction;
+	private float timerSpawnUsed;
     private Nurse nurse;
 	private ABG abg;
 
@@ -40,6 +41,28 @@ public class Manager : MonoBehaviour {
         {
             Manager_PatientSpawn();
         }
+
+		if (timerSpawnUsed > 0)
+		{
+			timerSpawnUsed -= Time.deltaTime;
+			if (timerSpawnUsed <= 0)
+			{
+				Manager_PatientSpawn();
+				timerSpawnUsed = timerSpawn;
+			}
+		}
+
+		if (score_Satisfaction > 0)
+		{
+			score_Satisfaction -= Time.deltaTime / 6f;
+			gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
+			if (score_Satisfaction <= 0)
+			{
+				Application.LoadLevel(0);
+			}
+		}
+
+
 	}
 
     #region Patient Leaving
@@ -55,6 +78,8 @@ public class Manager : MonoBehaviour {
 
         //Perform some kind of animation
         //decrease points based on level of satisfaction
+		UpdateSatisfactionScore(-5);
+		//make the patient go to the exit
         p.Person_Move(location_Exit.position,"Exit");
     }
 
@@ -68,6 +93,8 @@ public class Manager : MonoBehaviour {
         //perform some kind of animation
 
         //gain/increase points based on level of satisfaction
+		UpdateSatisfactionScore(6);
+
         p.Person_Move(location_Exit.position, "Exit");
     }
 
@@ -144,6 +171,10 @@ public class Manager : MonoBehaviour {
 		//Reset the score
         score_Patients_Total = 0;
         score_Satisfaction = 100f;
+		gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
+
+		//reset the spawn timer
+		timerSpawnUsed = 0.1f;
 
 		//set the manager
 		manager = this;
@@ -186,5 +217,15 @@ public class Manager : MonoBehaviour {
 	public GameplayUIScript GamePlayUI()
 	{
 		return gameplayUI;
+	}
+
+	public void UpdateSatisfactionScore(int s){
+		score_Satisfaction += s;
+		gameplayUI.satisfaction.SatisfactionModify(s);
+
+		if (score_Satisfaction <= 0)
+		{
+			Application.LoadLevel(0);
+		}
 	}
 }

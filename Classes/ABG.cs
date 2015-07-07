@@ -12,7 +12,7 @@ public class ABG{
     /// - Return Random Diagnosis
     //*/
 
-    private List<string> test_Stories_L = new List<string>(), test_Stories_S = new List<string>(), test_Medications_1 = new List<string>(), test_Medications_2 = new List<string>(), test_Symptoms_1 = new List<string>(), test_Symptoms_2 = new List<string>(), test_Conditions_1 = new List<string>(), test_Conditions_2 = new List<string>();
+    private List<string> test_Stories_L, test_Stories_S, test_Medications_1, test_Medications_2, test_Medications_3, test_Medications_4, test_Symptoms_1, test_Symptoms_2, test_Symptoms_3, test_Symptoms_4, test_Conditions_1, test_Conditions_2, test_Conditions_3, test_Conditions_4;
 
     private List<Diagnosis> diagnoses;
     private float val_PH_Lowest = 7.24f, val_PH_Neutral_Low = 7.35f, val_PH_Neutral_High = 7.45f, val_PH_Highest = 7.58f;//PH Values
@@ -180,23 +180,41 @@ public class ABG{
         //Initialize Test Sample lists.
 
 		test_Stories_L = new List<string>(); test_Stories_S = new List<string>();
-		test_Symptoms_1 = new List<string>(); test_Symptoms_2 = new List<string>();
-		test_Conditions_1 = new List<string>(); test_Conditions_2 = new List<string>();
-		test_Medications_1 = new List<string>(); test_Medications_2 = new List<string>();
+		test_Symptoms_1 = new List<string>(); test_Symptoms_2 = new List<string>(); test_Symptoms_3 = new List<string>(); test_Symptoms_4 = new List<string>();
+		test_Conditions_1 = new List<string>(); test_Conditions_2 = new List<string>(); test_Conditions_3 = new List<string>(); test_Conditions_4 = new List<string>();
+		test_Medications_1 = new List<string>(); test_Medications_2 = new List<string>(); test_Medications_3 = new List<string>(); test_Medications_4 = new List<string>();
 
 		//populate the test sample lists.
+		//long stories
+		test_Stories_L.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident."); test_Stories_L.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach."); test_Stories_L.Add("I was on my way to an important meeting for work when I realized I forgot several essential documents. I became anxious and started hyperventilating. Then I became dizzy and felt tingling in my fingertips."); test_Stories_L.Add("My child has been very difficult to feed and has had very frequent runny poops for the past 3 days. My child also seems to be breathing fast.");
 
-        test_Stories_L.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident."); test_Stories_L.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach.");
-        test_Stories_S.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); test_Stories_S.Add("I woke up in the middle of the night with stomach cramps");
+
+		//short stories
+		test_Stories_S.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); test_Stories_S.Add("I woke up in the middle of the night with stomach cramps"); test_Stories_S.Add("I became anxious on the way to work and started hyperventilating!!"); test_Stories_S.Add("My child has been difficult to feed and has had runny poops for days.");
+
+		//symptoms
         test_Symptoms_1.Add("Severe Pain"); test_Symptoms_1.Add("Cyanotic Fingers");
         test_Symptoms_2.Add("Stomach Cramps"); test_Symptoms_2.Add("Weak & Fainty");
+		test_Symptoms_3.Add("Hyperventilation"); test_Symptoms_3.Add("Dizziness"); test_Symptoms_3.Add("Palpitations"); test_Symptoms_3.Add("Tingling in arms");
+		test_Symptoms_4.Add("Tachypnea"); test_Symptoms_4.Add("Depressed anterior fontanel");
+
+		//conditions
         test_Conditions_1.Add("Asthma"); test_Conditions_1.Add("Lung Disease");
         test_Conditions_2.Add("Stomach Polyps"); test_Conditions_2.Add("Peptic Ulcer Disease");
+
+		//medications
         test_Medications_1.Add("Alleve"); test_Medications_1.Add("Zyrtec");
         test_Medications_2.Add("Pepto-Bismol"); test_Medications_2.Add("Tums");
+
+		//generate the diagnoses
         Diagnosis d = new Diagnosis("Respiratory", "Acidosis", "Uncompensated", test_Stories_L[0], test_Stories_S[0], test_Medications_1, test_Symptoms_1, test_Conditions_1);
         Diagnosis e = new Diagnosis("Metabolic", "Alkalosis", "Compensated", test_Stories_L[1], test_Stories_S[1], test_Medications_2, test_Symptoms_2, test_Conditions_2);
-        diagnoses.Add(d); diagnoses.Add(e);
+        
+		Diagnosis f = new Diagnosis("Respiratory", "Alkalosis", "Uncompensated", test_Stories_L[2], test_Stories_S[2], test_Medications_3, test_Symptoms_3, test_Medications_3);
+		Diagnosis g = new Diagnosis("Metabolic", "Acidosis", "Compensated", test_Stories_L[3], test_Stories_S[3], test_Medications_4, test_Symptoms_4, test_Conditions_4);
+
+		//add the new diagnoses to the list.
+		diagnoses.Add(d); diagnoses.Add(e); diagnoses.Add(f); diagnoses.Add(g);
 
         //get the values for the diagnoses
         for (int i = 0; i < diagnoses.Count; i++ )

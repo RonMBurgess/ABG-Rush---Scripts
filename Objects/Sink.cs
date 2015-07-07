@@ -6,6 +6,7 @@ public class Sink : OfficeObject {
 	// Use this for initialization
 	void Start () {
         OfficeObject_Initialize();
+		Highlight(true);
 	}
 	
 	// Update is called once per frame
@@ -19,7 +20,7 @@ public class Sink : OfficeObject {
 		if (!Manager.MyNurse.IsBusy())
 		{
 			//highlight this object.
-			Highlight(true);
+			//Highlight(true);
 			//Manager.Manager_MouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
@@ -33,6 +34,6 @@ public class Sink : OfficeObject {
     {
         //Manager.Manager_MouseOver(false);
 		//stop being highlighted
-		Highlight(false);
+		//Highlight(false);
     }
 }

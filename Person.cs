@@ -29,13 +29,13 @@ public class Person : MonoBehaviour {
     /// </summary>
     public void Person_Initialize()
     {
-        Debug.Log("Initializing Person");
+        //Debug.Log("Initializing Person");
         agent = GetComponent<PolyNavAgent>();
         sr = GetComponent<SpriteRenderer>();
-        if (CompareTag("Patient"))
-        {
-            sr.color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
-        }
+		//if (CompareTag("Patient"))
+		//{
+		//	sr.color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
+		//}
         destinationName = "";
         if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
         moving = false;
@@ -56,6 +56,13 @@ public class Person : MonoBehaviour {
 		{
 			(this as Nurse).IsBusy(-1);
 		}
+		else if (gameObject.CompareTag("Patient"))
+		{
+			//Debug.Log("Setting Patient Walking to True");
+
+			(this as Patient).Patient_Animation("Highlight", false, false);
+			(this as Patient).Patient_Animation("Walking", false, true);
+		}
 
 		//make sure that I have a reference to my polynav agent.
         if (agent == null)
@@ -65,7 +72,7 @@ public class Person : MonoBehaviour {
 		
 
         destinationName = dName;
-		Debug.Log("OfficeObject = " + officeobject);
+		//Debug.Log("OfficeObject = " + officeobject);
         if (officeobject) { patientObject = pObject; officeObject = officeobject; }
 
 		//make sure that the agent is enabled, and then set the agent's destination.
@@ -113,7 +120,7 @@ public class Person : MonoBehaviour {
 				{
 					//open the UI of the Waiting Chair
 					(officeObject as PatientObject).PatientObject_OpenUI();
-					Debug.Log("Opened the UI for " + officeObject.name);
+					//Debug.Log("Opened the UI for " + officeObject.name);
 				}
 				else if (destinationName == "ExamRoom")
 				{
@@ -174,7 +181,7 @@ public class Person : MonoBehaviour {
 				}
 				else if (destinationName == "Sink")
 				{
-					(this as Nurse).Nurse_PerformAction("Wash Hands");
+					(this as Nurse).Nurse_PerformAction("Wash Hands",officeObject);
 				}
 				else if (destinationName == "ReferenceDesk")
 				{
@@ -197,13 +204,18 @@ public class Person : MonoBehaviour {
         return moving;
     }
 
-    public void Person_Update()
+    public void Person_Update(SpriteRenderer r = null)
     {
         //if (moving)
         //{
         //Debug.Log("Person Update from " + name);
-            sr.sortingOrder = -1 * (Mathf.CeilToInt(transform.position.y * 100f));
+		int so = -1 * (Mathf.CeilToInt(transform.position.y * 100f));
+            sr.sortingOrder = so;
+			if (r)
+			{
+				r.sortingOrder = so -1;
 
+			}
         //}
     }
 }

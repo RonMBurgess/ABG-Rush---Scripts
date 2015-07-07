@@ -100,6 +100,9 @@ public class UI_Patient : MonoBehaviour {
             //add the patient to it's new hotspot
             e.PatientObject_Patient_Add(MyPatient);
 
+			//make the patient update the player's score.
+			MyPatient.Patient_PatienceScore();
+
             //make the patient move to the proper location of it's new hotspot
             MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag,true,e);
 

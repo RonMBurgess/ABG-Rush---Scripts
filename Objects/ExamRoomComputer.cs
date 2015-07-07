@@ -35,6 +35,7 @@ public class ExamRoomComputer : OfficeObject {
 				bloodworkSent = false;
 
 				//inform the patient of status change/update.
+				
 				MyExamRoom().MyPatient.Patient_StatusUpdate("Diagnosis");
 			}
 		}

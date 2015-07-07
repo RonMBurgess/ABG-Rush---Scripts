@@ -8,7 +8,7 @@ public class UI_WaitingChair : UI_Patient
     //should be 2 buttons, 3 at the most
     //0 - Send to Exam Room, 1 - Pacifiy, 2 - Exit/Cancel
     public Button[] button_Choices;
-    public Text text_Story;
+    public Text text_name, text_Story;
 
     //Add in Name
     //Add in DOB
@@ -44,7 +44,11 @@ public class UI_WaitingChair : UI_Patient
         {
             //text_Story.text = MyPatient.
         }
-        if (MyPatient != null) { MyPatient.Patient_ToggleCountdown(true); }
+        if (MyPatient != null) {
+			MyPatient.Patient_ToggleCountdown(true);
+			text_name.text = MyPatient.name;
+			text_Story.text = MyPatient.MyDiagnosis().Story("S");
+		}
         
     }
 

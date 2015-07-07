@@ -9,12 +9,16 @@ public class ABGWW_Help_Script : MonoBehaviour {
     public List<Button> menuButtons; //all of the buttons found on the menu.
     public GameObject contentArea, navPanel;//This is the gameobject that holds the content for the different screens.
     public ABGToolManagerScript ABGTool;//the script of the ABG tool
-   
+	public DiagnosisTool diagnosisTool;
+
     private int loadingHash = Animator.StringToHash("Loading"), curScreen = 0;
 
 	// Use this for initialization
 	void Start () {
         //ABGTool.gameObject.SetActive(false);
+		diagnosisTool.transform.parent.gameObject.SetActive(false);
+		diagnosisTool.Initialize(false);
+		diagnosisTool.Reset();
         //Debug.Log("ABG tool should be off");
 	}
 	
@@ -73,7 +77,7 @@ public class ABGWW_Help_Script : MonoBehaviour {
             contentArea.SetActive(false);
             //turn off the ABG tool just in case.
             ABGTool.gameObject.SetActive(false);
-
+			diagnosisTool.transform.parent.gameObject.SetActive(false);
             //show the loading image
             anim_Loading.gameObject.SetActive(true);
             anim_Loading.SetBool(loadingHash, true);
@@ -88,7 +92,7 @@ public class ABGWW_Help_Script : MonoBehaviour {
                 case 1:
                 case 2:
                 case 3: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); contentArea.SetActive(true); navPanel.SetActive(true); break;
-                case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); ABGTool.gameObject.SetActive(true); navPanel.SetActive(false); ABGTool.Reset(); break;
+				case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); diagnosisTool.transform.parent.gameObject.SetActive(true); /*ABGTool.gameObject.SetActive(true); ABGTool.Reset();*/ navPanel.SetActive(false); break;
 
             }
 

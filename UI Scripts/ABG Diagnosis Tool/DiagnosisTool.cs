@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class DiagnosisTool : MonoBehaviour {
 
+	
 	public Color colWrong, colCorrect, colNormal;
 	public Text dragndropPH, dragndropCO2, dragndropHCO3, ansRM, ansAA, ansC;
 	public Button btnSubmit;
@@ -20,6 +21,13 @@ public class DiagnosisTool : MonoBehaviour {
 	private float answerTimerUsed;
 
 
+	///The Following variables are for the Help Panel of the Diagnosis Tool.
+	public GameObject panelHelp;
+	public Slider sliderPH, sliderCO2, sliderHCO3;
+	public Text helpPH, helpCO2, helpHCO3;
+
+
+
 	/// <summary>
 	/// Prepare the Diagnosis Tool
 	/// </summary>
@@ -32,8 +40,12 @@ public class DiagnosisTool : MonoBehaviour {
 		}
 		else
 		{
+			//create an instance of ABG, or gain a reference of ABG
 			abg = new ABG();
+			//set practice to true
 			practice = true;
+			//turn on the help panel.
+			panelHelp.SetActive(true);
 		}
 
 		//Set the original parents of the drag and drop objects
@@ -89,7 +101,9 @@ public class DiagnosisTool : MonoBehaviour {
 		dragndropHCO3.text = "HCO3\n" + diagnosis.HCO3.ToString("F2");
 
 		//reset the color of each button to it's original color/status
-
+		imageRM.color = colNormal;
+		imageAA.color = colNormal;
+		imageC.color = colNormal;
 
 
 		// reset the value of each answer text to it's original text
@@ -107,6 +121,20 @@ public class DiagnosisTool : MonoBehaviour {
 		//Set answersubmitted and correct to false;
 		answerCorrect = false;
 		answerSubmitted = false;
+
+		//if we are in practice mode, make sure help panel is enabled, and the sliders are reset
+		if (practice)
+		{
+			if (panelHelp)
+			{
+				//make sure the help panel is on.
+				panelHelp.SetActive(true);
+				//reset the value of each slider.
+				sliderCO2.value = 40;
+				sliderHCO3.value = 24;
+				sliderPH.value = 7.4f;
+			}
+		}
 	}
 
 
@@ -142,6 +170,7 @@ public class DiagnosisTool : MonoBehaviour {
 					if (practice)
 					{
 						//reset the tool
+						Reset();
 					}
 					else
 					{
@@ -257,10 +286,40 @@ public class DiagnosisTool : MonoBehaviour {
 		//Set the timer and values
 		btnSubmit.interactable = false;
 		answerCorrect = (a && b && c);
+		if (!practice)
+		{
+			if (!answerCorrect)
+			{
+				Manager.manager.UpdateSatisfactionScore(-15);
+			}
+			else
+			{
+				Manager.manager.UpdateSatisfactionScore(+10);
+			}
+		}
+		
 		answerSubmitted = true;
 		answerTimerUsed = 0;
 
 	}
 
+	/// <summary>
+	/// Called when a slider's value has been updated.
+	/// </summary>
+	public void UpdateSliderText()
+	{
+		//update the value being displayed by each slider.
+		helpPH.text = sliderPH.value.ToString("F2");
+		helpCO2.text = sliderCO2.value.ToString();
+		helpHCO3.text = sliderHCO3.value.ToString();
+	}
+
+	/// <summary>
+	/// Called from the Reset Button
+	/// </summary>
+	public void ResetTool()
+	{
+		Reset();
+	}
 	#endregion
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameplayUIScript : MonoBehaviour {
 
@@ -12,7 +13,7 @@ public class GameplayUIScript : MonoBehaviour {
     public NotificationManagerScript notifications;
     public SatisfactionBarScript satisfaction;
 	public UI_ExamRoomComputer examroomComputer;
-
+	public Text debugHands;
 
 
 	// Use this for initialization
@@ -48,5 +49,14 @@ public class GameplayUIScript : MonoBehaviour {
 	public UI_ExamRoomComputer ExamRoomComputerUI()
 	{
 		return examroomComputer;
+	}
+
+	public void CleanStatus(bool t)
+	{
+		if (t) { debugHands.text = "Hands are clean"; }
+		else
+		{
+			debugHands.text = "Hands are Dirty";
+		}
 	}
 }

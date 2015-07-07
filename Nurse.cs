@@ -30,6 +30,7 @@ public class Nurse : Person {
 
 	// Update is called once per frame
 	void Update () {
+		
         Person_Update();
 	}
 
@@ -65,7 +66,9 @@ public class Nurse : Person {
 	{
 		if (action == "Wash Hands")
 		{
+			current_OfficeObject = o;
 			StartCoroutine("WashHands");
+			
 		}
 		else if (action == "Vitals")
 		{
@@ -151,11 +154,17 @@ public class Nurse : Person {
 		//set busy to true so no actions can be taken/made
 		IsBusy(1);
 
+		//make the patient update the player's score.
+		current_Patient.Patient_PatienceScore();
+
 		//tell the patient to stop losing patience
 		current_Patient.Patient_ToggleCountdown(true);
 
 		//check if hands are clean. Gain/Lose points based on result.
-		//RON COME BACK AND UPDATE THIS
+		if (clean) { Manager.UpdateSatisfactionScore(1); } else { Manager.UpdateSatisfactionScore(-2); }
+		
+		//make sure the patient is no longer highlighted
+		current_Patient.Patient_Animation("Highlight", false, false);
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -207,17 +216,31 @@ public class Nurse : Person {
 	private IEnumerator WashHands()
 	{
 		IsBusy(1);
+		if (current_OfficeObject)
+		{
+			//un-highlight the sink
+			current_OfficeObject.Highlight(false);
+		}
 		if (anim)
 		{
 			//turn to face the sink
 			//Ron Come Back and Update This!!!
 		}
 		//wait for time
-		yield return new WaitForSeconds(.75f);
+		yield return new WaitForSeconds(2f);
 		//set clean hands to true.
 		IsClean(1);
-		//return to normal animation
-		//Ron Come Back and Update This!!!!
+		if (anim)
+		{
+			//return to normal animation
+			//Ron Come Back and Update This!!!!
+		}
+
+		if (current_OfficeObject)
+		{
+			//highlight the sink again.
+			current_OfficeObject.Highlight(true);
+		}
 		//remove a counter from busy
 		IsBusy(-1);
 
@@ -316,7 +339,7 @@ public class Nurse : Person {
 		{
 			clean = false;
 		}
-
+		Manager.GamePlayUI().CleanStatus(clean);
 		return clean;
 	}
 
