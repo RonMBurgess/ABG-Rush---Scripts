@@ -234,17 +234,20 @@ public class Patient : Person {
 						//tell the nurse to move to the proper location
 						//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
 						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
+						Patient_ToggleCountdown(true);
 						//nextStep = true;
 					}
 					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete")
 					{
 						//tell the nurse to move to the exam room computer
 						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
+						Patient_ToggleCountdown(true);
 						//nextStep = true;
 					}
 					else if(status == "WaitingChair")
 					{
 						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), hotspot.tag, true, hotspot);
+						Patient_ToggleCountdown(true);
 						//nextStep = true;
 					}
 					//if (nextStep && !timer_Halted)

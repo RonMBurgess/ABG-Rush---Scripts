@@ -13,6 +13,7 @@ public class Manager : MonoBehaviour {
 	public float timerSpawn = 15f;
 	public static Manager manager;
 
+	public List<string> namesFirst, namesLast;
     private Triage triage;
     private List<Patient> list_Patients;
     private List<WaitingChair> list_WaitingChairs;
@@ -183,7 +184,7 @@ public class Manager : MonoBehaviour {
     private void Manager_PatientSpawn()
     {
         Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
-		p.Patient_Setup("Jack N. A'Box", "1952", abg.PatientDiagnosis());
+		p.Patient_Setup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], "1952", abg.PatientDiagnosis());
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
         //p.Person_Move(triage.location_Patient, "Triage");

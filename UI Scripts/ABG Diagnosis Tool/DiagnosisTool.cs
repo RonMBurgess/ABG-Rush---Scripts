@@ -11,6 +11,7 @@ public class DiagnosisTool : MonoBehaviour {
 	public Button btnSubmit;
 	public Image imageRM, imageAA, imageC;
 	public float answerTimer;
+	public Transform tttPH, tttCO2, tttHCO3;
 
 	private Transform startParentPH, startParentCO2, startParentHCO3;
 	private UI_ExamRoomComputer ercUI;
@@ -49,11 +50,11 @@ public class DiagnosisTool : MonoBehaviour {
 		}
 
 		//Set the original parents of the drag and drop objects
-		if (dragndropCO2 && dragndropHCO3 && dragndropPH)
+		if (tttPH && tttHCO3 && tttCO2)
 		{
-			startParentPH = dragndropPH.transform.parent;
-			startParentCO2 = dragndropCO2.transform.parent;
-			startParentHCO3 = dragndropHCO3.transform.parent;
+			startParentPH = tttPH.parent;
+			startParentCO2 = tttCO2.parent;
+			startParentHCO3 = tttHCO3.parent;
 		}
 
 		//get the original text for the answer fields.
@@ -79,9 +80,9 @@ public class DiagnosisTool : MonoBehaviour {
 	public void Reset(Diagnosis d = null)
 	{
 		//Since the drag/drop slots handle positioning/scaling and everything else, just tell the objects who their parent/slot is.
-		dragndropPH.transform.SetParent(startParentPH);
-		dragndropCO2.transform.SetParent(startParentCO2);
-		dragndropHCO3.transform.SetParent(startParentHCO3);
+		tttPH.SetParent(startParentPH);
+		tttCO2.SetParent(startParentCO2);
+		tttHCO3.SetParent(startParentHCO3);
 
 		//If a diagnosis was provided, use it
 		if (d != null)
