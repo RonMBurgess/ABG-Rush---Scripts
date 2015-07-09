@@ -38,6 +38,12 @@ public class PatientObject : OfficeObject {
 
 		Debug.Log(gameObject + " has added patient " + p);
         OfficeObject_SetReadyState(true); //handled inside of the person class now.
+
+		//Hotfix for now. Ron Come back and change this!!!
+		if (CompareTag("ExamRoom"))
+		{
+			(this as ExamRoom).Computer().Highlight(true);
+		}
     }
 
     /// <summary>
@@ -47,6 +53,12 @@ public class PatientObject : OfficeObject {
     {
         patient = null;
         OfficeObject_SetReadyState(false);
+
+		//Hotfix for now. Ron Come back and change this!!!
+		if (CompareTag("ExamRoom"))
+		{
+			(this as ExamRoom).Computer().Highlight(false);
+		}
     }
 
     /// <summary>

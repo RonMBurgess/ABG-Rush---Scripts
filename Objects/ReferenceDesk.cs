@@ -3,13 +3,51 @@ using System.Collections;
 
 public class ReferenceDesk : OfficeObject {
 
+	public GameObject referenceDeskUI;
+	private Animator anim;
+
+	void Awake()
+	{
+		anim = GetComponent<Animator>();
+	}
+
 	// Use this for initialization
 	void Start () {
-	
+		if (anim)
+		{
+			anim.SetBool("Highlight", true);
+		}
+
+		tag = "ReferenceDesk";
+		if (referenceDeskUI)
+		{
+			referenceDeskUI.SetActive(false);
+		}
+		OfficeObject_Initialize();
+		Highlight(true);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	void OnMouseOver()
+	{
+		//check to see if the nurse is currently busy. If the nurse is not busy...
+		if (!Manager.MyNurse.IsBusy())
+		{
+			
+			if (Input.GetMouseButtonUp(0))
+			{
+				Manager.MyNurse.Person_Move(location_Nurse, tag, false, this);
+			}
+		}
+
+	}
+
+	/// <summary>
+	/// Open up the Reference Desk Computer
+	/// </summary>
+	public void OpenReferenceDesk()
+	{
+		//pause the game
+		Time.timeScale = 0f;
+		referenceDeskUI.SetActive(true);
 	}
 }

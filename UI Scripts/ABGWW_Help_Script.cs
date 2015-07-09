@@ -47,6 +47,10 @@ public class ABGWW_Help_Script : MonoBehaviour {
         }
         else if (!on)
         {
+			if (Time.timeScale == 0)
+			{
+				Time.timeScale = 1;
+			}
             gameObject.SetActive(false);
         }
     }
@@ -54,7 +58,48 @@ public class ABGWW_Help_Script : MonoBehaviour {
     
     public void ChangeScreens(int screen)
     {
-        StartCoroutine("ScreenSwap", screen);
+		Debug.Log("TimeScale is: " + Time.timeScale);
+		if (Time.timeScale > 0)
+		{
+			StartCoroutine("ScreenSwap", screen);
+		}
+		else
+		{
+			if (screen == curScreen)
+			{
+				//do nothing
+			}
+			else
+			{
+				//turn off all buttons
+				MenuButtonsSwitcher(false);
+				//turn the current page's content off
+				contentArea.SetActive(false);
+				//turn off the ABG tool just in case.
+				ABGTool.gameObject.SetActive(false);
+				diagnosisTool.transform.parent.gameObject.SetActive(false);
+				navPanel.SetActive(false);
+
+				switch (screen)
+				{
+					//come back and change this later.
+					case 0:  //break;
+					case 1:
+					case 2:
+					case 3: contentArea.SetActive(true); navPanel.SetActive(true); break;
+					case 4: diagnosisTool.transform.parent.gameObject.SetActive(true); /*ABGTool.gameObject.SetActive(true); ABGTool.Reset();*/  break;
+
+				}
+
+				curScreen = screen;
+				//reset menu buttons
+				MenuButtonsSwitcher(true);
+
+			}
+
+
+        
+		}
         
     }
 
@@ -77,6 +122,7 @@ public class ABGWW_Help_Script : MonoBehaviour {
             contentArea.SetActive(false);
             //turn off the ABG tool just in case.
             ABGTool.gameObject.SetActive(false);
+			navPanel.SetActive(false);
 			diagnosisTool.transform.parent.gameObject.SetActive(false);
             //show the loading image
             anim_Loading.gameObject.SetActive(true);
@@ -92,7 +138,7 @@ public class ABGWW_Help_Script : MonoBehaviour {
                 case 1:
                 case 2:
                 case 3: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); contentArea.SetActive(true); navPanel.SetActive(true); break;
-				case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); diagnosisTool.transform.parent.gameObject.SetActive(true); /*ABGTool.gameObject.SetActive(true); ABGTool.Reset();*/ navPanel.SetActive(false); break;
+				case 4: anim_Loading.gameObject.SetActive(false); anim_Loading.SetBool(loadingHash, false); diagnosisTool.transform.parent.gameObject.SetActive(true); /*ABGTool.gameObject.SetActive(true); ABGTool.Reset();*/  break;
 
             }
 

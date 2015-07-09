@@ -46,8 +46,8 @@ public class ExamRoomComputer : OfficeObject {
 		//verify that nurse is not currently busy. Verify that I have a reference to a patient
 		if (!Manager.MyNurse.IsBusy() && er.MyPatient)
 		{
-			//Highlight this object.
-			Highlight(true);
+			////Highlight this object.
+			//Highlight(true);
 
 			//Manager.Manager_MouseOver(true);
 			if (Input.GetMouseButtonUp(0))
@@ -61,8 +61,8 @@ public class ExamRoomComputer : OfficeObject {
 
     void OnMouseExit()
     {
-        //Manager.Manager_MouseOver(false);
-		Highlight(false);
+        ////Manager.Manager_MouseOver(false);
+		//Highlight(false);
     }
 
 	/// <summary>

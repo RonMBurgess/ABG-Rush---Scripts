@@ -285,10 +285,12 @@ public class DiagnosisTool : MonoBehaviour {
 		//}
 
 		//Set the timer and values
-		btnSubmit.interactable = false;
+		
 		answerCorrect = (a && b && c);
 		if (!practice)
 		{
+			btnSubmit.interactable = false;
+
 			if (!answerCorrect)
 			{
 				Manager.manager.UpdateSatisfactionScore(-15);
@@ -297,10 +299,16 @@ public class DiagnosisTool : MonoBehaviour {
 			{
 				Manager.manager.UpdateSatisfactionScore(+10);
 			}
+			//Make the player wait for a period of time.
+			answerSubmitted = true;
+			answerTimerUsed = 0;
 		}
-		
-		answerSubmitted = true;
-		answerTimerUsed = 0;
+
+		else
+		{
+			//provide immediate feedback since the game is paused, we cannot wait.
+			//The player will reset the problem when they are ready
+		}
 
 	}
 

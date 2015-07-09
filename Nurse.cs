@@ -100,7 +100,7 @@ public class Nurse : Person {
 		//check if hands are clean. Gain/Lose points based on result.
 		//RON COME BACK AND UPDATE THIS
 
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			//make sure the patient's speech bubble is off.
 			current_Patient.Patient_Animation("Talking", false, false);
@@ -109,7 +109,7 @@ public class Nurse : Person {
 			Nurse_Animation("Talking", false, true);
 
 			//wait for time
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(.75f);
 
 			//make sure the nurse's speech bubble is off
 			Nurse_Animation("Talking", false, false);
@@ -118,7 +118,7 @@ public class Nurse : Person {
 			current_Patient.Patient_Animation("Talking", false, true);
 
 			//wait for time
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(.75f);
 		}
 
 		//turn both animations off just in case.
@@ -129,7 +129,7 @@ public class Nurse : Person {
 		IsClean(-1);
 
 		//update the patient's status
-		current_Patient.Patient_StatusUpdate("Vitals");
+		current_Patient.Patient_StatusUpdate("VitalsComplete");//changed from vitals
 
 		//Open the ExamRoom Computer Interface
 		Manager.GamePlayUI().ExamRoomComputerUI().SetPatient(current_Patient);
@@ -166,7 +166,7 @@ public class Nurse : Person {
 		//make sure the patient is no longer highlighted
 		current_Patient.Patient_Animation("Highlight", false, false);
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			//make sure the patient's speech bubble is off.
 			current_Patient.Patient_Animation("Talking", false, false);
@@ -175,7 +175,7 @@ public class Nurse : Person {
 			Nurse_Animation("Talking", false, true);
 			
 			//wait for time
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(.75f);
 			
 			//make sure the nurse's speech bubble is off
 			Nurse_Animation("Talking", false, false);
@@ -184,7 +184,7 @@ public class Nurse : Person {
 			current_Patient.Patient_Animation("Talking", false, true);
 			
 			//wait for time
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(.75f);
 		}
 		
 		//turn both animations off just in case.
@@ -227,7 +227,7 @@ public class Nurse : Person {
 			//Ron Come Back and Update This!!!
 		}
 		//wait for time
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(.5f);
 		//set clean hands to true.
 		IsClean(1);
 		if (anim)

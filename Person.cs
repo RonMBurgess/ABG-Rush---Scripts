@@ -186,6 +186,7 @@ public class Person : MonoBehaviour {
 				else if (destinationName == "ReferenceDesk")
 				{
 					//open up the reference desk
+					(officeObject as ReferenceDesk).OpenReferenceDesk();
 					//pause the game?
 				}
 			}
