@@ -30,4 +30,9 @@ public class MainMenuUIScript : MonoBehaviour {
     {
         Application.LoadLevel("Scn_Play");
     }
+
+	public void QuitOut()
+	{
+		Application.Quit();
+	}
 }
