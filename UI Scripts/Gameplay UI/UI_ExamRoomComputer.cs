@@ -7,14 +7,19 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 
 	private Patient patient;//the patient I am currently displaying information about.
 
-	public Button button_Close, button_Diagnose, button_PatientHistory, button_Bloodwork;
-	public Text text_name, text_DOB, text_History, text_Symptoms, text_Conditions, text_Medications, text_PH, text_HCO3, text_CO2;
+	public Button button_Close, button_Diagnose, button_PatientHistory, button_Bloodwork, button_Submitassessment;
+	public Text textfield_name, textfield_DOB, textfield_Bloodwork,/*textfield_History, textfield_Symptoms, textfield_Conditions, textfield_Medications, textfield_PH, textfield_HCO3, textfield_CO2,*/ textfield_InitialRM, textfield_InitialAA, textfield_assessmentAnswer;
+
+	//The following are text fields for patient information and patient signs and symptoms.
+	public List<Text> patientHistory, patientSignsSymptoms;
+
 	public Image image_Patient;
-	public GameObject screen_PatientHistory, screen_Diagnosis;
+	public GameObject screen_PatientHistory, screen_Diagnosis, panel_assessment1, panel_assessment2;
 	public DiagnosisTool diagnosisTool;
 
 	private Manager manager;
 	private bool init = false;
+	private string defaultRM, defaultAA;
 
 	private List<Text> patientABGValues, patientStoryInformation;
 	
@@ -50,36 +55,38 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			patient.Patient_ToggleCountdown(true);
 
 			//Turn text fields off
-			ToggleTexts("ABG Values", false);
-			ToggleTexts("Story Information", false);
+			//ToggleTexts("ABG Values", false);
+			//ToggleTexts("Story Information", false);
 
 
 			//Name
-			text_name.text = patient.name;
+			textfield_name.text = patient.name;
 
 			//DOB
-			text_DOB.text = Random.Range(1960, 2001).ToString();
+			textfield_DOB.text = patient.DateOfBirth(); //Random.Range(1960, 2001).ToString();
 			
 			//Picture
 
-			
+			//setup patient history information ***RON COME BACK AND UNCOMMENT THIS***
+			//DisplayHistoryAndSignsSymptoms();
+
 			//RON COME BACK AND CHANGE THIS
 
 			//set the values of the PH, HCO3, CO2, Medications, Symptoms, and Conditions
 			Diagnosis d = patient.MyDiagnosis();
-			if (text_CO2 && text_HCO3 && text_PH)
+			/*if (textfield_CO2 && textfield_HCO3 && textfield_PH)
 			{
-				text_PH.text = "PH : " + d.PH.ToString("F2");
-				text_HCO3.text = "HCO3 : " + d.HCO3.ToString("F2");
-				text_CO2.text = "CO2 : " + d.CO2.ToString("F2");
+				textfield_PH.text = "PH : " + d.PH.ToString("F2");
+				textfield_HCO3.text = "HCO3 : " + d.HCO3.ToString("F2");
+				textfield_CO2.text = "CO2 : " + d.CO2.ToString("F2");
 			}
 
-			if (text_Symptoms && text_Conditions && text_Medications)
+			if (textfield_Symptoms && textfield_Conditions && textfield_Medications)
 			{
-				text_Symptoms.text = d.Symptoms();
-				text_Conditions.text = d.Conditions();
-				text_Medications.text = d.Medications();
-			}
+				textfield_Symptoms.text = d.Symptoms();
+				textfield_Conditions.text = d.Conditions();
+				textfield_Medications.text = d.Medications();
+			}*/
 			
 			//display the initial patient history screen, and make sure diagnosis screen is off.
 			PatientHistoryDiagnosisTabSwitch(true);
@@ -92,7 +99,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			if (status == "ExamRoom" || status == "Vitals")
 			{
 				//display the basic information
-				text_History.text = d.Story("S");
+				//textfield_History.text = d.Story("S");
 
 				//set status of buttons
 
@@ -120,15 +127,15 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 					button_Bloodwork.interactable = false;
 				}
 			}
-			else if (status == "VitalsComplete" || status == "Bloodwork" || status == "Diagnosis")
+			else if (status == "VitalsComplete" || status == "Bloodwork" || status == "Diagnosis" || status == "Assessment")
 			{
 				//display all the information
 				
 				//History
-				text_History.text = d.Story("L");
+				//textfield_History.text = d.Story("L");
 				
 				//Extra Story Information
-				ToggleTexts("Story Information", true);
+				//ToggleTexts("Story Information", true);
 
 				if (status == "VitalsComplete")
 				{
@@ -141,6 +148,52 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 						button_Bloodwork.interactable = true;
 					}
 					
+				}
+
+				if (status == "Assessment")
+				{
+					//determine if the player has already made an assessment
+					string aa = patient.InitialAssessmentGetAA(), rm = patient.InitialAssessmentGetRM();
+					
+					if ((aa == "Acidosis" || aa == "Alkalosis") && (rm == "Respiratory" || rm == "Metabolic"))
+					{
+						//turn the first assessment panel off
+						panel_assessment1.SetActive(false);
+						//setup the answer the player provided.
+						textfield_assessmentAnswer.text = rm + " " + aa;
+						//turn the second panel on.
+						panel_assessment2.SetActive(true);
+						//turn off the submit assessment button
+						if (button_Submitassessment)
+						{
+							button_Submitassessment.gameObject.SetActive(false);
+						}
+						//display the bloodwork button
+						if (button_Bloodwork)
+						{
+							button_Bloodwork.interactable = true;
+							textfield_Bloodwork.text = "REQUEST BLOOD WORK";
+							button_Bloodwork.gameObject.SetActive(true);
+						}
+					}
+					else
+					{
+						//make sure the second panel is off.
+						panel_assessment2.SetActive(false);
+
+						//make sure the initial panel has it's values and buttons prepared.
+						textfield_InitialAA.text = defaultAA;
+						textfield_InitialRM.text = defaultRM;
+
+						//turn the initial panel on.
+						panel_assessment1.SetActive(true);
+						//make sure the submit button is active and interactable
+						if (button_Submitassessment)
+						{
+							button_Submitassessment.interactable = true;
+							button_Submitassessment.gameObject.SetActive(true);
+						}
+					}
 				}
 
 				if (status == "BloodworkWaiting")
@@ -202,6 +255,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 		ToggleTexts("Story Information", false);
 	}
 
+	#region Private Methods
 
 	/// <summary>
 	/// Toggle the Text components to On or Off
@@ -225,6 +279,113 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			}
 		}
 	}
+
+
+	private void Initialize()
+	{
+		//Initialize both lists.
+		patientABGValues = new List<Text>();
+		patientStoryInformation = new List<Text>();
+
+		//populate the lists.
+		//patientABGValues.Add(textfield_PH); patientABGValues.Add(textfield_CO2); patientABGValues.Add(textfield_HCO3);
+		//patientStoryInformation.Add(textfield_Symptoms); patientStoryInformation.Add(textfield_Conditions); patientStoryInformation.Add(textfield_Medications);
+
+		//clear the placeholder values inside.
+		foreach (Text t in patientABGValues)
+		{
+			t.text = " ";
+		}
+		foreach (Text t in patientStoryInformation)
+		{
+			t.text = " ";
+		}
+
+		//turn off buttons that may not be used immediately
+		if (button_Bloodwork)
+		{
+			button_Bloodwork.interactable = false;
+		}
+		//gain access to the manager
+		if (GameObject.Find("Manager"))
+		{
+			manager = GameObject.Find("Manager").GetComponent<Manager>();
+		}
+
+		//Prepare assestment field
+		if (textfield_InitialAA && textfield_InitialRM)
+		{
+			defaultAA = textfield_InitialAA.text;
+			defaultRM = textfield_InitialRM.text;
+		}
+		else
+		{
+			Debug.LogWarning(name + "'s UI_ExamRoomComputer does not have access to the assessment fields.");
+		}
+
+		//initialize the diagnosis tool
+		diagnosisTool.Initialize(true, this);
+
+		init = true;
+
+	}
+
+	/// <summary>
+	/// Populate the patient information area as well as the Signs and Symptoms area.
+	/// </summary>
+	private void DisplayHistoryAndSignsSymptoms()
+	{
+		//make sure we have a patient
+		if (patient)
+		{
+			//grab the diagnosis
+			Diagnosis d = patient.MyDiagnosis();
+
+			//gain access to the history and signs and symptoms of that patient
+			List<string> h = d.History(), ss = d.SignsAndSymptoms();
+
+			//patient history bullet points
+			for (int i = 0; i < patientHistory.Count; i++)
+			{
+				//verify that there is something in this location
+				if (h[i] != null)
+				{
+					//place the value in the text field.
+					patientHistory[i].text = "- " + h[i];
+					//make sure this textfield is on.
+					patientHistory[i].gameObject.SetActive(true);
+				}
+				else
+				{
+					//become inactive since there is no value to go inside.
+					patientHistory[i].gameObject.SetActive(false);
+				}
+			}
+
+			//signs and symptoms bullet points
+			for (int i = 0; i < patientSignsSymptoms.Count; i++)
+			{
+				//verify that there is something in this location
+				if (ss[i] != null)
+				{
+					//place the value in the text field.
+					patientSignsSymptoms[i].text = "- " + ss[i];
+					//make sure this textfield is on.
+					patientSignsSymptoms[i].gameObject.SetActive(true);
+				}
+				else
+				{
+					//become inactive since there is no value to go inside.
+					patientSignsSymptoms[i].gameObject.SetActive(false);
+				}
+			}
+		}
+		
+	}
+
+
+	#endregion
+
 
 	#region Button Functions
 
@@ -252,16 +413,87 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	{
 		//make the button un-interactable
 		button_Bloodwork.interactable = false;
-
+		textfield_Bloodwork.text = "REQUESTED BLOOD WORK";
 		//Change the status of the patient to bloodwork
 
 		//Inform the patient's computer to send the bloodwork and begin counting down.
-		(patient.Patient_Hotspot_Get() as ExamRoom).Computer().SendBloodwork();
-
+		if (patient)
+		{
+			(patient.Patient_Hotspot_Get() as ExamRoom).Computer().SendBloodwork();
+		}
+		
 		//inform the patient to stop/begin counting down. Not sure which at the moment, or if they should just be halted.
 
 		//Close this window
 		Close();
+	}
+
+	public void InitialassessmentTextSwap(Text t)
+	{
+		string s = t.text;
+		//make sure we have access to both of these text fields.
+		if (textfield_InitialAA && textfield_InitialRM)
+		{
+			//swap the text inside of the text field
+			if (s == "Respiratory" || s == "Metabolic")
+			{
+				textfield_InitialRM.text = s;
+			}
+			else if (s == "Acidosis" || s == "Alkalosis")
+			{
+				textfield_InitialAA.text = s;
+			}
+		}
+		else
+		{
+			Debug.LogWarning(name + "'s UI_ExamRoomComputer does not have access to the assessment text fields");
+		}
+	}
+
+	public void InitialassessmentSubmit()
+	{
+		//take in the values submitted.
+		string aa = textfield_InitialAA.text, rm = textfield_InitialRM.text;
+
+		//make sure that the submitted values are indeed proper values.
+		if ((aa == "Acidosis" || aa == "Alkalosis") && (rm == "Respiratory" || rm == "Metabolic"))
+		{
+			//turn off the panel for the first part.
+			panel_assessment1.SetActive(false);
+
+			//turn off the assessment submit button
+			if (button_Submitassessment)
+			{
+				button_Submitassessment.gameObject.SetActive(false);
+			}
+
+			//set the text of the second panel
+			textfield_assessmentAnswer.text = rm + " " + aa;
+
+			//give these values to the patient.
+			if (patient)
+			{
+				patient.InitialAssessmentSet(rm, aa);
+			}
+			
+			//display this secondary panel
+			panel_assessment2.SetActive(true);
+
+			//turn off the submit assessment button
+			if (button_Submitassessment)
+			{
+				button_Submitassessment.gameObject.SetActive(false);
+			}
+			
+			//display bloodwork button.
+			if (button_Bloodwork)
+			{
+				button_Bloodwork.gameObject.SetActive(true);
+				button_Bloodwork.interactable = true;
+			}
+
+		}
+
 	}
 
 	/// <summary>
@@ -275,44 +507,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	#endregion
 
 
-	private void Initialize()
-	{
-		//Initialize both lists.
-		patientABGValues = new List<Text>();
-		patientStoryInformation = new List<Text>();
-
-		//populate the lists.
-		patientABGValues.Add(text_PH); patientABGValues.Add(text_CO2); patientABGValues.Add(text_HCO3);
-		patientStoryInformation.Add(text_Symptoms); patientStoryInformation.Add(text_Conditions); patientStoryInformation.Add(text_Medications);
-
-		//clear the placeholder values inside.
-		foreach (Text t in patientABGValues)
-		{
-			t.text = " ";
-		}
-		foreach (Text t in patientStoryInformation)
-		{
-			t.text = " ";
-		}
-
-		//turn off buttons that may not be used immediately
-		if (button_Bloodwork)
-		{
-			button_Bloodwork.interactable = false;
-		}
-		//gain access to the manager
-		if (GameObject.Find("Manager"))
-		{
-			manager = GameObject.Find("Manager").GetComponent<Manager>();
-		}
-		
-		//initialize the diagnosis tool
-		diagnosisTool.Initialize(true,this);
-
-		init = true;
-
-	}
-
+	
 
 	/// <summary>
 	/// Tell the Patient to leave.

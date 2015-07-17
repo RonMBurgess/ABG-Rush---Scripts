@@ -9,7 +9,9 @@ public class Patient : Person {
     private float timer_Triage, timer_WaitingRoom, timer_ExamRoom, timer_Vitals, timer_Bloodwork, timer_Diagnosis, timer_Delay_Pacification, timer_Current, timer_CurrentSet;
     private int pacify_AmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
     private string patient_Name, status;//The current status of the patient: (Triage, Waiting, Exam Room, Vitals, etc...)
-    private Diagnosis diagnosis;
+	private string assessmentRM, assessmentAA;//the initial assessment provided by the player.
+	private string dateOfBirth;
+	private Diagnosis diagnosis;
     private PatientObject hotspot;
     private bool timer_Halted;
     private Collider2D collider;
@@ -55,6 +57,8 @@ public class Patient : Person {
 			case "ExamRoom": timer_Current = timer_ExamRoom; timer_CurrentSet = timer_ExamRoom; collider.enabled = false; Patient_Animation("Sitting", false, true); break;
 			case "Vitals": timer_Current = timer_Vitals; timer_CurrentSet = timer_Vitals; collider.enabled = true; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, true); break;
 			case "VitalsComplete": timer_Current = timer_Vitals; timer_CurrentSet = timer_Vitals; Patient_ToggleCountdown(true); collider.enabled = false; Patient_Animation("Sitting", false, true); break;//countdown will re-enable after a decision is made in UI
+			case "Assessment": timer_Current = timer_Vitals; timer_CurrentSet = timer_Vitals; Patient_ToggleCountdown(false); collider.enabled = true; Patient_Animation("Sitting", false, true); break;
+
 			//case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
 			case "BloodworkWaiting": timer_Current = timer_Bloodwork; timer_CurrentSet = timer_Bloodwork; collider.enabled = false; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, false); break;
 			case "Diagnosis": timer_Current = timer_Diagnosis; timer_CurrentSet = timer_Diagnosis; collider.enabled = true; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, true); break;
@@ -237,7 +241,7 @@ public class Patient : Person {
 						Patient_ToggleCountdown(true);
 						//nextStep = true;
 					}
-					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete")
+					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete" || status == "Assessment")
 					{
 						//tell the nurse to move to the exam room computer
 						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
@@ -342,10 +346,34 @@ public class Patient : Person {
 		name = n;
 		patient_Name = n;
 
-		//COME BACK AND SET DOB
+		dateOfBirth = dob;
 
 		diagnosis = d;
+		assessmentAA = " ";
+		assessmentRM = " ";
+
 		Debug.Log(name + "'s Diagnosis is: " + d.Answer_Respiratory_Metabolic + " " + d.Answer_Acidosis_Alkalosis + " " + d.Answer_Compensation);
-		Debug.Log(name + "'s Story is: " + d.Story("S"));
+		//Debug.Log(name + "'s Story is: " + d.Story("S"));
+	}
+
+	public void InitialAssessmentSet(string RM, string AA)
+	{
+		assessmentRM = RM;
+		assessmentAA = AA;
+	}
+
+	public string InitialAssessmentGetRM()
+	{
+		return assessmentRM;
+	}
+
+	public string InitialAssessmentGetAA()
+	{
+		return assessmentAA;
+	}
+
+	public string DateOfBirth()
+	{
+		return dateOfBirth;
 	}
 }

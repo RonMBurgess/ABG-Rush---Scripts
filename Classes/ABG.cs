@@ -14,16 +14,15 @@ public class ABG{
 
     private List<string> test_Stories_L, test_Stories_S, test_Medications_1, test_Medications_2, test_Medications_3, test_Medications_4, test_Symptoms_1, test_Symptoms_2, test_Symptoms_3, test_Symptoms_4, test_Conditions_1, test_Conditions_2, test_Conditions_3, test_Conditions_4;
 
-    private List<Diagnosis> diagnoses;
+    private List<Diagnosis> diagnoses, diagnosesInUse;
     private float val_PH_Lowest = 7.24f, val_PH_Neutral_Low = 7.35f, val_PH_Neutral_High = 7.45f, val_PH_Highest = 7.58f;//PH Values
     private float val_CO2_Lowest = 20f, val_CO2_Neutral_Low = 35f, val_CO2_Neutral_High = 45f, val_CO2_Highest = 64f;//CO2 Values
     private float val_HCO3_Lowest = 14f, val_HCO3_Neutral_Low = 22f, val_HCO3_Neutral_High = 26f, val_HCO3_Highest = 42f;// HCO3 Values
 
-
     public ABG()
     {
         diagnoses = new List<Diagnosis>();
-		
+		diagnosesInUse = new List<Diagnosis>();
         CreateDiagnoses();
     }
 	
@@ -43,7 +42,7 @@ public class ABG{
         
         
         //if the diagnosis does not have set answers, give it some.
-        if (d.Answer_Acidosis_Alkalosis == " ")
+        if (aa == " ")
         {
             int r = Random.Range(0, 12);
 
@@ -78,7 +77,7 @@ public class ABG{
             }
             else if (rm == "Respiratory" && aa == "Acidosis" && comp == "Compensated")
             {
-                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == "Respiratory" && aa == "Alkalosis" && comp == "Uncompensated")
             {
@@ -90,7 +89,7 @@ public class ABG{
             }
             else if (rm == "Respiratory" && aa == "Alkalosis" && comp == "Compensated")
             {
-                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == "Metabolic" && aa == "Acidosis" && comp == "Uncompensated")
             {
@@ -102,7 +101,7 @@ public class ABG{
             }
             else if (rm == "Metabolic" && aa == "Acidosis" && comp == "Compensated")
             {
-                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == "Metabolic" && aa == "Alkalosis" && comp == "Uncompensated")
             {
@@ -114,7 +113,7 @@ public class ABG{
             }
             else if (rm == "Metabolic" && aa == "Alkalosis" && comp == "Compensated")
             {
-                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
 
             return d;
@@ -131,14 +130,14 @@ public class ABG{
     /// Generate number values for each of the variables.
     /// </summary>
     /// <param name="value">name of the value ie. PH, CO2, HCO3</param>
-    /// <param name="LowMedHigh">0 for acid, 1 for neutral, 2 for basic</param>
+    /// <param name="LowMedHigh">0 for acid, 1 for neutral, 2 for basic, 5 == Lower Neutral, 6 = Higher Neutral</param>
     /// <returns></returns>
     private float GenerateDiagnosisValues(string value, int LowMedHigh)
     {
-        float lowest = 0f, low = 0f, high = 0f, highest = 0f;
+        float lowest = 0f, low = 0f, lowMed = 0f, medHigh = 0f, high = 0f, highest = 0f;
         if (value == "PH")
         {
-            lowest = val_PH_Lowest; low = val_PH_Neutral_Low; high = val_PH_Neutral_High; highest = val_PH_Highest;
+			lowest = val_PH_Lowest; low = val_PH_Neutral_Low; high = val_PH_Neutral_High; highest = val_PH_Highest; lowMed = 39.5f; medHigh = 40.5f;
         }
         else if (value == "CO2")
         {
@@ -162,6 +161,14 @@ public class ABG{
         {
             return Random.Range(high, highest);
         }
+		else if (LowMedHigh == 5)
+		{
+			return Random.Range(low, lowMed);
+		}
+		else if (LowMedHigh == 6)
+		{
+			return Random.Range(medHigh, high);
+		}
 
         Debug.LogWarning("ABG: GenerateDiagnosisValues Did not receive a valid Param");
         return -50f;
@@ -247,7 +254,30 @@ public class ABG{
 	public Diagnosis PatientDiagnosis()
 	{
 		//return a random diagnosis for a patient.
-		return diagnoses[Random.Range(0, diagnoses.Count)];
+		if (diagnoses.Count > 0)
+		{
+			Diagnosis d = diagnoses[Random.Range(0, diagnoses.Count)];
+			diagnoses.Remove(d);
+			diagnosesInUse.Add(d);
+			//randomize the values
+			return DiagnosisAnswerValues(d);
+		}
+		else
+		{
+			return RandomDiagnosis();
+		}
+	}
+
+	/// <summary>
+	/// Inform ABG that this Diagnosis is finished.
+	/// </summary>
+	/// <param name="d"></param>
+	public void PatientDiagnosisComplete(Diagnosis d)
+	{
+		//remove the diagnosis because it's no longer in use by a patient.
+		diagnosesInUse.Remove(d);
+		//add the diagnosis back to the available diagnosis list.
+		diagnoses.Add(d);
 	}
 
 }

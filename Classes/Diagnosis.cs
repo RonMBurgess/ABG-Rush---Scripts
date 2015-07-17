@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 public class Diagnosis {
 
-    private string story_Long, story_Short, diag_RespMet, diag_AcidAlk, diag_Comp;
-    private List<string> medications, symptoms, conditions;
-    private float val_PH, val_CO2, val_HCO3;
+    private string story_Long, story_Short, diag_RespMet, diag_AcidAlk, diag_Comp; //, assesmentRM, assesmentAA;
+    //private List<string> medications, symptoms, conditions;
+	private List<string> history, signsandsymptoms;
+	private float val_PH, val_CO2, val_HCO3;
 
-    public Diagnosis(string diag_RM = " ", string diag_AA = " ", string diag_C = " ", string story_L = null, string story_S = null, List<string> meds = null, List<string> sympts = null, List<string> conds = null)
+    public Diagnosis(string diag_RM = " ", string diag_AA = " ", string diag_C = " ", string story_L = null, string story_S = null, List<string> hist = null, List<string> signssympts = null, List<string> conds = null)
     {
         //initialize the lists
         //medications = new List<string>();
@@ -17,12 +18,18 @@ public class Diagnosis {
 
         //set the diagnosis answers
         diag_RespMet = diag_RM; diag_AcidAlk = diag_AA; diag_Comp = diag_C;
-        //set the story
+        
+		//set the history
+		history = hist;
+		//set the signs and symptoms
+		signsandsymptoms = signssympts;
+
+		//set the story
 		//Debug.Log(story_L);
 		//Debug.Log(story_S);
         story_Long = story_L; story_Short = story_S;
         //set the extra information
-        medications = meds; symptoms = sympts; conditions = conds;
+        //medications = meds; symptoms = sympts; conditions = conds;
     }
 
 
@@ -66,6 +73,7 @@ public class Diagnosis {
 
     #endregion
 
+	/*
     #region Medication, Symptoms, Conditions
     /// <summary>
     /// Return a string of medications
@@ -175,6 +183,8 @@ public class Diagnosis {
 
     }
 
+	
+
 	/// <summary>
 	/// Return the story
 	/// </summary>
@@ -192,4 +202,43 @@ public class Diagnosis {
 		}
 	}
     #endregion
+
+	*/
+
+	//public void InitialDiagnosisSet(string RM, string AA)
+	//{
+	//	//if values were provided, then we must set them.
+	//	if (RM != "" && AA != "")
+	//	{
+	//		assesmentAA = AA;
+	//		assesmentRM = RM;
+	//	}
+		
+	//}
+
+	public bool InitialDiagnosisCorrect(string RM, string AA)
+	{
+		return (RM == Answer_Respiratory_Metabolic && AA == Answer_Acidosis_Alkalosis);
+	}
+
+	/// <summary>
+	/// Information that should help give an initial assesment of the diagnosis.
+	/// </summary>
+	/// <returns>List of Strings / Bullet Points</returns>
+	public List<string> History()
+	{
+		//Do a check for language, return the history for that language.
+		return history;
+	}
+
+
+	/// <summary>
+	/// Information that should help give an initial assesment of the diagnosis.
+	/// </summary>
+	/// <returns>List of Strings/Bullet Points</returns>
+	public List<string> SignsAndSymptoms()
+	{
+		//Do a check for language, return the signs and symptoms for that language.
+		return signsandsymptoms;
+	}
 }

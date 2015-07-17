@@ -80,6 +80,10 @@ public class Manager : MonoBehaviour {
         //Perform some kind of animation
         //decrease points based on level of satisfaction
 		UpdateSatisfactionScore(-5);
+
+		//inform abg that the diagnosis is no longer being used.
+		abg.PatientDiagnosisComplete(p.MyDiagnosis());
+
 		//make the patient go to the exit
         p.Person_Move(location_Exit.position,"Exit");
     }
@@ -95,6 +99,8 @@ public class Manager : MonoBehaviour {
 
         //gain/increase points based on level of satisfaction
 		UpdateSatisfactionScore(6);
+		//inform abg that the diagnosis is no longer being used.
+		abg.PatientDiagnosisComplete(p.MyDiagnosis());
 
         p.Person_Move(location_Exit.position, "Exit");
     }
@@ -183,8 +189,11 @@ public class Manager : MonoBehaviour {
 
     private void Manager_PatientSpawn()
     {
+		//prepare a dob
+		string dob = Random.Range(1, 13).ToString() + "/" + Random.Range(1, 29).ToString() + "/" + Random.Range(1940, 2000).ToString();
+
         Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
-		p.Patient_Setup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], "1952", abg.PatientDiagnosis());
+		p.Patient_Setup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], dob, abg.PatientDiagnosis());
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
         //p.Person_Move(triage.location_Patient, "Triage");

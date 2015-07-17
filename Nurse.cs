@@ -129,7 +129,7 @@ public class Nurse : Person {
 		IsClean(-1);
 
 		//update the patient's status
-		current_Patient.Patient_StatusUpdate("VitalsComplete");//changed from vitals
+		current_Patient.Patient_StatusUpdate("Assessment");//changed from VitalsComplete //changed from vitals
 
 		//Open the ExamRoom Computer Interface
 		Manager.GamePlayUI().ExamRoomComputerUI().SetPatient(current_Patient);
