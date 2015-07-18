@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.XPath;
+using System.Text;
 
 public class ABG{
 
@@ -12,6 +15,10 @@ public class ABG{
     /// - Return Random Diagnosis
     //*/
 
+	//variables for xml
+	private string fileLocation;//, fileName;
+
+
     private List<string> test_Stories_L, test_Stories_S, test_Medications_1, test_Medications_2, test_Medications_3, test_Medications_4, test_Symptoms_1, test_Symptoms_2, test_Symptoms_3, test_Symptoms_4, test_Conditions_1, test_Conditions_2, test_Conditions_3, test_Conditions_4;
 
     private List<Diagnosis> diagnoses, diagnosesInUse;
@@ -19,11 +26,27 @@ public class ABG{
     private float val_CO2_Lowest = 20f, val_CO2_Neutral_Low = 35f, val_CO2_Neutral_High = 45f, val_CO2_Highest = 64f;//CO2 Values
     private float val_HCO3_Lowest = 14f, val_HCO3_Neutral_Low = 22f, val_HCO3_Neutral_High = 26f, val_HCO3_Highest = 42f;// HCO3 Values
 
-    public ABG()
+	/// <summary>
+	/// Create a new ABG Class. 
+	/// </summary>
+	/// <param name="locationOfFile">Location of the xml file to be read from.</param>
+	/// <param name="nameOfFile">Name of the xml file to be read from.</param>
+    public ABG(string locationOfFile = "", string nameOfFile = "")
     {
         diagnoses = new List<Diagnosis>();
 		diagnosesInUse = new List<Diagnosis>();
-        CreateDiagnoses();
+
+		if (locationOfFile != "" /*&& nameOfFile != ""*/)
+		{
+			fileLocation = locationOfFile;
+			//fileName = nameOfFile;
+			LoadDiagnosesFromXML();
+		}
+		else
+		{
+			CreateDiagnoses();
+		}
+        
     }
 	
 	
@@ -229,6 +252,88 @@ public class ABG{
             diagnoses[i] = DiagnosisAnswerValues(diagnoses[i]);
         }
     }
+
+	private void LoadDiagnosesFromXML()
+	{
+		Debug.Log("LoadDiagnosesFromXML");
+		if (fileLocation != "")
+		{
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.Load(fileLocation);
+
+			//parse through all the different interventions.
+			XmlNodeList interventions = xmlDoc.GetElementsByTagName("Intervention");
+
+			foreach (XmlNode intervention in interventions)
+			{
+				
+				
+				//diagnosis RM, AA, C
+				string rm = "" , aa = "", c = "";
+				List<string> historyEnglish = new List<string>();
+				List<string> historySpanish = new List<string>();
+				List<string> signsSymptomsEnglish = new List<string>();
+				List<string> signsSymptomsSpanish = new List<string>();
+
+				foreach (XmlNode child in intervention)
+				{
+					string n = child.Name;
+					//diagnosis
+					if (n == "Diagnosis")
+					{
+						rm = child.FirstChild.InnerText;
+						aa = child.ChildNodes[1].InnerText;
+						c = child.LastChild.InnerText;
+					}
+
+					//English
+					else if (n == "English" || n == "Spanish")
+					{
+						//each language only has 2 sections of information
+						XmlNode signsSymptoms = child.FirstChild;
+						XmlNode history = child.LastChild;
+
+						//create a list for each history
+						List<string> allHistory = new List<string>();
+						//create a list for all signs and symptoms
+						List<string> allSignsSymptoms = new List<string>();
+
+						//Read in all of the history information.
+						foreach (XmlNode hist in history)
+						{
+							if (hist.InnerText != null && hist.InnerText != " " && hist.NodeType != XmlNodeType.Comment)
+							{
+								allHistory.Add(hist.InnerText);
+							}
+							
+						}
+						//Read in all of the signs and symptoms information.
+						foreach (XmlNode ss in signsSymptoms)
+						{
+							if (ss.InnerText != null && ss.InnerText != " " && ss.NodeType != XmlNodeType.Comment)
+							{
+								allSignsSymptoms.Add(ss.InnerText);
+							}
+							
+						}
+
+						//Determine which language we are looking at, and set the list accordingly.
+						if (n == "English") { historyEnglish = allHistory; signsSymptomsEnglish = allSignsSymptoms; }
+						else if (n == "Spanish") { historySpanish = allHistory; signsSymptomsSpanish = allSignsSymptoms; }
+					}
+
+					
+				}
+
+				//create the diagnosis
+				Diagnosis d = new Diagnosis(rm, aa, c, " ", " ", historyEnglish, historySpanish, signsSymptomsEnglish, signsSymptomsSpanish);
+
+				//add this diagnosis to the list
+				diagnoses.Add(d);
+			}
+		}
+		//XmlNodeList interventions
+	}
 
 
 #endregion

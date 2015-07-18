@@ -68,7 +68,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			//Picture
 
 			//setup patient history information ***RON COME BACK AND UNCOMMENT THIS***
-			//DisplayHistoryAndSignsSymptoms();
+			DisplayHistoryAndSignsSymptoms();
 
 			//RON COME BACK AND CHANGE THIS
 
@@ -348,7 +348,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			for (int i = 0; i < patientHistory.Count; i++)
 			{
 				//verify that there is something in this location
-				if (h[i] != null)
+				if (h.Count > i)
 				{
 					//place the value in the text field.
 					patientHistory[i].text = "- " + h[i];
@@ -366,7 +366,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			for (int i = 0; i < patientSignsSymptoms.Count; i++)
 			{
 				//verify that there is something in this location
-				if (ss[i] != null)
+				if (ss.Count > i)
 				{
 					//place the value in the text field.
 					patientSignsSymptoms[i].text = "- " + ss[i];

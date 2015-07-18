@@ -148,7 +148,7 @@ public class Manager : MonoBehaviour {
     private void Manager_Initialize()
     {
 		//Initialize the ABG class and prepare all the diagnoses
-		abg = new ABG();
+		abg = new ABG("assets/NursingInterventions.xml");
 
 		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
         list_WaitingChairs = new List<WaitingChair>();

@@ -6,10 +6,10 @@ public class Diagnosis {
 
     private string story_Long, story_Short, diag_RespMet, diag_AcidAlk, diag_Comp; //, assesmentRM, assesmentAA;
     //private List<string> medications, symptoms, conditions;
-	private List<string> history, signsandsymptoms;
+	private List<string> historyEnglish, historySpanish, signsandsymptomsEnglish, signsandsymptomsSpanish;
 	private float val_PH, val_CO2, val_HCO3;
 
-    public Diagnosis(string diag_RM = " ", string diag_AA = " ", string diag_C = " ", string story_L = null, string story_S = null, List<string> hist = null, List<string> signssympts = null, List<string> conds = null)
+    public Diagnosis(string diag_RM = " ", string diag_AA = " ", string diag_C = " ", string story_L = null, string story_S = null, List<string> histEnglish = null, List<string> histSpanish = null, List<string> signssymptsEnglish = null, List<string> signssymptsSpanish = null, List<string> conds = null)
     {
         //initialize the lists
         //medications = new List<string>();
@@ -20,9 +20,12 @@ public class Diagnosis {
         diag_RespMet = diag_RM; diag_AcidAlk = diag_AA; diag_Comp = diag_C;
         
 		//set the history
-		history = hist;
+		historyEnglish = histEnglish;
+		historySpanish = histSpanish;
+
 		//set the signs and symptoms
-		signsandsymptoms = signssympts;
+		signsandsymptomsEnglish = signssymptsEnglish;
+		signsandsymptomsSpanish = signssymptsSpanish;
 
 		//set the story
 		//Debug.Log(story_L);
@@ -228,7 +231,12 @@ public class Diagnosis {
 	public List<string> History()
 	{
 		//Do a check for language, return the history for that language.
-		return history;
+		switch ("English")
+		{
+			case "English": return historyEnglish; break;
+			case "Spanish": return historySpanish; break;
+		}
+		return null;
 	}
 
 
@@ -239,6 +247,12 @@ public class Diagnosis {
 	public List<string> SignsAndSymptoms()
 	{
 		//Do a check for language, return the signs and symptoms for that language.
-		return signsandsymptoms;
+		switch ("English")
+		{
+			case "English": return signsandsymptomsEnglish; break;
+			case "Spanish": return signsandsymptomsSpanish; break;
+		}
+
+		return null;
 	}
 }
