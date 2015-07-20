@@ -4,19 +4,19 @@ using System.Collections;
 public class ReferenceDesk : OfficeObject {
 
 	public GameObject referenceDeskUI;
-	private Animator anim;
+	//private Animator anim;
 
 	void Awake()
 	{
-		anim = GetComponent<Animator>();
+		//anim = GetComponent<Animator>();
 	}
 
 	// Use this for initialization
 	void Start () {
-		if (anim)
-		{
-			anim.SetBool("Highlight", true);
-		}
+		//if (anim)
+		//{
+		//	anim.SetBool("Highlight", true);
+		//}
 
 		tag = "ReferenceDesk";
 		if (referenceDeskUI)

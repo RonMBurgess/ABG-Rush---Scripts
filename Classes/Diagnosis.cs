@@ -231,12 +231,16 @@ public class Diagnosis {
 	public List<string> History()
 	{
 		//Do a check for language, return the history for that language.
-		switch ("English")
+		if (LanguageManager._LanguageManager)
 		{
-			case "English": return historyEnglish; break;
-			case "Spanish": return historySpanish; break;
+			switch (LanguageManager._LanguageManager.Language()){
+				case "English": return historyEnglish;// break;
+				case "Spanish": return historySpanish;// break;
+			}
 		}
-		return null;
+		
+		//since there is no language manager, we are most likely testing, so return english.
+		return historyEnglish;
 	}
 
 
@@ -247,12 +251,16 @@ public class Diagnosis {
 	public List<string> SignsAndSymptoms()
 	{
 		//Do a check for language, return the signs and symptoms for that language.
-		switch ("English")
+		if (LanguageManager._LanguageManager)
 		{
-			case "English": return signsandsymptomsEnglish; break;
-			case "Spanish": return signsandsymptomsSpanish; break;
+			switch (LanguageManager._LanguageManager.Language())
+			{
+				case "English": return signsandsymptomsEnglish;// break;
+				case "Spanish": return signsandsymptomsSpanish;// break;
+			}
 		}
 
-		return null;
+		//since there is no language manager, we are most likely testing, so return english.
+		return signsandsymptomsEnglish;
 	}
 }

@@ -339,7 +339,7 @@ public class Nurse : Person {
 		{
 			clean = false;
 		}
-		Manager.GamePlayUI().CleanStatus(clean);
+		Manager.MySink().CleanHandsPoster(clean);
 		return clean;
 	}
 

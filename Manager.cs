@@ -11,6 +11,8 @@ public class Manager : MonoBehaviour {
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
 	public GameplayUIScript gameplayUI;
 	public float timerSpawn = 15f;
+	public float timerSpawnRate = 3f;
+	public float timerSpawnDelayMin = 25f;
 	public static Manager manager;
 
 	public List<string> namesFirst, namesLast;
@@ -23,7 +25,7 @@ public class Manager : MonoBehaviour {
 	private float timerSpawnUsed;
     private Nurse nurse;
 	private ABG abg;
-
+	private Sink sink;
 
 
     public Nurse MyNurse
@@ -49,7 +51,11 @@ public class Manager : MonoBehaviour {
 			if (timerSpawnUsed <= 0)
 			{
 				Manager_PatientSpawn();
-				timerSpawnUsed = timerSpawn;
+				timerSpawn -= timerSpawnRate;
+				timerSpawn = Mathf.Clamp(timerSpawn, timerSpawnDelayMin, 120f);
+				//allow patient to spawn either 10 seconds sooner or 10 seconds after base time
+				timerSpawnUsed = Random.Range(-10, 11);
+				timerSpawnUsed += timerSpawn;
 			}
 		}
 
@@ -175,6 +181,9 @@ public class Manager : MonoBehaviour {
 		//Find the nurse
         nurse = GameObject.FindGameObjectWithTag("Nurse").GetComponent<Nurse>();
 
+		//Find the Sink
+		sink = GameObject.FindGameObjectWithTag("Sink").GetComponent<Sink>();
+
 		//Reset the score
         score_Patients_Total = 0;
         score_Satisfaction = 100f;
@@ -231,11 +240,19 @@ public class Manager : MonoBehaviour {
 
 	public void UpdateSatisfactionScore(int s){
 		score_Satisfaction += s;
+		//clamp the score so it cannot go above 100
+		score_Satisfaction = Mathf.Clamp(score_Satisfaction, 0f, 100f);
+
 		gameplayUI.satisfaction.SatisfactionModify(s);
 
 		if (score_Satisfaction <= 0)
 		{
 			Application.LoadLevel(0);
 		}
+	}
+
+	public Sink MySink()
+	{
+		return sink;
 	}
 }

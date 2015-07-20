@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.XPath;
+//using System.Xml.XPath;
 using System.Text;
 
 public class ABG{
@@ -331,6 +331,7 @@ public class ABG{
 				//add this diagnosis to the list
 				diagnoses.Add(d);
 			}
+		
 		}
 		//XmlNodeList interventions
 	}

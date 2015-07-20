@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Sink : OfficeObject {
 
+	public SpriteRenderer cleanhandsRenderer;
+	public Sprite posterClean, posterDirty;
+
 	// Use this for initialization
 	void Start () {
         OfficeObject_Initialize();
@@ -36,4 +39,24 @@ public class Sink : OfficeObject {
 		//stop being highlighted
 		//Highlight(false);
     }
+
+	/// <summary>
+	/// Update the Clean Hands Poster
+	/// </summary>
+	/// <param name="clean">True = Clean, False = Dirty</param>
+	public void CleanHandsPoster(bool clean)
+	{
+		//make sure we have access to renderer
+		if (cleanhandsRenderer)
+		{
+			if (clean)
+			{
+				cleanhandsRenderer.sprite = posterClean;
+			}
+			else
+			{
+				cleanhandsRenderer.sprite = posterDirty;
+			}
+		}
+	}
 }

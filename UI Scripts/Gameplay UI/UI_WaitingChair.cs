@@ -48,7 +48,21 @@ public class UI_WaitingChair : UI_Patient
 			MyPatient.Patient_ToggleCountdown(true);
 			text_name.text = MyPatient.name;
 			//RON come back and change this to say some mixed information from Signs and Symptoms as well as History.
-			//text_Story.text = MyPatient.MyDiagnosis().Story("S");
+			string s = "";
+			foreach (string h in MyPatient.MyDiagnosis().History())
+			{
+				if (s == "")
+				{
+					s += "- " + h;
+				}
+				else
+				{
+					s += "\n- " + h;
+				}
+
+			}
+			//display portions of the history from the patient.
+			text_Story.text = s;
 		}
         
     }
