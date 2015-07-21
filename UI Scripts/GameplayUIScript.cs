@@ -14,6 +14,8 @@ public class GameplayUIScript : MonoBehaviour {
     public SatisfactionBarScript satisfaction;
 	public UI_ExamRoomComputer examroomComputer;
 	public Text debugHands;
+	public UI_GameOver gameover;
+	public UI_PatientFeedback patientFeedback;
 
 
 	// Use this for initialization
@@ -58,5 +60,15 @@ public class GameplayUIScript : MonoBehaviour {
 		{
 			debugHands.text = "Hands are Dirty";
 		}
+	}
+
+	public UI_GameOver GameOverUI()
+	{
+		return gameover;
+	}
+
+	public UI_PatientFeedback PatientFeedback()
+	{
+		return patientFeedback;
 	}
 }

@@ -132,9 +132,12 @@ public class Nurse : Person {
 		current_Patient.Patient_StatusUpdate("Assessment");//changed from VitalsComplete //changed from vitals
 
 		//Open the ExamRoom Computer Interface
-		Manager.GamePlayUI().ExamRoomComputerUI().SetPatient(current_Patient);
-		Manager.GamePlayUI().ExamRoomComputerUI().gameObject.SetActive(true);
-
+		if (MyManager)
+		{
+			MyManager.GamePlayUI().ExamRoomComputerUI().SetPatient(current_Patient);
+			MyManager.GamePlayUI().ExamRoomComputerUI().gameObject.SetActive(true);
+		}
+		
 		//remove a busy counter
 		IsBusy(-1);
 
@@ -161,7 +164,18 @@ public class Nurse : Person {
 		current_Patient.Patient_ToggleCountdown(true);
 
 		//check if hands are clean. Gain/Lose points based on result.
-		if (clean) { Manager.UpdateSatisfactionScore(1); } else { Manager.UpdateSatisfactionScore(-2); }
+		if (MyManager)
+		{
+
+			if (clean)
+			{
+				MyManager.UpdateSatisfactionScore(1);
+			}
+			else
+			{
+				MyManager.UpdateSatisfactionScore(-2);
+			}
+		}
 		
 		//make sure the patient is no longer highlighted
 		current_Patient.Patient_Animation("Highlight", false, false);
@@ -339,7 +353,10 @@ public class Nurse : Person {
 		{
 			clean = false;
 		}
-		Manager.MySink().CleanHandsPoster(clean);
+		if (MyManager)
+		{
+			MyManager.MySink().CleanHandsPoster(clean);
+		}
 		return clean;
 	}
 

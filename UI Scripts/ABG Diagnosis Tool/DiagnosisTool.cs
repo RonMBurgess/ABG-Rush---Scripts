@@ -94,6 +94,7 @@ public class DiagnosisTool : MonoBehaviour {
 		{
 			//we must be in practice mode
 			diagnosis = abg.RandomDiagnosis();
+			Debug.Log("Created random diagnosis");
 		}
 
 		//set the text inside of the drag and drop objects.
@@ -193,18 +194,33 @@ public class DiagnosisTool : MonoBehaviour {
 	public void SwapText(Text t)
 	{
 		string s = t.text;
+
+		string r = "Respiratory", m = "Metabolic", aci = "Acidosis", alk = "Alkalosis", uc = "Uncompensated", pc = "Partial Compensation", c = "Compensated";
+		//translate if possible
+		if (LanguageManager._LanguageManager)
+		{
+			LanguageManager lm = LanguageManager._LanguageManager;
+			r = lm.DirectTranslation("ABG", r);
+			m = lm.DirectTranslation("ABG", m);
+			aci = lm.DirectTranslation("ABG", aci);
+			alk = lm.DirectTranslation("ABG", alk);
+			uc = lm.DirectTranslation("ABG", uc);
+			pc = lm.DirectTranslation("ABG", pc.Replace(" ", ""));
+			c = lm.DirectTranslation("ABG", c);
+		}
+
 		//swap the text of the RM answer field.
-		if (s == "Respiratory" || s == "Metabolic")
+		if (s == r || s == m)
 		{
 			ansRM.text = s;
 		}
 		//swap the text of the AA answer field.
-		else if (s == "Acidosis" || s == "Alkalosis")
+		else if (s == aci || s == alk)
 		{
 			ansAA.text = s;
 		}
 		//swap the text of the C answer field.
-		else if (s == "Uncompensated" || s == "Partial Compensation" || s == "Compensated")
+		else if (s == uc || s == pc|| s == c)
 		{
 			ansC.text = s;
 		}
@@ -293,11 +309,11 @@ public class DiagnosisTool : MonoBehaviour {
 
 			if (!answerCorrect)
 			{
-				Manager.manager.UpdateSatisfactionScore(-15);
+				Manager._manager.UpdateSatisfactionScore(-15);
 			}
 			else
 			{
-				Manager.manager.UpdateSatisfactionScore(+10);
+				Manager._manager.UpdateSatisfactionScore(+10);
 			}
 			//Make the player wait for a period of time.
 			answerSubmitted = true;
@@ -328,6 +344,7 @@ public class DiagnosisTool : MonoBehaviour {
 	/// </summary>
 	public void ResetTool()
 	{
+		Debug.Log("Reset has been called.");
 		Reset();
 	}
 	#endregion

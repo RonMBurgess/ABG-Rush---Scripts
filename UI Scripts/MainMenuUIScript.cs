@@ -35,4 +35,13 @@ public class MainMenuUIScript : MonoBehaviour {
 	{
 		Application.Quit();
 	}
+
+	public void ToggleLanguage(string language)
+	{
+		if (LanguageManager._LanguageManager)
+		{
+			LanguageManager._LanguageManager.SetLanguage(language);
+			Application.LoadLevel(1);
+		}
+	}
 }

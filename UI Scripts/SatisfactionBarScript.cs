@@ -33,7 +33,7 @@ public class SatisfactionBarScript : MonoBehaviour {
     public void SatisfactionUpdate(float value)
     {
         satisfactionbar.value = value;
-		displayText.text = Mathf.FloorToInt(value).ToString();
+		displayText.text = Mathf.CeilToInt(value).ToString();
     }
 
     /// <summary>

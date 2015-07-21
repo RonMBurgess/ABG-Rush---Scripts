@@ -13,7 +13,7 @@ public class Manager : MonoBehaviour {
 	public float timerSpawn = 15f;
 	public float timerSpawnRate = 3f;
 	public float timerSpawnDelayMin = 25f;
-	public static Manager manager;
+	public static Manager _manager;
 
 	public List<string> namesFirst, namesLast;
     private Triage triage;
@@ -21,6 +21,7 @@ public class Manager : MonoBehaviour {
     private List<WaitingChair> list_WaitingChairs;
     private List<ExamRoom> list_ExamRooms;
     private int score_Patients_Total;
+	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients;
     private float score_Satisfaction;
 	private float timerSpawnUsed;
     private Nurse nurse;
@@ -65,7 +66,7 @@ public class Manager : MonoBehaviour {
 			gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
 			if (score_Satisfaction <= 0)
 			{
-				Application.LoadLevel(0);
+				GameOver();
 			}
 		}
 
@@ -84,11 +85,15 @@ public class Manager : MonoBehaviour {
         list_Patients.Remove(p);
 
         //Perform some kind of animation
+
+		//update the total amount of patients to leave angry
+		scoreAngryPatients++;
+
         //decrease points based on level of satisfaction
 		UpdateSatisfactionScore(-5);
 
 		//inform abg that the diagnosis is no longer being used.
-		abg.PatientDiagnosisComplete(p.MyDiagnosis());
+		//abg.PatientDiagnosisComplete(p.MyDiagnosis());
 
 		//make the patient go to the exit
         p.Person_Move(location_Exit.position,"Exit");
@@ -103,10 +108,25 @@ public class Manager : MonoBehaviour {
         list_Patients.Remove(p);
         //perform some kind of animation
 
+		//Determine if the initial assessment of the patient was correct.
+		bool rm = (p.InitialAssessmentGetRM() == p.MyDiagnosis().Answer_Respiratory_Metabolic);
+		bool aa = (p.InitialAssessmentGetAA() == p.MyDiagnosis().Answer_Acidosis_Alkalosis);
+
+		//update score
+		scoreCorrectDiagnoses++;
+		if (rm && aa)
+		{
+			scoreCorrectInitialAssessment++;
+		}
+
+		gameplayUI.PatientFeedback().PatientFeedback(p, rm, aa);
+		gameplayUI.PatientFeedback().gameObject.SetActive(true);
+		Time.timeScale = 0;
         //gain/increase points based on level of satisfaction
 		UpdateSatisfactionScore(6);
+
 		//inform abg that the diagnosis is no longer being used.
-		abg.PatientDiagnosisComplete(p.MyDiagnosis());
+		//abg.PatientDiagnosisComplete(p.MyDiagnosis());
 
         p.Person_Move(location_Exit.position, "Exit");
     }
@@ -154,7 +174,7 @@ public class Manager : MonoBehaviour {
     private void Manager_Initialize()
     {
 		//Initialize the ABG class and prepare all the diagnoses
-		abg = new ABG("assets/NursingInterventions.xml");
+		abg = new ABG("NursingInterventions");
 
 		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
         list_WaitingChairs = new List<WaitingChair>();
@@ -186,14 +206,17 @@ public class Manager : MonoBehaviour {
 
 		//Reset the score
         score_Patients_Total = 0;
-        score_Satisfaction = 100f;
+		scoreAngryPatients = 0;
+		scoreCorrectDiagnoses = 0;
+		scoreCorrectInitialAssessment = 0;
+		score_Satisfaction = 100f;
 		gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
 
 		//reset the spawn timer
 		timerSpawnUsed = 0.1f;
 
 		//set the manager
-		manager = this;
+		_manager = this;
     }
 
     private void Manager_PatientSpawn()
@@ -247,12 +270,20 @@ public class Manager : MonoBehaviour {
 
 		if (score_Satisfaction <= 0)
 		{
-			Application.LoadLevel(0);
+			GameOver();
 		}
 	}
 
 	public Sink MySink()
 	{
 		return sink;
+	}
+
+	private void GameOver()
+	{
+		gameplayUI.GameOverUI().GameOver(scoreAngryPatients,scoreCorrectDiagnoses,scoreCorrectInitialAssessment);
+		Time.timeScale = 0;
+		gameplayUI.GameOverUI().gameObject.SetActive(true);
+		
 	}
 }

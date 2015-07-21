@@ -25,7 +25,7 @@ public class UI_Patient : MonoBehaviour {
         {
             if (manager == null)
             {
-                manager = GameObject.Find("Manager").GetComponent<Manager>();
+				manager = Manager._manager;
             } 
             return manager;
         }

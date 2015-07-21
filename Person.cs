@@ -18,9 +18,14 @@ public class Person : MonoBehaviour {
     private SpriteRenderer sr;
 
 
-    public Manager Manager
+    public Manager MyManager
     {
-        get { return manager; }
+        get {
+			if (!manager) {
+				manager = Manager._manager; 
+			}
+			return manager; 
+		}
     }
 
 
@@ -37,7 +42,7 @@ public class Person : MonoBehaviour {
 		//	sr.color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
 		//}
         destinationName = "";
-        if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
+		manager = Manager._manager;
         moving = false;
     }
 

@@ -61,7 +61,7 @@ public class Patient : Person {
 
 			//case "Bloodwork": timer_Current = timer_Bloodwork; collider.enabled = false; break;
 			case "BloodworkWaiting": timer_Current = timer_Bloodwork; timer_CurrentSet = timer_Bloodwork; collider.enabled = false; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, false); break;
-			case "Diagnosis": timer_Current = timer_Diagnosis; timer_CurrentSet = timer_Diagnosis; collider.enabled = true; Patient_Animation("Sitting", false, true); Patient_Animation("Highlight", false, true); break;
+			case "Diagnosis": timer_Current = timer_Diagnosis; timer_CurrentSet = timer_Diagnosis; collider.enabled = true; /*Patient_Animation("Sitting", false, true);*/ Patient_Animation("Highlight", false, true); break;
 			case "DiagnosisComplete": timer_Current = 999f; collider.enabled = false; Patient_Animation("Highlight", false, false); Patient_Leave(); break;
             case "Exit": Destroy(gameObject); break;
         }
@@ -185,7 +185,10 @@ public class Patient : Person {
         //inform current hotspot
         hotspot.PatientObject_Patient_Remove();
         //inform manager
-        Manager.Manager_Patient_StormOut(this);
+		if (MyManager)
+		{
+			MyManager.Manager_Patient_StormOut(this);
+		}
         //storm out
         //manager should inform me of where the exit is.
     }
@@ -199,70 +202,79 @@ public class Patient : Person {
         //inform current hotspot
         hotspot.PatientObject_Patient_Remove();
         //inform manager
-        Manager.Manager_Patient_Leave(this);
+		if (MyManager)
+		{
+			MyManager.Manager_Patient_Leave(this);
+        
+		}
         //leave
     }
 
-    void OnMouseEnter()
-    {
-		//if I am on a hotspot, and the nurse is not busy.
-        if (hotspot && !Manager.MyNurse.IsBusy())
-        {
-            //Manager.Manager_MouseOver(true);
-            //hotspot.OfficeObject_MouseEnter();
-        }
-    }
+	//void OnMouseEnter()
+	//{
+	//	////if I am on a hotspot, and the nurse is not busy.
+	//	//if (hotspot && !Manager.MyNurse.IsBusy())
+	//	//{
+	//	//	//Manager.Manager_MouseOver(true);
+	//	//	//hotspot.OfficeObject_MouseEnter();
+	//	//}
+	//}
 
-    void OnMouseExit()
-    {
-        if (hotspot)
-        {
-            //Manager.Manager_MouseOver(false);
-            //hotspot.OfficeObject_MouseExit();
-        }
+	//void OnMouseExit()
+	//{
+	//	if (hotspot)
+	//	{
+	//		//Manager.Manager_MouseOver(false);
+	//		//hotspot.OfficeObject_MouseExit();
+	//	}
         
         
-    }
+	//}
 
     void OnMouseOver()
     {
-        if (hotspot && !Manager.MyNurse.IsBusy())
-        {
-            if (hotspot.OfficeObject_Ready()/* && hotspot.OfficeObject_MousedOver()*/ && hotspot.tag != "Triage" && !Moving())
-            {
-                if (Input.GetMouseButtonUp(0))
-                {
-					//bool nextStep = false;
-					if (status == "ExamRoom" || status == "Vitals")
+		if (MyManager)
+		{
+			if (hotspot && !MyManager.MyNurse.IsBusy())
+			{
+				if (hotspot.OfficeObject_Ready()/* && hotspot.OfficeObject_MousedOver()*/ && hotspot.tag != "Triage" && !Moving())
+				{
+					if (Input.GetMouseButtonUp(0))
 					{
-						//tell the nurse to move to the proper location
-						//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
-						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
-						Patient_ToggleCountdown(true);
-						//nextStep = true;
-					}
-					else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete" || status == "Assessment")
-					{
-						//tell the nurse to move to the exam room computer
-						Manager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
-						Patient_ToggleCountdown(true);
-						//nextStep = true;
-					}
-					else if(status == "WaitingChair")
-					{
-						Manager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), hotspot.tag, true, hotspot);
-						Patient_ToggleCountdown(true);
-						//nextStep = true;
-					}
-					//if (nextStep && !timer_Halted)
-					//{
-					//	if (timer_Current / timer_CurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
-					//	else if (timer_Current / timer_CurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
-					//}
-                }
+						//bool nextStep = false;
+						if (status == "ExamRoom" || status == "Vitals")
+						{
+							//tell the nurse to move to the proper location
+							//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
 
-            }
-        }
+							MyManager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), "ExamRoom", true, hotspot);
+							Patient_ToggleCountdown(true);
+							//nextStep = true;
+						}
+						else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete" || status == "Assessment")
+						{
+							//tell the nurse to move to the exam room computer
+							MyManager.MyNurse.Person_Move((hotspot as ExamRoom).Computer().OfficeObject_LocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
+							Patient_ToggleCountdown(true);
+							//nextStep = true;
+						}
+						else if (status == "WaitingChair")
+						{
+							MyManager.MyNurse.Person_Move(hotspot.OfficeObject_LocationNurse(), hotspot.tag, true, hotspot);
+							Patient_ToggleCountdown(true);
+							//nextStep = true;
+						}
+						//if (nextStep && !timer_Halted)
+						//{
+						//	if (timer_Current / timer_CurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
+						//	else if (timer_Current / timer_CurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
+						//}
+					}
+
+				}
+			}
+		}
+        
         
     }
 
@@ -273,8 +285,18 @@ public class Patient : Person {
 	{
 		if (status != "ExamRoom" && status != "Triage")
 		{
-			if (timer_Current / timer_CurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
-			else if (timer_Current / timer_CurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
+			if (MyManager)
+			{
+				if (timer_Current / timer_CurrentSet > .6)
+				{ 
+					MyManager.UpdateSatisfactionScore(2);
+				}
+				else if (timer_Current / timer_CurrentSet < .3)
+				{
+					MyManager.UpdateSatisfactionScore(-1);
+				}
+			}
+			
 		}
 	}
 

@@ -45,24 +45,14 @@ public class UI_WaitingChair : UI_Patient
             //text_Story.text = MyPatient.
         }
         if (MyPatient != null) {
+			//tell the patient to stop counting down.
 			MyPatient.Patient_ToggleCountdown(true);
-			text_name.text = MyPatient.name;
-			//RON come back and change this to say some mixed information from Signs and Symptoms as well as History.
-			string s = "";
-			foreach (string h in MyPatient.MyDiagnosis().History())
-			{
-				if (s == "")
-				{
-					s += "- " + h;
-				}
-				else
-				{
-					s += "\n- " + h;
-				}
 
-			}
+			//display the patients name
+			text_name.text = MyPatient.name;
+			
 			//display portions of the history from the patient.
-			text_Story.text = s;
+			text_Story.text = MyPatient.MyDiagnosis().Greeting(); ;
 		}
         
     }

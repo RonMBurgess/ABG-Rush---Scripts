@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-//using System.Xml.XPath;
+using System.Xml.XPath;
 using System.Text;
 
 public class ABG{
@@ -17,7 +17,7 @@ public class ABG{
 
 	//variables for xml
 	private string fileLocation;//, fileName;
-
+	private XmlReaderSettings xmlreaderSettings;
 
     private List<string> test_Stories_L, test_Stories_S, test_Medications_1, test_Medications_2, test_Medications_3, test_Medications_4, test_Symptoms_1, test_Symptoms_2, test_Symptoms_3, test_Symptoms_4, test_Conditions_1, test_Conditions_2, test_Conditions_3, test_Conditions_4;
 
@@ -33,6 +33,8 @@ public class ABG{
 	/// <param name="nameOfFile">Name of the xml file to be read from.</param>
     public ABG(string locationOfFile = "", string nameOfFile = "")
     {
+		
+
         diagnoses = new List<Diagnosis>();
 		diagnosesInUse = new List<Diagnosis>();
 
@@ -40,7 +42,14 @@ public class ABG{
 		{
 			fileLocation = locationOfFile;
 			//fileName = nameOfFile;
+			
+
+			//prepare the settings for the xmlreader.
+			xmlreaderSettings = new XmlReaderSettings();
+			xmlreaderSettings.IgnoreComments = true;
+
 			LoadDiagnosesFromXML();
+			Debug.Log("The total amount of interventions is: " + diagnoses.Count);
 		}
 		else
 		{
@@ -61,80 +70,117 @@ public class ABG{
     /// <returns>The same Diagnosis with answers and values</returns>
     public Diagnosis DiagnosisAnswerValues(Diagnosis d)
     {
-        string rm = d.Answer_Respiratory_Metabolic, aa = d.Answer_Acidosis_Alkalosis, comp = d.Answer_Compensation;
+        
         
         
         //if the diagnosis does not have set answers, give it some.
-        if (aa == " ")
+        if (d.Answer_Respiratory_Metabolic == "")
         {
             int r = Random.Range(0, 12);
+			//create strings to hold the answer values.
+			string rm = "", aa = "", c = "";
 
             switch (r)
             {
-                case (0): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Uncompensated"; break;
-                case (1): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Partial Compensation"; break;
-                case (2): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Compensated"; break;
-                case (3): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Uncompensated"; break;
-                case (4): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Partial Compensation"; break;
-                case (5): d.Answer_Respiratory_Metabolic = "Respiratory"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Compensated"; break;
-                case (6): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Uncompensated"; break;
-                case (7): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Partial Compensation"; break;
-                case (8): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Acidosis"; d.Answer_Compensation = "Compensated"; break;
-                case (9): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Uncompensated"; break;
-                case (10): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Partial Compensation"; break;
-                case (11): d.Answer_Respiratory_Metabolic = "Metabolic"; d.Answer_Acidosis_Alkalosis = "Alkalosis"; d.Answer_Compensation = "Compensated"; break;
+                case (0): rm = "Respiratory"; aa = "Acidosis"; c = "Uncompensated"; break;
+                case (1): rm = "Respiratory"; aa = "Acidosis"; c = "Partial Compensation"; break;
+                case (2): rm = "Respiratory"; aa = "Acidosis"; c = "Compensated"; break;
+                case (3): rm = "Respiratory"; aa = "Alkalosis"; c = "Uncompensated"; break;
+                case (4): rm = "Respiratory"; aa = "Alkalosis"; c = "Partial Compensation"; break;
+                case (5): rm = "Respiratory"; aa = "Alkalosis"; c = "Compensated"; break;
+                case (6): rm = "Metabolic"; aa = "Acidosis"; c = "Uncompensated"; break;
+                case (7): rm = "Metabolic"; aa = "Acidosis"; c = "Partial Compensation"; break;
+                case (8): rm = "Metabolic"; aa = "Acidosis"; c = "Compensated"; break;
+                case (9): rm = "Metabolic"; aa = "Alkalosis"; c = "Uncompensated"; break;
+                case (10): rm = "Metabolic"; aa = "Alkalosis"; c = "Partial Compensation"; break;
+                case (11): rm = "Metabolic"; aa = "Alkalosis"; c = "Compensated"; break;
             }
+
+			// Don't need to translate here, or ever because the answer is returned in it's translated form.
+
+			////if language manager is available
+			//if (LanguageManager._LanguageManager)
+			//{
+			//	LanguageManager lm = LanguageManager._LanguageManager;
+			//	//translate to current language
+			//	rm = lm.DirectTranslation("ABG", rm);
+			//	aa = lm.DirectTranslation("ABG", aa);
+			//	c = lm.DirectTranslation("ABG", c);
+			//}
+
+			d.Answer_Respiratory_Metabolic = rm;
+			d.Answer_Acidosis_Alkalosis = aa;
+			d.Answer_Compensation = c;
+			
+
             //go through the gauntlet again but this time, pick up the number values.
             return DiagnosisAnswerValues(d);
         }
         else
         {
+			string rm = d.Answer_Respiratory_Metabolic, aa = d.Answer_Acidosis_Alkalosis, comp = d.Answer_Compensation;
+			//prepare our comparison values.
+			string r = "Respiratory", m = "Metabolic", alk = "Alkalosis", aci = "Acidosis", uc = "Uncompensated", pc = "Partial Compensation", c = "Compensated";
+
+			//translate the answers if possible
+			if (LanguageManager._LanguageManager)
+			{
+				LanguageManager lm = LanguageManager._LanguageManager;
+				r = lm.DirectTranslation("ABG", r);
+				m = lm.DirectTranslation("ABG", m);
+				alk = lm.DirectTranslation("ABG", alk);
+				aci = lm.DirectTranslation("ABG", aci);
+				uc = lm.DirectTranslation("ABG", uc);
+				pc = lm.DirectTranslation("ABG", pc.Replace(" ",""));//due to xml syntax, this is not spelled the same and the whitespace needs to be removed.
+				c = lm.DirectTranslation("ABG", c);
+			}
+
             //since we have set answers, set the number values
-            if (rm == "Respiratory" && aa == "Acidosis" && comp == "Uncompensated")
+            if (rm == r && aa == aci && comp == uc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
             }
-            else if (rm == "Respiratory" && aa == "Acidosis" && comp == "Partial Compensation")
+            else if (rm == r && aa == aci && comp == pc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
-            else if (rm == "Respiratory" && aa == "Acidosis" && comp == "Compensated")
+            else if (rm == r && aa == aci && comp == c)
             {
                 d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
-            else if (rm == "Respiratory" && aa == "Alkalosis" && comp == "Uncompensated")
+            else if (rm == r && aa == alk && comp == uc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
             }
-            else if (rm == "Respiratory" && aa == "Alkalosis" && comp == "Partial Compensation")
+            else if (rm == r && aa == alk && comp == pc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
-            else if (rm == "Respiratory" && aa == "Alkalosis" && comp == "Compensated")
+            else if (rm == r && aa == alk && comp == c)
             {
                 d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
-            else if (rm == "Metabolic" && aa == "Acidosis" && comp == "Uncompensated")
+            else if (rm == m && aa == aci && comp == uc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
-            else if (rm == "Metabolic" && aa == "Acidosis" && comp == "Partial Compensation")
+            else if (rm == m && aa == aci && comp == pc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
-            else if (rm == "Metabolic" && aa == "Acidosis" && comp == "Compensated")
+            else if (rm == m && aa == aci && comp == c)
             {
                 d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
-            else if (rm == "Metabolic" && aa == "Alkalosis" && comp == "Uncompensated")
+            else if (rm == m && aa == alk && comp == uc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
-            else if (rm == "Metabolic" && aa == "Alkalosis" && comp == "Partial Compensation")
+            else if (rm == m && aa == alk && comp == pc)
             {
                 d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
-            else if (rm == "Metabolic" && aa == "Alkalosis" && comp == "Compensated")
+            else if (rm == m && aa == alk && comp == c)
             {
                 d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
@@ -258,82 +304,113 @@ public class ABG{
 		Debug.Log("LoadDiagnosesFromXML");
 		if (fileLocation != "")
 		{
+			//create a reader that uses our settings defined earlier.
+			TextAsset xml = Resources.Load(fileLocation) as TextAsset;
+			//XmlReader xmlreader = XmlReader.Create(fileLocation, xmlreaderSettings);
+			//create a new instance of an xml document
 			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.Load(fileLocation);
+			//xmlDoc.Load(xmlreader);
+			xmlDoc.LoadXml(xml.text);
+
+			//Debug.Log(xmlDoc.ChildNodes[1].InnerText);
 
 			//parse through all the different interventions.
 			XmlNodeList interventions = xmlDoc.GetElementsByTagName("Intervention");
 
+			//determine how many languages there are.
+			//int totalLanguages = interventions[0].ChildNodes.Count;
+
+			#region Nursing Intervention
 			foreach (XmlNode intervention in interventions)
 			{
 				
-				
-				//diagnosis RM, AA, C
+				//create the variables
+				//RespiratoryMetabolic, AcidosisAlkalosis, Compensation, Greeting
 				string rm = "" , aa = "", c = "";
+				string greetingEnglish = "", greetingSpanish = "";
+				
+				//History, and Signs & Symptoms
 				List<string> historyEnglish = new List<string>();
 				List<string> historySpanish = new List<string>();
 				List<string> signsSymptomsEnglish = new List<string>();
 				List<string> signsSymptomsSpanish = new List<string>();
 
-				foreach (XmlNode child in intervention)
+				//Get the Diagnosis /Intervention/English/Diagnosis
+				XmlNode xn = intervention.FirstChild.FirstChild;
+				
+				//Respiratory Or Metabolic, Acidosis or Alkalosis, Compensation
+				rm = xn.FirstChild.InnerText;
+				aa = xn.ChildNodes[1].InnerText;
+				c = xn.LastChild.InnerText;
+
+				//get the greeting, signs and symptoms, and history for each language.
+				#region Language
+				foreach (XmlNode langauge in intervention)
 				{
-					string n = child.Name;
-					//diagnosis
-					if (n == "Diagnosis")
+					//Keep track of what language we are currently in.
+					string lang = langauge.Name;
+					//Debug.Log(lang);
+					//the greeting for this language
+					string greeting = "";
+					//The history and signs and symptoms for this language
+					List<string> hist = new List<string>();
+					List<string> ss = new List<string>();
+
+					#region Sections
+					//now find the information for each section in this language.
+					foreach (XmlNode section in langauge)
 					{
-						rm = child.FirstChild.InnerText;
-						aa = child.ChildNodes[1].InnerText;
-						c = child.LastChild.InnerText;
-					}
-
-					//English
-					else if (n == "English" || n == "Spanish")
-					{
-						//each language only has 2 sections of information
-						XmlNode signsSymptoms = child.FirstChild;
-						XmlNode history = child.LastChild;
-
-						//create a list for each history
-						List<string> allHistory = new List<string>();
-						//create a list for all signs and symptoms
-						List<string> allSignsSymptoms = new List<string>();
-
-						//Read in all of the history information.
-						foreach (XmlNode hist in history)
+						//Greeting
+						if (section.Name == "Greeting")
 						{
-							if (hist.InnerText != null && hist.InnerText != " " && hist.NodeType != XmlNodeType.Comment)
-							{
-								allHistory.Add(hist.InnerText);
-							}
-							
-						}
-						//Read in all of the signs and symptoms information.
-						foreach (XmlNode ss in signsSymptoms)
-						{
-							if (ss.InnerText != null && ss.InnerText != " " && ss.NodeType != XmlNodeType.Comment)
-							{
-								allSignsSymptoms.Add(ss.InnerText);
-							}
-							
+							greeting = section.InnerText;
 						}
 
-						//Determine which language we are looking at, and set the list accordingly.
-						if (n == "English") { historyEnglish = allHistory; signsSymptomsEnglish = allSignsSymptoms; }
-						else if (n == "Spanish") { historySpanish = allHistory; signsSymptomsSpanish = allSignsSymptoms; }
-					}
+						//Signs and Symptoms
+						else if (section.Name == "SignsAndSymptoms")
+						{
+							//comb through the list of elements and add each value
+							foreach (XmlNode element in section)
+							{
+								ss.Add(element.InnerText);
+							}
+						}
 
-					
+						else if (section.Name == "History")
+						{
+							foreach (XmlNode element in section)
+							{
+								hist.Add(element.InnerText);
+							}
+						}
+					}
+					//now save the retrieved values to their proper variables.
+					if (lang == "English")
+					{
+						greetingEnglish = greeting;
+						historyEnglish = hist;
+						signsSymptomsEnglish = ss;
+					}
+					else if (lang == "Spanish")
+					{
+						greetingSpanish = greeting;
+						historySpanish = hist;
+						signsSymptomsSpanish = ss;
+					}
+					#endregion
 				}
+				#endregion
 
-				//create the diagnosis
-				Diagnosis d = new Diagnosis(rm, aa, c, " ", " ", historyEnglish, historySpanish, signsSymptomsEnglish, signsSymptomsSpanish);
-
-				//add this diagnosis to the list
+				#region Create the Nursing Intervention And add to list
+				Diagnosis d = new Diagnosis(rm, aa, c, greetingEnglish, greetingSpanish, historyEnglish, historySpanish, signsSymptomsEnglish, signsSymptomsSpanish);
 				diagnoses.Add(d);
+				#endregion
+
 			}
-		
+			#endregion
+
 		}
-		//XmlNodeList interventions
+		
 	}
 
 
@@ -363,8 +440,8 @@ public class ABG{
 		if (diagnoses.Count > 0)
 		{
 			Diagnosis d = diagnoses[Random.Range(0, diagnoses.Count)];
-			diagnoses.Remove(d);
-			diagnosesInUse.Add(d);
+			//diagnoses.Remove(d);
+			//diagnosesInUse.Add(d);
 			//randomize the values
 			return DiagnosisAnswerValues(d);
 		}
@@ -381,9 +458,9 @@ public class ABG{
 	public void PatientDiagnosisComplete(Diagnosis d)
 	{
 		//remove the diagnosis because it's no longer in use by a patient.
-		diagnosesInUse.Remove(d);
+		//diagnosesInUse.Remove(d);
 		//add the diagnosis back to the available diagnosis list.
-		diagnoses.Add(d);
+		//diagnoses.Add(d);
 	}
 
 }

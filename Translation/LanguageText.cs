@@ -11,6 +11,9 @@ public class LanguageText : MonoBehaviour {
 	public int xmlTextID = -9;//the specific id we can find this text at.
 	public int xmlTextID2 = -9;//The specific id we can find the second text at. Request Bloodwork button text and Feedback Text will utilize this.
 
+	public bool directTranslation;
+	public string translateText;
+
 	private Text textField;
 	private int curXmlTextID = -9;
 
@@ -58,14 +61,23 @@ public class LanguageText : MonoBehaviour {
 			//verify we have access to the text field.
 			if (textField)
 			{
-				//make sure we have a current id to use.
-				if (curXmlTextID < 0)
+				//see if we need to do a direct translation
+				if (directTranslation)
 				{
-					curXmlTextID = xmlTextID;
+					textField.text = LanguageManager._LanguageManager.DirectTranslation(xmlTextSection, translateText);
 				}
+				else
+				{
+					//make sure we have a current id to use.
+					if (curXmlTextID < 0)
+					{
+						curXmlTextID = xmlTextID;
+					}
 
-				//set our text.
-				textField.text = LanguageManager._LanguageManager.TextTranslation(xmlTextSection, curXmlTextID);
+					//set our text.
+					textField.text = LanguageManager._LanguageManager.TextTranslation(xmlTextSection, curXmlTextID);
+				}
+				
 			}
 		
 		}

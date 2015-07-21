@@ -47,9 +47,13 @@ public class ABGWW_Help_Script : MonoBehaviour {
         }
         else if (!on)
         {
-			if (Time.timeScale == 0)
+			if (Time.timeScale == 0)//we must be in play mode.
 			{
 				Time.timeScale = 1;
+			}
+			if(Application.loadedLevelName == "Scn_Practice")
+			{
+				Application.LoadLevel(1);
 			}
             gameObject.SetActive(false);
         }
@@ -164,4 +168,11 @@ public class ABGWW_Help_Script : MonoBehaviour {
             b.interactable = on;
         }
     }
+
+	public void GoBack()
+	{
+		//return to main menu
+
+		//return to gameplay
+	}
 }

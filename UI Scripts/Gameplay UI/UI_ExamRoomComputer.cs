@@ -434,15 +434,36 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 		//make sure we have access to both of these text fields.
 		if (textfield_InitialAA && textfield_InitialRM)
 		{
-			//swap the text inside of the text field
-			if (s == "Respiratory" || s == "Metabolic")
+			//check for language
+			if (LanguageManager._LanguageManager)
 			{
-				textfield_InitialRM.text = s;
+				LanguageManager lm = LanguageManager._LanguageManager;
+
+				//swap the text inside of the text field
+				if (s == lm.DirectTranslation("ABG", "Respiratory") || s == lm.DirectTranslation("ABG", "Metabolic"))
+				{
+					textfield_InitialRM.text = s;
+				}
+				else if (s == lm.DirectTranslation("ABG", "Acidosis") || s == lm.DirectTranslation("ABG", "Alkalosis"))
+				{
+					textfield_InitialAA.text = s;
+				}
 			}
-			else if (s == "Acidosis" || s == "Alkalosis")
+			else
 			{
-				textfield_InitialAA.text = s;
+				//default to english since we are probably testing.
+
+				//swap the text inside of the text field
+				if (s == "Respiratory" || s == "Metabolic")
+				{
+					textfield_InitialRM.text = s;
+				}
+				else if (s == "Acidosis" || s == "Alkalosis")
+				{
+					textfield_InitialAA.text = s;
+				}
 			}
+			
 		}
 		else
 		{
@@ -455,8 +476,20 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 		//take in the values submitted.
 		string aa = textfield_InitialAA.text, rm = textfield_InitialRM.text;
 
+		//create comparison values.
+		string r = "Respiratory", m = "Metabolic", aci = "Acidosis", alk = "Alkalosis";
+		//translate comparison values if possible.
+		if (LanguageManager._LanguageManager)
+		{
+			LanguageManager lm = LanguageManager._LanguageManager;
+			r = lm.DirectTranslation("ABG", r);
+			m = lm.DirectTranslation("ABG", m);
+			aci = lm.DirectTranslation("ABG", aci);
+			alk = lm.DirectTranslation("ABG", alk);
+		}
+
 		//make sure that the submitted values are indeed proper values.
-		if ((aa == "Acidosis" || aa == "Alkalosis") && (rm == "Respiratory" || rm == "Metabolic"))
+		if ((aa == alk || aa == aci) && (rm == r || rm == m))
 		{
 			//turn off the panel for the first part.
 			panel_assessment1.SetActive(false);
@@ -516,12 +549,13 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	public void FinishDiagnosis()
 	{
 		Debug.Log("FinishDiagnosis");
+		gameObject.SetActive(false);
 		patient.Patient_StatusUpdate("DiagnosisComplete");
 		//patient.Patient_Leave(); // this is now handled inside the patient.
 
 		//close since the diagnosis is complete
 		//StartCoroutine("Deactivate", 1f);
-		gameObject.SetActive(false);
+		//gameObject.SetActive(false);
 	}
 
 	private IEnumerator Deactivate(float delay)

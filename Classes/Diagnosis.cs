@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class Diagnosis {
 
-    private string story_Long, story_Short, diag_RespMet, diag_AcidAlk, diag_Comp; //, assesmentRM, assesmentAA;
+	private string greetingEnglish, greetingSpanish, diagnosisRM, diagnosisAA, diagnosisC; //, assesmentRM, assesmentAA;
     //private List<string> medications, symptoms, conditions;
 	private List<string> historyEnglish, historySpanish, signsandsymptomsEnglish, signsandsymptomsSpanish;
 	private float val_PH, val_CO2, val_HCO3;
 
-    public Diagnosis(string diag_RM = " ", string diag_AA = " ", string diag_C = " ", string story_L = null, string story_S = null, List<string> histEnglish = null, List<string> histSpanish = null, List<string> signssymptsEnglish = null, List<string> signssymptsSpanish = null, List<string> conds = null)
+    public Diagnosis(string diag_RM = "", string diag_AA = "", string diag_C = "", string greetE = "", string greetS = "", List<string> histEnglish = null, List<string> histSpanish = null, List<string>signssymptsEnglish = null, List<string>signssymptsSpanish = null)
     {
         //initialize the lists
         //medications = new List<string>();
@@ -17,8 +17,12 @@ public class Diagnosis {
         //conditions = new List<string>();
 
         //set the diagnosis answers
-        diag_RespMet = diag_RM; diag_AcidAlk = diag_AA; diag_Comp = diag_C;
+        diagnosisRM = diag_RM; diagnosisAA = diag_AA; diagnosisC = diag_C;
         
+		//set the greeting
+		greetingEnglish = greetE;
+		greetingSpanish = greetS;
+
 		//set the history
 		historyEnglish = histEnglish;
 		historySpanish = histSpanish;
@@ -30,7 +34,7 @@ public class Diagnosis {
 		//set the story
 		//Debug.Log(story_L);
 		//Debug.Log(story_S);
-        story_Long = story_L; story_Short = story_S;
+        //story_Long = story_L; story_Short = story_S;
         //set the extra information
         //medications = meds; symptoms = sympts; conditions = conds;
     }
@@ -56,24 +60,80 @@ public class Diagnosis {
         set { val_PH = value; }
     }
 
+	
     public string Answer_Respiratory_Metabolic
     {
-        get { return diag_RespMet; }
-        set { diag_RespMet = value; }
+		get
+		{
+			if (diagnosisRM != "")
+			{
+				if (LanguageManager._LanguageManager)
+				{
+					return LanguageManager._LanguageManager.DirectTranslation("ABG", diagnosisRM);
+				}
+				else
+				{
+					return diagnosisRM;
+				}
+			}
+			else
+			{
+				return diagnosisRM;
+			}
+			
+		}
+        set { diagnosisRM = value; }
     }
 
     public string Answer_Acidosis_Alkalosis
     {
-        get { return diag_AcidAlk; }
-        set { diag_AcidAlk = value; }
+		get
+		{
+			if (diagnosisAA != "")
+			{
+				if (LanguageManager._LanguageManager)
+				{
+					return LanguageManager._LanguageManager.DirectTranslation("ABG", diagnosisAA);
+				}
+				else
+				{
+					return diagnosisAA;
+				}
+			}
+			else
+			{
+				return diagnosisAA;
+			}
+			
+		}
+        set { diagnosisAA = value; }
     }
 
     public string Answer_Compensation
     {
-        get { return diag_Comp; }
-        set { diag_Comp = value; }
+		get
+		{
+			if (diagnosisC != "")
+			{
+				if (LanguageManager._LanguageManager)
+				{
+					//use the replace method for strings because white space will need to be removed in order for partial compensation to work.
+					return LanguageManager._LanguageManager.DirectTranslation("ABG", diagnosisC.Replace(" ", ""));
+				}
+				else
+				{
+					return diagnosisC;
+				}
+			}
+			else
+			{
+				return diagnosisC;
+			}
+			
+		}
+        set { diagnosisC = value; }
     }
-
+	
     #endregion
 
 	/*
@@ -262,5 +322,19 @@ public class Diagnosis {
 
 		//since there is no language manager, we are most likely testing, so return english.
 		return signsandsymptomsEnglish;
+	}
+
+	public string Greeting()
+	{
+		if (LanguageManager._LanguageManager)
+		{
+			switch (LanguageManager._LanguageManager.Language())
+			{
+				case "English": return greetingEnglish;
+				case "Spanish": return greetingSpanish;
+			}
+		}
+		//since there is no language manager, we are most likely testing, so return english.
+		return greetingEnglish;
 	}
 }
