@@ -17,11 +17,12 @@ public class Manager : MonoBehaviour {
 
 	public List<string> namesFirst, namesLast;
     private Triage triage;
-    private List<Patient> list_Patients;
+    //private List<Patient> list_Patients;
     private List<WaitingChair> list_WaitingChairs;
     private List<ExamRoom> list_ExamRooms;
     private int score_Patients_Total;
 	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients;
+	private int currentPatients;
     private float score_Satisfaction;
 	private float timerSpawnUsed;
     private Nurse nurse;
@@ -52,11 +53,7 @@ public class Manager : MonoBehaviour {
 			if (timerSpawnUsed <= 0)
 			{
 				Manager_PatientSpawn();
-				timerSpawn -= timerSpawnRate;
-				timerSpawn = Mathf.Clamp(timerSpawn, timerSpawnDelayMin, 120f);
-				//allow patient to spawn either 10 seconds sooner or 10 seconds after base time
-				timerSpawnUsed = Random.Range(-10, 11);
-				timerSpawnUsed += timerSpawn;
+				
 			}
 		}
 
@@ -82,7 +79,15 @@ public class Manager : MonoBehaviour {
     /// <param name="p">The Patient leaving</param>
     public void Manager_Patient_StormOut(Patient p)
     {
-        list_Patients.Remove(p);
+		//update the amount of patients.
+		currentPatients--;
+		//spawn another patient if we are down to 0.
+		if (currentPatients <= 0)
+		{
+			Manager_PatientSpawn();
+		}
+
+        //list_Patients.Remove(p);
 
         //Perform some kind of animation
 
@@ -105,7 +110,15 @@ public class Manager : MonoBehaviour {
     /// <param name="p"></param>
     public void Manager_Patient_Leave(Patient p)
     {
-        list_Patients.Remove(p);
+		//update the amount of patients.
+		currentPatients--;
+		//spawn another patient if we are down to 0.
+		if (currentPatients <= 0)
+		{
+			Manager_PatientSpawn();
+		}
+
+        //list_Patients.Remove(p);
         //perform some kind of animation
 
 		//Determine if the initial assessment of the patient was correct.
@@ -179,7 +192,7 @@ public class Manager : MonoBehaviour {
 		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
         list_WaitingChairs = new List<WaitingChair>();
         list_ExamRooms = new List<ExamRoom>();
-        list_Patients = new List<Patient>();
+        //list_Patients = new List<Patient>();
 
 		//Populate the list of waiting chairs.
         GameObject[] wc = GameObject.FindGameObjectsWithTag("WaitingChair");
@@ -211,7 +224,7 @@ public class Manager : MonoBehaviour {
 		scoreCorrectInitialAssessment = 0;
 		score_Satisfaction = 100f;
 		gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
-
+		currentPatients = 0;
 		//reset the spawn timer
 		timerSpawnUsed = 0.1f;
 
@@ -225,6 +238,7 @@ public class Manager : MonoBehaviour {
 		string dob = Random.Range(1, 13).ToString() + "/" + Random.Range(1, 29).ToString() + "/" + Random.Range(1940, 2000).ToString();
 
         Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
+
 		p.Patient_Setup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], dob, abg.PatientDiagnosis());
         //Debug.Log(p);
         //Debug.Log(triage.location_Patient);
@@ -232,6 +246,13 @@ public class Manager : MonoBehaviour {
         //Debug.Log("Adding Patient to the triage");
         //triage.PatientObject_Patient_Add(p);
         triage.Triage_Patient_Add(p);
+		currentPatients++;
+
+		timerSpawn -= timerSpawnRate;
+		timerSpawn = Mathf.Clamp(timerSpawn, timerSpawnDelayMin, 120f);
+		//allow patient to spawn either 10 seconds sooner or 10 seconds after base time
+		timerSpawnUsed = Random.Range(-10, 11);
+		timerSpawnUsed += timerSpawn;
     }
 
     /// <summary>

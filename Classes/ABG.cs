@@ -26,6 +26,9 @@ public class ABG{
     private float val_CO2_Lowest = 20f, val_CO2_Neutral_Low = 35f, val_CO2_Neutral_High = 45f, val_CO2_Highest = 64f;//CO2 Values
     private float val_HCO3_Lowest = 14f, val_HCO3_Neutral_Low = 22f, val_HCO3_Neutral_High = 26f, val_HCO3_Highest = 42f;// HCO3 Values
 
+
+	private int diagnosesUsed;
+
 	/// <summary>
 	/// Create a new ABG Class. 
 	/// </summary>
@@ -50,12 +53,18 @@ public class ABG{
 
 			LoadDiagnosesFromXML();
 			Debug.Log("The total amount of interventions is: " + diagnoses.Count);
+
+			//foreach (Diagnosis d in diagnoses)
+			//{
+			//	Debug.Log()
+			//}
 		}
 		else
 		{
 			CreateDiagnoses();
 		}
-        
+
+		diagnosesUsed = 0;
     }
 	
 	
@@ -206,7 +215,7 @@ public class ABG{
         float lowest = 0f, low = 0f, lowMed = 0f, medHigh = 0f, high = 0f, highest = 0f;
         if (value == "PH")
         {
-			lowest = val_PH_Lowest; low = val_PH_Neutral_Low; high = val_PH_Neutral_High; highest = val_PH_Highest; lowMed = 39.5f; medHigh = 40.5f;
+			lowest = val_PH_Lowest; low = val_PH_Neutral_Low; high = val_PH_Neutral_High; highest = val_PH_Highest; lowMed = 7.395f; medHigh = 7.405f;
         }
         else if (value == "CO2")
         {
@@ -306,7 +315,9 @@ public class ABG{
 		{
 			//create a reader that uses our settings defined earlier.
 			TextAsset xml = Resources.Load(fileLocation) as TextAsset;
+
 			//XmlReader xmlreader = XmlReader.Create(fileLocation, xmlreaderSettings);
+
 			//create a new instance of an xml document
 			XmlDocument xmlDoc = new XmlDocument();
 			//xmlDoc.Load(xmlreader);
@@ -372,7 +383,11 @@ public class ABG{
 							//comb through the list of elements and add each value
 							foreach (XmlNode element in section)
 							{
-								ss.Add(element.InnerText);
+								if (element.NodeType != XmlNodeType.Comment && element.InnerText != "" && element.NodeType != XmlNodeType.Whitespace)
+								{
+									ss.Add(element.InnerText);
+								}
+								
 							}
 						}
 
@@ -380,7 +395,12 @@ public class ABG{
 						{
 							foreach (XmlNode element in section)
 							{
-								hist.Add(element.InnerText);
+
+								if (element.NodeType != XmlNodeType.Comment && element.InnerText != "" && element.NodeType != XmlNodeType.Whitespace)
+								{
+									hist.Add(element.InnerText);
+								}
+								
 							}
 						}
 					}
@@ -439,11 +459,27 @@ public class ABG{
 		//return a random diagnosis for a patient.
 		if (diagnoses.Count > 0)
 		{
-			Diagnosis d = diagnoses[Random.Range(0, diagnoses.Count)];
+			if (diagnosesUsed == diagnoses.Count)
+			{
+				//shuffle the diagnoses
+				for (int i = 0; i < diagnoses.Count; i++)
+				{
+					Diagnosis temp = diagnoses[i];
+					int rand = Random.Range(i, diagnoses.Count);
+					diagnoses[i] = diagnoses[rand];
+					diagnoses[rand] = temp;
+				}
+				//reset the diagnoses Used
+				diagnosesUsed = 0;
+			}
+
+			Diagnosis d = diagnoses[diagnosesUsed];
+			diagnosesUsed++;
 			//diagnoses.Remove(d);
 			//diagnosesInUse.Add(d);
 			//randomize the values
 			return DiagnosisAnswerValues(d);
+
 		}
 		else
 		{

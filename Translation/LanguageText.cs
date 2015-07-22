@@ -16,6 +16,7 @@ public class LanguageText : MonoBehaviour {
 
 	private Text textField;
 	private int curXmlTextID = -9;
+	private bool overridden = false;
 
 	void Awake()
 	{
@@ -24,7 +25,11 @@ public class LanguageText : MonoBehaviour {
 
 	void OnEnable()
 	{
-		UpdateText();
+		if (!overridden)
+		{
+			UpdateText();
+		}
+		
 	}
 
 	/// <summary>
@@ -81,5 +86,15 @@ public class LanguageText : MonoBehaviour {
 			}
 		
 		}
+	}
+
+
+	/// <summary>
+	/// Should this text remain what is is?
+	/// </summary>
+	/// <param name="overrideThisText">True = don't reset, false = allow reset</param>
+	public void Overide(bool overrideThisText)
+	{
+		overridden = overrideThisText;
 	}
 }

@@ -24,6 +24,8 @@ public class Nurse : Person {
 		busy = 0;
         tag = "Nurse";
 		waitingAtExamRoom = false;
+		//make sure that the nurse's hands start off dirty.
+		IsClean(-1);
 	}
 
 	#endregion

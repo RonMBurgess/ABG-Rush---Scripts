@@ -125,6 +125,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 				{
 					//We cannot currently request bloodwork, so this button should also be disabled.
 					button_Bloodwork.interactable = false;
+					button_Bloodwork.gameObject.SetActive(false);
 				}
 			}
 			else if (status == "VitalsComplete" || status == "Bloodwork" || status == "Diagnosis" || status == "Assessment")
@@ -155,7 +156,18 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 					//determine if the player has already made an assessment
 					string aa = patient.InitialAssessmentGetAA(), rm = patient.InitialAssessmentGetRM();
 					
-					if ((aa == "Acidosis" || aa == "Alkalosis") && (rm == "Respiratory" || rm == "Metabolic"))
+					//create comparisons
+					string aci = "Acidosis", alk = "Alkalosis", r = "Respiratory", m = "Metabolic";
+					if (LanguageManager._LanguageManager)
+					{
+						LanguageManager lm = LanguageManager._LanguageManager;
+						aci = lm.DirectTranslation("ABG", aci);
+						alk = lm.DirectTranslation("ABG", alk);
+						r = lm.DirectTranslation("ABG", r);
+						m = lm.DirectTranslation("ABG", m);
+					}
+
+					if ((aa == alk || aa == aci) && (rm == r || rm == m))
 					{
 						//turn the first assessment panel off
 						panel_assessment1.SetActive(false);
@@ -172,7 +184,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 						if (button_Bloodwork)
 						{
 							button_Bloodwork.interactable = true;
-							textfield_Bloodwork.text = "REQUEST BLOOD WORK";
+							textfield_Bloodwork.gameObject.GetComponent<LanguageText>().SwitchCurrentText(1);
 							button_Bloodwork.gameObject.SetActive(true);
 						}
 					}
@@ -185,8 +197,16 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 						textfield_InitialAA.text = defaultAA;
 						textfield_InitialRM.text = defaultRM;
 
+						//make sure that the bloodwork button is not being displayed
+						if (button_Bloodwork)
+						{
+							button_Bloodwork.interactable = false;
+							button_Bloodwork.gameObject.SetActive(false);
+						}
+
 						//turn the initial panel on.
 						panel_assessment1.SetActive(true);
+
 						//make sure the submit button is active and interactable
 						if (button_Submitassessment)
 						{
@@ -413,7 +433,8 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	{
 		//make the button un-interactable
 		button_Bloodwork.interactable = false;
-		textfield_Bloodwork.text = "REQUESTED BLOOD WORK";
+		//textfield_Bloodwork.text = "REQUESTED BLOOD WORK";
+		textfield_Bloodwork.gameObject.GetComponent<LanguageText>().SwitchCurrentText(1);
 		//Change the status of the patient to bloodwork
 
 		//Inform the patient's computer to send the bloodwork and begin counting down.

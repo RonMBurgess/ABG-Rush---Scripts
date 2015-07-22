@@ -99,8 +99,8 @@ public class DiagnosisTool : MonoBehaviour {
 
 		//set the text inside of the drag and drop objects.
 		dragndropPH.text = "pH\n" + diagnosis.PH.ToString("F2");
-		dragndropCO2.text = "CO2\n" + diagnosis.CO2.ToString("F2");
-		dragndropHCO3.text = "HCO3\n" + diagnosis.HCO3.ToString("F2");
+		dragndropCO2.text = "CO2\n" + Mathf.RoundToInt(diagnosis.CO2).ToString();//ToString("F2");
+		dragndropHCO3.text = "HCO3\n" + Mathf.RoundToInt(diagnosis.HCO3).ToString();//("F2")*/;
 
 		//reset the color of each button to it's original color/status
 		imageRM.color = colNormal;
