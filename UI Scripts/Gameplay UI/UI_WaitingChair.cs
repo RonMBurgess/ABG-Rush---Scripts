@@ -7,8 +7,8 @@ public class UI_WaitingChair : UI_Patient
 
     //should be 2 buttons, 3 at the most
     //0 - Send to Exam Room, 1 - Pacifiy, 2 - Exit/Cancel
-    public Button[] button_Choices;
-    public Text text_name, text_Story;
+    public Button[] buttonChoices;
+    public Text textname, textStory;
 
     //Add in Name
     //Add in DOB
@@ -19,8 +19,8 @@ public class UI_WaitingChair : UI_Patient
     {
         if (MyManager != null)
         {
-            button_Choices[0].interactable = (MyManager.Manager_Empty_ExamRoom() != null);
-            button_Choices[1].interactable = (MyPatient.Patient_Pacify_AmountLeft() > 0);
+            buttonChoices[0].interactable = (MyManager.ManagerEmptyExamRoom() != null);
+            buttonChoices[1].interactable = (MyPatient.PatientPacifyAmountLeft() > 0);
         }
     }
 
@@ -32,27 +32,27 @@ public class UI_WaitingChair : UI_Patient
 			MyManager.MyNurse.IsBusy(1);
 		}
 
-        if (button_Choices.Length < 1)
+        if (buttonChoices.Length < 1)
         {
-            Debug.LogWarning(name + " is missing buttons in it's UI_Triage Script");
+            Debug.LogWarning(name + " is missing buttons in it's UITriage Script");
         }
-        if (text_Story == null)
+        if (textStory == null)
         {
             Debug.LogWarning(name + " is missing the textfield to display it's story");
         }
         else
         {
-            //text_Story.text = MyPatient.
+            //textStory.text = MyPatient.
         }
         if (MyPatient != null) {
 			//tell the patient to stop counting down.
-			MyPatient.Patient_ToggleCountdown(true);
+			MyPatient.PatientToggleCountdown(true);
 
 			//display the patients name
-			text_name.text = MyPatient.name;
+			textname.text = MyPatient.name;
 			
 			//display portions of the history from the patient.
-			text_Story.text = MyPatient.MyDiagnosis().Greeting(); ;
+			textStory.text = MyPatient.MyDiagnosis().Greeting(); ;
 		}
         
     }
@@ -66,37 +66,5 @@ public class UI_WaitingChair : UI_Patient
 		}
 	}
 
-    ///// <summary>
-    ///// Send the patient to an open exam room. Only called by a button click
-    ///// </summary>
-    //public void Send_ExamRoom()
-    //{
-    //    //verify that there is an open room
-    //    ExamRoom e = MyManager.Manager_Empty_ExamRoom();
-    //    if (e != null)
-    //    {
-    //        //add the patient to it's new hotspot
-    //        e.PatientObject_Patient_Add(MyPatient);
-
-    //        //make the patient move to the proper location of it's new hotspot
-    //        MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag);
-
-    //        //remove my patient from it's current hotspot
-    //        MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
-    //        Debug.Log("Patient has been given to: " + e.name);
-
-    //        Close();
-    //    }
-    //}
-
-    //public void Pacify()
-    //{
-    //    if (MyPatient.Patient_Pacify_AmountLeft() > 0)
-    //    {
-    //        MyPatient.Patient_Pacify();
-    //        Debug.Log(MyPatient.name + " has been pacified");
-    //        Close();
-    //    }
-        
-    //}
+ 
 }

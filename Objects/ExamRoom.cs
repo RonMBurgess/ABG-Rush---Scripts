@@ -3,15 +3,15 @@ using System.Collections;
 
 public class ExamRoom : PatientObject {
 
-    public UI_ExamRoom ui_ExamRoom;
+    //public UI_ExamRoom uiExamRoom;
 	public ExamRoomComputer computer;
 
 	// Use this for initialization
 	void Start () {
         tag = "ExamRoom";
-        OfficeObject_Initialize();
+        OfficeObjectInitialize();
 		computer.MyExamRoom(this);
-        MyUI = ui_ExamRoom;
+        //MyUI = uiExamRoom;
 	}
 
 	/// <summary>
@@ -23,16 +23,4 @@ public class ExamRoom : PatientObject {
 		return computer;
 	}
 
-    //void OnMouseOver()
-    //{
-    //    if (OfficeObject_Ready() && OfficeObject_MousedOver())
-    //    {
-    //        if (Input.GetMouseButtonDown(0))
-    //        {
-    //            //tell the nurse to move to location
-    //            Manager.MyNurse.Person_Move(location_Nurse, tag, true, this);
-    //        }
-
-    //    }
-    //}
 }

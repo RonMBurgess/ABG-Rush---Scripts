@@ -8,7 +8,7 @@ public class Sink : OfficeObject {
 
 	// Use this for initialization
 	void Start () {
-        OfficeObject_Initialize();
+        OfficeObjectInitialize();
 		Highlight(true);
 	}
 	
@@ -24,10 +24,10 @@ public class Sink : OfficeObject {
 		{
 			//highlight this object.
 			//Highlight(true);
-			//Manager.Manager_MouseOver(true);
+			//Manager.ManagerMouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
-				Manager.MyNurse.Person_Move(location_Nurse, "Sink", false, this);
+				Manager.MyNurse.PersonMove(locationNurse, "Sink", false, this);
 			}
 		}
         
@@ -35,7 +35,7 @@ public class Sink : OfficeObject {
 
     void OnMouseExit()
     {
-        //Manager.Manager_MouseOver(false);
+        //Manager.ManagerMouseOver(false);
 		//stop being highlighted
 		//Highlight(false);
     }

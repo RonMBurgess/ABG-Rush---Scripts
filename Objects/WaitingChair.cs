@@ -3,27 +3,13 @@ using System.Collections;
 
 public class WaitingChair : PatientObject {
 
-    public UI_WaitingChair ui_waitingchair;
+    public UI_WaitingChair uiWaitingchair;
 
 	// Use this for initialization
 	void Start () {
         tag = "WaitingChair";
-        OfficeObject_Initialize();
-        MyUI = ui_waitingchair;
+        OfficeObjectInitialize();
+        MyUI = uiWaitingchair;
 	}
 	
-
-
-    //void OnMouseOver()
-    //{
-    //    if (OfficeObject_Ready() && OfficeObject_MousedOver())
-    //    {
-    //        if (Input.GetMouseButtonDown(0))
-    //        {
-    //            //tell the nurse to move to location
-    //            Manager.MyNurse.Person_Move(location_Nurse, tag, true, this);
-    //        }
-            
-    //    }
-    //}
 }

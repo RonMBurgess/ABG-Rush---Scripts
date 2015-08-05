@@ -13,7 +13,7 @@ public class ExamRoomComputer : OfficeObject {
 	void Start () {
 		
 		
-        OfficeObject_Initialize();
+        OfficeObjectInitialize();
 		InitializeExamRoomComputer();
 	}
 
@@ -36,7 +36,7 @@ public class ExamRoomComputer : OfficeObject {
 
 				//inform the patient of status change/update.
 				
-				MyExamRoom().MyPatient.Patient_StatusUpdate("Diagnosis");
+				MyExamRoom().MyPatient.PatientStatusUpdate("Diagnosis");
 			}
 		}
 	}
@@ -49,11 +49,11 @@ public class ExamRoomComputer : OfficeObject {
 			////Highlight this object.
 			//Highlight(true);
 
-			//Manager.Manager_MouseOver(true);
+			//Manager.ManagerMouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
 				Debug.Log("Telling the Nurse to move to me: " + this);
-				Manager.MyNurse.Person_Move(location_Nurse, tag, false, this);
+				Manager.MyNurse.PersonMove(locationNurse, tag, false, this);
 			}
 		}
         
@@ -61,7 +61,7 @@ public class ExamRoomComputer : OfficeObject {
 
     void OnMouseExit()
     {
-        ////Manager.Manager_MouseOver(false);
+        ////Manager.ManagerMouseOver(false);
 		//Highlight(false);
     }
 
@@ -85,6 +85,6 @@ public class ExamRoomComputer : OfficeObject {
 	{
 		bloodworkTimeUsed = 0;
 		bloodworkSent = true;
-		MyExamRoom().MyPatient.Patient_StatusUpdate("BloodWorkWaiting");
+		MyExamRoom().MyPatient.PatientStatusUpdate("BloodWorkWaiting");
 	}
 }

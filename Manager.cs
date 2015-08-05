@@ -6,8 +6,8 @@ using System.Collections.Generic;
 public class Manager : MonoBehaviour {
 
     //change this later to private and load from resource folder
-    public GameObject prefab_Patient;
-    public Transform location_Entrance, location_Exit;
+    public GameObject prefabPatient;
+    public Transform locationEntrance, locationExit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
 	public GameplayUIScript gameplayUI;
 	public float timerSpawn = 15f;
@@ -17,13 +17,12 @@ public class Manager : MonoBehaviour {
 
 	public List<string> namesFirst, namesLast;
     private Triage triage;
-    //private List<Patient> list_Patients;
-    private List<WaitingChair> list_WaitingChairs;
-    private List<ExamRoom> list_ExamRooms;
-    private int score_Patients_Total;
-	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients;
+    //private List<Patient> listPatients;
+    private List<WaitingChair> listWaitingChairs;
+    private List<ExamRoom> listExamRooms;
+	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients, scorePatientsSeen;
 	private int currentPatients;
-    private float score_Satisfaction;
+    private float scoreSatisfaction;
 	private float timerSpawnUsed;
     private Nurse nurse;
 	private ABG abg;
@@ -37,14 +36,14 @@ public class Manager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Manager_Initialize();
+        ManagerInitialize();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyUp(KeyCode.P))
         {
-            Manager_PatientSpawn();
+            ManagerPatientSpawn();
         }
 
 		if (timerSpawnUsed > 0)
@@ -52,16 +51,16 @@ public class Manager : MonoBehaviour {
 			timerSpawnUsed -= Time.deltaTime;
 			if (timerSpawnUsed <= 0)
 			{
-				Manager_PatientSpawn();
+				ManagerPatientSpawn();
 				
 			}
 		}
 
-		if (score_Satisfaction > 0)
+		if (scoreSatisfaction > 0)
 		{
-			score_Satisfaction -= Time.deltaTime / 6f;
-			gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
-			if (score_Satisfaction <= 0)
+			scoreSatisfaction -= Time.deltaTime / 6f;
+			gameplayUI.satisfaction.SatisfactionUpdate(scoreSatisfaction);
+			if (scoreSatisfaction <= 0)
 			{
 				GameOver();
 			}
@@ -77,17 +76,21 @@ public class Manager : MonoBehaviour {
     /// Leave the practice / emergency facility angrily. 
     /// </summary>
     /// <param name="p">The Patient leaving</param>
-    public void Manager_Patient_StormOut(Patient p)
+    public void ManagerPatientStormOut(Patient p)
     {
 		//update the amount of patients.
 		currentPatients--;
+		//update the amount of patients that have been seen.
+		scorePatientsSeen++;
+		
+
 		//spawn another patient if we are down to 0.
 		if (currentPatients <= 0)
 		{
-			Manager_PatientSpawn();
+			ManagerPatientSpawn();
 		}
 
-        //list_Patients.Remove(p);
+        //listPatients.Remove(p);
 
         //Perform some kind of animation
 
@@ -96,34 +99,38 @@ public class Manager : MonoBehaviour {
 
         //decrease points based on level of satisfaction
 		UpdateSatisfactionScore(-5);
+		UpdatePatientsTreated();
 
 		//inform abg that the diagnosis is no longer being used.
 		//abg.PatientDiagnosisComplete(p.MyDiagnosis());
 
 		//make the patient go to the exit
-        p.Person_Move(location_Exit.position,"Exit");
+        p.PersonMove(locationExit.position,"Exit");
     }
 
     /// <summary>
     /// Leave the facility happily, and award points
     /// </summary>
     /// <param name="p"></param>
-    public void Manager_Patient_Leave(Patient p)
+    public void ManagerPatientLeave(Patient p)
     {
 		//update the amount of patients.
 		currentPatients--;
+		//update the amount of patients that have been seen.
+		scorePatientsSeen++;		
+
 		//spawn another patient if we are down to 0.
 		if (currentPatients <= 0)
 		{
-			Manager_PatientSpawn();
+			ManagerPatientSpawn();
 		}
 
-        //list_Patients.Remove(p);
+        //listPatients.Remove(p);
         //perform some kind of animation
 
 		//Determine if the initial assessment of the patient was correct.
-		bool rm = (p.InitialAssessmentGetRM() == p.MyDiagnosis().Answer_Respiratory_Metabolic);
-		bool aa = (p.InitialAssessmentGetAA() == p.MyDiagnosis().Answer_Acidosis_Alkalosis);
+		bool rm = (p.InitialAssessmentGetRM() == p.MyDiagnosis().AnswerRespiratoryMetabolic);
+		bool aa = (p.InitialAssessmentGetAA() == p.MyDiagnosis().AnswerAcidosisAlkalosis);
 
 		//update score
 		scoreCorrectDiagnoses++;
@@ -137,24 +144,27 @@ public class Manager : MonoBehaviour {
 		Time.timeScale = 0;
         //gain/increase points based on level of satisfaction
 		UpdateSatisfactionScore(6);
+		UpdatePatientsTreated();
 
 		//inform abg that the diagnosis is no longer being used.
 		//abg.PatientDiagnosisComplete(p.MyDiagnosis());
 
-        p.Person_Move(location_Exit.position, "Exit");
+        p.PersonMove(locationExit.position, "Exit");
     }
 
     #endregion
+
+
 	#region Check Hotspots
 	/// <summary>
     /// Determine if there is an empty examination room
     /// </summary>
     /// <returns>Empty room or null</returns>
-    public ExamRoom Manager_Empty_ExamRoom()
+    public ExamRoom ManagerEmptyExamRoom()
     {
-        foreach (ExamRoom e in list_ExamRooms)
+        foreach (ExamRoom e in listExamRooms)
         {
-            if (!e.PatientObject_Occupied())
+            if (!e.PatientObjectOccupied())
             {
                 return e;
             }
@@ -168,11 +178,11 @@ public class Manager : MonoBehaviour {
     /// Determine if there is an empty Waiting Chair
     /// </summary>
     /// <returns>Empty chair or null</returns>
-    public WaitingChair Manager_Empty_WaitingChair()
+    public WaitingChair ManagerEmptyWaitingChair()
     {
-        foreach (WaitingChair w in list_WaitingChairs)
+        foreach (WaitingChair w in listWaitingChairs)
         {
-            if (!w.PatientObject_Occupied())
+            if (!w.PatientObjectOccupied())
             {
                 return w;
             }
@@ -184,28 +194,28 @@ public class Manager : MonoBehaviour {
 	/// <summary>
     /// Set up the manager
     /// </summary>
-    private void Manager_Initialize()
+    private void ManagerInitialize()
     {
 		//Initialize the ABG class and prepare all the diagnoses
 		abg = new ABG("NursingInterventions");
 
 		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
-        list_WaitingChairs = new List<WaitingChair>();
-        list_ExamRooms = new List<ExamRoom>();
-        //list_Patients = new List<Patient>();
+        listWaitingChairs = new List<WaitingChair>();
+        listExamRooms = new List<ExamRoom>();
+        //listPatients = new List<Patient>();
 
 		//Populate the list of waiting chairs.
         GameObject[] wc = GameObject.FindGameObjectsWithTag("WaitingChair");
         foreach (GameObject w in wc)
         {
-            list_WaitingChairs.Add(w.GetComponent<WaitingChair>());
+            listWaitingChairs.Add(w.GetComponent<WaitingChair>());
         }
 
 		//Populate the list of exam rooms.
         GameObject[] er = GameObject.FindGameObjectsWithTag("ExamRoom");
         foreach (GameObject e in er)
         {
-            list_ExamRooms.Add(e.GetComponent<ExamRoom>());
+            listExamRooms.Add(e.GetComponent<ExamRoom>());
         }
 
 		//Find the triage
@@ -218,34 +228,37 @@ public class Manager : MonoBehaviour {
 		sink = GameObject.FindGameObjectWithTag("Sink").GetComponent<Sink>();
 
 		//Reset the score
-        score_Patients_Total = 0;
+        scorePatientsSeen = 0;
 		scoreAngryPatients = 0;
 		scoreCorrectDiagnoses = 0;
 		scoreCorrectInitialAssessment = 0;
-		score_Satisfaction = 100f;
-		gameplayUI.satisfaction.SatisfactionUpdate(score_Satisfaction);
+		scoreSatisfaction = 100f;
+		
 		currentPatients = 0;
 		//reset the spawn timer
 		timerSpawnUsed = 0.1f;
 
 		//set the manager
 		_manager = this;
+
+		gameplayUI.satisfaction.SatisfactionUpdate(scoreSatisfaction);
+		UpdatePatientsTreated();
     }
 
-    private void Manager_PatientSpawn()
+    private void ManagerPatientSpawn()
     {
 		//prepare a dob
 		string dob = Random.Range(1, 13).ToString() + "/" + Random.Range(1, 29).ToString() + "/" + Random.Range(1940, 2000).ToString();
 
-        Patient p = (Instantiate(prefab_Patient,location_Entrance.position, prefab_Patient.transform.rotation) as GameObject).GetComponent<Patient>();
+        Patient p = (Instantiate(prefabPatient,locationEntrance.position, prefabPatient.transform.rotation) as GameObject).GetComponent<Patient>();
 
-		p.Patient_Setup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], dob, abg.PatientDiagnosis());
+		p.PatientSetup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], dob, abg.PatientDiagnosis());
         //Debug.Log(p);
-        //Debug.Log(triage.location_Patient);
-        //p.Person_Move(triage.location_Patient, "Triage");
+        //Debug.Log(triage.locationPatient);
+        //p.PersonMove(triage.locationPatient, "Triage");
         //Debug.Log("Adding Patient to the triage");
-        //triage.PatientObject_Patient_Add(p);
-        triage.Triage_Patient_Add(p);
+        //triage.PatientObjectPatientAdd(p);
+        triage.TriagePatientAdd(p);
 		currentPatients++;
 
 		timerSpawn -= timerSpawnRate;
@@ -259,7 +272,7 @@ public class Manager : MonoBehaviour {
     /// Change the cursor based on what is currently moused over.
     /// </summary>
     /// <param name="enter"></param>
-    public void Manager_MouseOver(bool enter)
+    public void ManagerMouseOver(bool enter)
     {
         //come back and update this later to accept parameters to use multiple cursors. Will most likely accept a string and look through a dictionary.
         if (enter)
@@ -283,16 +296,24 @@ public class Manager : MonoBehaviour {
 	}
 
 	public void UpdateSatisfactionScore(int s){
-		score_Satisfaction += s;
+		scoreSatisfaction += s;
 		//clamp the score so it cannot go above 100
-		score_Satisfaction = Mathf.Clamp(score_Satisfaction, 0f, 100f);
+		scoreSatisfaction = Mathf.Clamp(scoreSatisfaction, 0f, 100f);
 
 		gameplayUI.satisfaction.SatisfactionModify(s);
 
-		if (score_Satisfaction <= 0)
+		if (scoreSatisfaction <= 0)
 		{
 			GameOver();
 		}
+	}
+
+	/// <summary>
+	/// Inform the UI to display the correct amount of patients we have treated vs seen.
+	/// </summary>
+	private void UpdatePatientsTreated()
+	{
+		gameplayUI.satisfaction.UpdateTreatedPatients(scoreCorrectDiagnoses, scorePatientsSeen);
 	}
 
 	public Sink MySink()

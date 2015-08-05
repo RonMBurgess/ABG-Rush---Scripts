@@ -234,7 +234,7 @@ public class DiagnosisTool : MonoBehaviour {
 	public void Submit()
 	{
 		bool a = false, b = false, c = false;
-		if (ansAA.text == diagnosis.Answer_Acidosis_Alkalosis)
+		if (ansAA.text == diagnosis.AnswerAcidosisAlkalosis)
 		{
 			a = true;
 			imageAA.color = colCorrect;
@@ -243,7 +243,7 @@ public class DiagnosisTool : MonoBehaviour {
 		{
 			imageAA.color = colWrong;
 		}
-		if (ansRM.text == diagnosis.Answer_Respiratory_Metabolic)
+		if (ansRM.text == diagnosis.AnswerRespiratoryMetabolic)
 		{
 			b = true;
 			imageRM.color = colCorrect;
@@ -252,7 +252,7 @@ public class DiagnosisTool : MonoBehaviour {
 		{
 			imageRM.color = colWrong;
 		}
-		if (ansC.text == diagnosis.Answer_Compensation)
+		if (ansC.text == diagnosis.AnswerCompensation)
 		{
 			c = true;
 			imageC.color = colCorrect;

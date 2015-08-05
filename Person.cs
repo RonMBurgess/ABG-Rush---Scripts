@@ -32,7 +32,7 @@ public class Person : MonoBehaviour {
     /// <summary>
     /// Prepare all variables and components
     /// </summary>
-    public void Person_Initialize()
+    public void PersonInitialize()
     {
         //Debug.Log("Initializing Person");
         agent = GetComponent<PolyNavAgent>();
@@ -54,7 +54,7 @@ public class Person : MonoBehaviour {
     /// <param name="dName">Tag of destination</param>
     /// <param name="pObject">Is this a Patient Object?</param>
     /// <param name="officeobject">The class</param>
-    public void Person_Move(Vector2 m, string dName, bool pObject = true, OfficeObject officeobject = null)
+    public void PersonMove(Vector2 m, string dName, bool pObject = true, OfficeObject officeobject = null)
     {
 		//if I am a nurse, set myself to busy
 		if (gameObject.CompareTag("Nurse"))
@@ -65,8 +65,8 @@ public class Person : MonoBehaviour {
 		{
 			//Debug.Log("Setting Patient Walking to True");
 
-			(this as Patient).Patient_Animation("Highlight", false, false);
-			(this as Patient).Patient_Animation("Walking", false, true);
+			(this as Patient).PatientAnimation("Highlight", false, false);
+			(this as Patient).PatientAnimation("Walking", false, true);
 		}
 
 		//make sure that I have a reference to my polynav agent.
@@ -85,29 +85,29 @@ public class Person : MonoBehaviour {
 		
         moving = true;
 
-		agent.SetDestination(m, Person_MovementStatus);
+		agent.SetDestination(m, PersonMovementStatus);
     }
 
     /// <summary>
     /// Called after a movement action has been taken
     /// </summary>
     /// <param name="moved">True - Reached Destination | False - Did not reach Destination</param>
-    private void Person_MovementStatus(bool moved)
+    private void PersonMovementStatus(bool moved)
     {
 		Debug.Log(name + " has arrived at destination " + destinationName);
         //inform self that my status has changed, so if I'm a nurse, I should now be either waiting at triage, waiting at waiting room, or waiting in patient room
         if (moved && gameObject.CompareTag("Patient"))
         {
 			Patient p = (this as Patient);
-            p.Patient_StatusUpdate(destinationName);
-            if (p.Patient_Hotspot_Get())
+            p.PatientStatusUpdate(destinationName);
+            if (p.PatientHotspotGet())
             {
-                //p.Patient_Hotspot_Get().OfficeObject_SetReadyState(true);
+                //p.PatientHotspotGet().OfficeObjectSetReadyState(true);
             }
 
 			if (p.Status() == "ExamRoom")
 			{
-				manager.MyNurse.Nurse_ExamRoomArrival(p, officeObject);
+				manager.MyNurse.NurseExamRoomArrival(p, officeObject);
 			
 			}
                         
@@ -124,7 +124,7 @@ public class Person : MonoBehaviour {
 				if (destinationName == "WaitingChair")
 				{
 					//open the UI of the Waiting Chair
-					(officeObject as PatientObject).PatientObject_OpenUI();
+					(officeObject as PatientObject).PatientObjectOpenUI();
 					//Debug.Log("Opened the UI for " + officeObject.name);
 				}
 				else if (destinationName == "ExamRoom")
@@ -134,7 +134,7 @@ public class Person : MonoBehaviour {
 					{
 						//the patient is waiting for their vitals to be checked.
 						//perform vital sign check, another conversation between nurse and patient, and then popup.
-						(this as Nurse).Nurse_PerformAction("Vitals", officeObject, (officeObject as PatientObject).MyPatient);
+						(this as Nurse).NursePerformAction("Vitals", officeObject, (officeObject as PatientObject).MyPatient);
 
 					}
 					//if the patient is currently waiting to get a diagnosis
@@ -164,9 +164,9 @@ public class Person : MonoBehaviour {
 					if (p.Status() == "ExamRoom" || p.Status() == "WaitingChair")
 					{
 						//same /similar process as vitals
-						//(this as Nurse).Nurse_PerformAction("ExamRoomSetup", officeObject, p);
+						//(this as Nurse).NursePerformAction("ExamRoomSetup", officeObject, p);
 						Debug.Log("Nurse setting up arrival");
-						(this as Nurse).Nurse_ExamRoomArrival(this, officeObject);
+						(this as Nurse).NurseExamRoomArrival(this, officeObject);
 						
 					}
 					else
@@ -186,7 +186,7 @@ public class Person : MonoBehaviour {
 				}
 				else if (destinationName == "Sink")
 				{
-					(this as Nurse).Nurse_PerformAction("Wash Hands",officeObject);
+					(this as Nurse).NursePerformAction("Wash Hands",officeObject);
 				}
 				else if (destinationName == "ReferenceDesk")
 				{
@@ -210,7 +210,7 @@ public class Person : MonoBehaviour {
         return moving;
     }
 
-    public void Person_Update(SpriteRenderer r = null)
+    public void PersonUpdate(SpriteRenderer r = null)
     {
         //if (moving)
         //{

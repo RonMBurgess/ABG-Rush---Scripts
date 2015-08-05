@@ -83,9 +83,9 @@ public class UI_PatientFeedback : MonoBehaviour {
 		}
 
 		//display the correct answer for the final diagnosis
-		textfieldDiagnosisRM.text = p.MyDiagnosis().Answer_Respiratory_Metabolic;
-		textfieldDiagnosisAA.text = p.MyDiagnosis().Answer_Acidosis_Alkalosis;
-		textfieldDiagnosisC.text = p.MyDiagnosis().Answer_Compensation;
+		textfieldDiagnosisRM.text = p.MyDiagnosis().AnswerRespiratoryMetabolic;
+		textfieldDiagnosisAA.text = p.MyDiagnosis().AnswerAcidosisAlkalosis;
+		textfieldDiagnosisC.text = p.MyDiagnosis().AnswerCompensation;
 		//make sure that the diagnosis text fields are the correct color
 		textfieldDiagnosisRM.color = colorCorrect;
 		textfieldDiagnosisAA.color = colorCorrect;
