@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class LanguageUIImage : MonoBehaviour {
 
 	public Sprite spriteEnglish = null, spriteSpanish = null;//the sprites that will be used for each language
-
+	public bool referenceTopic;
 	
 	private Image image;// the image component attached to this object
 	void Awake()
@@ -31,7 +31,15 @@ public class LanguageUIImage : MonoBehaviour {
 		{
 			image = GetComponent<Image>();
 		}
+		if (!referenceTopic)
+		{
+			UpdateImage();
+		}
+		
+	}
 
+	private void UpdateImage()
+	{
 		//make sure we have access to language manager
 		if (LanguageManager._LanguageManager)
 		{
@@ -52,8 +60,39 @@ public class LanguageUIImage : MonoBehaviour {
 				}
 			}
 		}
+	}
 
+	/// <summary>
+	/// The Image that will be displayed
+	/// </summary>
+	/// <returns>Image for the current language</returns>
+	public Sprite CurrentImage()
+	{
+		Sprite s = null;
+		//make sure we have access to language manager
+		if (LanguageManager._LanguageManager)
+		{
+			if (spriteEnglish && spriteSpanish)
+			{
+				string lang = LanguageManager._LanguageManager.Language();
+				Debug.Log(lang);
 
+				switch (lang)
+				{
+					case "English": s = spriteEnglish; break;
+					case "Spanish": s = spriteSpanish; break;
+				}
 
+				
+			}
+		}
+		if (s != null)
+		{
+			return s;
+		}
+		else
+		{
+			return spriteEnglish;
+		}
 	}
 }

@@ -52,7 +52,9 @@ public class LanguageManager : MonoBehaviour {
 	/// <returns></returns>
 	public string TextTranslation(string section = "", int id = -5)
 	{
-		Debug.Log("TextTranslation for: " + section + " " + id);
+		Debug.Log("TextTranslation for: " + section + "" + id);
+		string str = "X X";
+		Debug.Log("The Length of X X is: " + str.Length);
 
 		//verfiy that we have an xml doc.
 		if (xmlDoc != null)
@@ -62,16 +64,34 @@ public class LanguageManager : MonoBehaviour {
 			//create the path we will use to find the translation we need.
 			string path = "/Translations/" + language + "/" + section + "/e" + id;
 
-			//create a variable to hold the value we find.
-			string translation ;
+			
 
 			//make sure we can find something.
 			if (xmlDoc.SelectSingleNode(path) != null)
 			{
-				translation = xmlDoc.SelectSingleNode(path).InnerText;
+				//since something was found, lets prepare to return it.
+				//create a variable to hold the value we find.
+				string translation = xmlDoc.SelectSingleNode(path).InnerText;
+				string translationFinal = "";
+
+				char[] delimiterCharacters = { ';' };//this will allow us to format.
+				string[] delimiterStrings = { "[NewLine]" };
+
+				//split up the string to format.
+				string[] substrings = translation.Split(delimiterStrings /*delimiterCharacters*/,System.StringSplitOptions.None);
+				Debug.Log(substrings.Length + " Substrings have been found");
+				foreach(string s in substrings){
+					Debug.Log("Substring: " + s);
+					translationFinal += s;
+					if (substrings.Length > 1)
+					{
+						translationFinal += " \n";
+					}
+				}
 
 				//return what we found
-				return translation;
+				
+				return translationFinal;
 			}
 			
 

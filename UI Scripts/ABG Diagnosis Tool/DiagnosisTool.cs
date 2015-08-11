@@ -37,6 +37,8 @@ public class DiagnosisTool : MonoBehaviour {
 	public void Initialize(bool gamemode, UI_ExamRoomComputer ui = null )
 	{
 		if(gamemode){
+			//make sure the help panel is off.
+			panelHelp.SetActive(false);
 			if (ui) { ercUI = ui; practice = false; }
 		}
 		else

@@ -14,6 +14,12 @@ public class LanguageText : MonoBehaviour {
 	public bool directTranslation;
 	public string translateText;
 
+	public bool referenceTopic = false;//is this a reference topic?
+	public string xmlReferenceTopicSectionTitle;
+	public string xmlReferenceTopicSectionContent;
+	public int xmlReferenceTopicID;//used by the UIReferenceDesk Script.
+
+
 	private Text textField;
 	private int curXmlTextID = -9;
 	private bool overridden = false;
