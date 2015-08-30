@@ -7,9 +7,9 @@ public class Diagnosis {
 	private string greetingEnglish, greetingSpanish, diagnosisRM, diagnosisAA, diagnosisC; //, assesmentRM, assesmentAA;
     //private List<string> medications, symptoms, conditions;
 	private List<string> historyEnglish, historySpanish, signsandsymptomsEnglish, signsandsymptomsSpanish;
-	private float val_PH, val_CO2, val_HCO3;
+	private float valPH, valCO2, valHCO3;
 
-    public Diagnosis(string diag_RM = "", string diag_AA = "", string diag_C = "", string greetE = "", string greetS = "", List<string> histEnglish = null, List<string> histSpanish = null, List<string>signssymptsEnglish = null, List<string>signssymptsSpanish = null)
+    public Diagnosis(string diagRM = "", string diagAA = "", string diagC = "", string greetE = "", string greetS = "", List<string> histEnglish = null, List<string> histSpanish = null, List<string>signssymptsEnglish = null, List<string>signssymptsSpanish = null)
     {
         //initialize the lists
         //medications = new List<string>();
@@ -17,7 +17,7 @@ public class Diagnosis {
         //conditions = new List<string>();
 
         //set the diagnosis answers
-        diagnosisRM = diag_RM; diagnosisAA = diag_AA; diagnosisC = diag_C;
+        diagnosisRM = diagRM; diagnosisAA = diagAA; diagnosisC = diagC;
         
 		//set the greeting
 		greetingEnglish = greetE;
@@ -32,9 +32,9 @@ public class Diagnosis {
 		signsandsymptomsSpanish = signssymptsSpanish;
 
 		//set the story
-		//Debug.Log(story_L);
-		//Debug.Log(story_S);
-        //story_Long = story_L; story_Short = story_S;
+		//Debug.Log(storyL);
+		//Debug.Log(storyS);
+        //storyLong = storyL; storyShort = storyS;
         //set the extra information
         //medications = meds; symptoms = sympts; conditions = conds;
     }
@@ -44,24 +44,24 @@ public class Diagnosis {
 
     public float HCO3
     {
-        get { return val_HCO3;}
-        set { val_HCO3 = value;}
+        get { return valHCO3;}
+        set { valHCO3 = value;}
     }
 
     public float CO2
     {
-        get { return val_CO2; }
-        set { val_CO2 = value; }
+        get { return valCO2; }
+        set { valCO2 = value; }
     }
 
     public float PH
     {
-        get { return val_PH; }
-        set { val_PH = value; }
+        get { return valPH; }
+        set { valPH = value; }
     }
 
 	
-    public string Answer_Respiratory_Metabolic
+    public string AnswerRespiratoryMetabolic
     {
 		get
 		{
@@ -85,7 +85,7 @@ public class Diagnosis {
         set { diagnosisRM = value; }
     }
 
-    public string Answer_Acidosis_Alkalosis
+    public string AnswerAcidosisAlkalosis
     {
 		get
 		{
@@ -109,7 +109,7 @@ public class Diagnosis {
         set { diagnosisAA = value; }
     }
 
-    public string Answer_Compensation
+    public string AnswerCompensation
     {
 		get
 		{
@@ -257,11 +257,11 @@ public class Diagnosis {
 	{
 		if (w == "L")
 		{
-			return story_Long;
+			return storyLong;
 		}
 		else
 		{
-			return story_Short;
+			return storyShort;
 		}
 	}
     #endregion
@@ -281,7 +281,7 @@ public class Diagnosis {
 
 	public bool InitialDiagnosisCorrect(string RM, string AA)
 	{
-		return (RM == Answer_Respiratory_Metabolic && AA == Answer_Acidosis_Alkalosis);
+		return (RM == AnswerRespiratoryMetabolic && AA == AnswerAcidosisAlkalosis);
 	}
 
 	/// <summary>

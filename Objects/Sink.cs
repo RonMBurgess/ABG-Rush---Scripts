@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (LanguageSprite))]
+
 public class Sink : OfficeObject {
 
-	public SpriteRenderer cleanhandsRenderer;
-	public Sprite posterClean, posterDirty;
+	private LanguageSprite langSprite;
+
+	void Awake()
+	{
+		langSprite = GetComponent<LanguageSprite>();
+	}
 
 	// Use this for initialization
 	void Start () {
-        OfficeObject_Initialize();
+        OfficeObjectInitialize();
 		Highlight(true);
 	}
 	
@@ -24,10 +30,16 @@ public class Sink : OfficeObject {
 		{
 			//highlight this object.
 			//Highlight(true);
-			//Manager.Manager_MouseOver(true);
+			//Manager.ManagerMouseOver(true);
 			if (Input.GetMouseButtonUp(0))
 			{
-				Manager.MyNurse.Person_Move(location_Nurse, "Sink", false, this);
+				Manager.MyNurse.PersonMove(locationNurse, "Sink", false, this);
+
+				//Play a sound
+				if (SoundManager._SoundManager)
+				{
+					SoundManager._SoundManager.PlaySound("Click");
+				}
 			}
 		}
         
@@ -35,7 +47,7 @@ public class Sink : OfficeObject {
 
     void OnMouseExit()
     {
-        //Manager.Manager_MouseOver(false);
+        //Manager.ManagerMouseOver(false);
 		//stop being highlighted
 		//Highlight(false);
     }
@@ -47,15 +59,16 @@ public class Sink : OfficeObject {
 	public void CleanHandsPoster(bool clean)
 	{
 		//make sure we have access to renderer
-		if (cleanhandsRenderer)
+		if (langSprite)
 		{
 			if (clean)
 			{
-				cleanhandsRenderer.sprite = posterClean;
+				//the clean sprite should be in slot 0.
+				langSprite.SwapSprite(0);
 			}
 			else
 			{
-				cleanhandsRenderer.sprite = posterDirty;
+				langSprite.SwapSprite(1);
 			}
 		}
 	}

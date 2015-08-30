@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class SatisfactionBarScript : MonoBehaviour {
 
     public Slider satisfactionbar;
-    public Text displayText;
+    public Text displayText, treatedPatientsText;
     public List<SatisfactionBoostTextScript> decrementers, incrementers;
 
 
@@ -33,6 +33,7 @@ public class SatisfactionBarScript : MonoBehaviour {
     public void SatisfactionUpdate(float value)
     {
         satisfactionbar.value = value;
+		Debug.Log("Bar Value has changed to " + value);
 		displayText.text = Mathf.CeilToInt(value).ToString();
     }
 
@@ -70,4 +71,26 @@ public class SatisfactionBarScript : MonoBehaviour {
             
         }
     }
+
+	/// <summary>
+	/// Display the current number of treated vs untreated patients.
+	/// </summary>
+	/// <param name="treated">The number of patients that have been correctly treated.</param>
+	/// <param name="seen">The number of patients that have not been treated or wrongly diagnosed.</param>
+	public void UpdateTreatedPatients(int treated, int seen)
+	{
+		string display = "";
+		//if the player has a perfect score, display a single digit.
+		if (treated == seen)
+		{
+			display = treated.ToString();
+		}
+		//if the player does not have a perfect score, display a fraction.
+		else if (seen > treated)
+		{
+			display = treated.ToString() + "/" + seen.ToString();
+		}
+
+		treatedPatientsText.text = display;
+	}
 }

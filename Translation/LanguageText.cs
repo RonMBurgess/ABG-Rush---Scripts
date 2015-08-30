@@ -14,22 +14,29 @@ public class LanguageText : MonoBehaviour {
 	public bool directTranslation;
 	public string translateText;
 
+	public bool referenceTopic = false;//is this a reference topic?
+	public string xmlReferenceTopicSectionTitle;
+	public string xmlReferenceTopicSectionContent;
+	public int xmlReferenceTopicID;//used by the UIReferenceDesk Script.
+
+
 	private Text textField;
 	private int curXmlTextID = -9;
 	private bool overridden = false;
 
+	private string concatenateText = "";//this is the string that will be added onto our text.
+	private string editorText = "";
+
 	void Awake()
 	{
 		textField = GetComponent<Text>();
+		editorText = textField.text;
+		//concatenateText = "";
 	}
 
 	void OnEnable()
 	{
-		if (!overridden)
-		{
-			UpdateText();
-		}
-		
+		UpdateText();
 	}
 
 	/// <summary>
@@ -59,17 +66,19 @@ public class LanguageText : MonoBehaviour {
 	/// </summary>
 	private void UpdateText()
 	{
-		//make sure we have access to language manager.
-		if (LanguageManager._LanguageManager)
+		string t = editorText;
+
+		//verify we have access to the text field.
+		if (textField)
 		{
 
-			//verify we have access to the text field.
-			if (textField)
+			//make sure we have access to language manager.
+			if (LanguageManager._LanguageManager)
 			{
 				//see if we need to do a direct translation
 				if (directTranslation)
 				{
-					textField.text = LanguageManager._LanguageManager.DirectTranslation(xmlTextSection, translateText);
+					t = LanguageManager._LanguageManager.DirectTranslation(xmlTextSection, translateText);
 				}
 				else
 				{
@@ -80,11 +89,19 @@ public class LanguageText : MonoBehaviour {
 					}
 
 					//set our text.
-					textField.text = LanguageManager._LanguageManager.TextTranslation(xmlTextSection, curXmlTextID);
+					t = LanguageManager._LanguageManager.TextTranslation(xmlTextSection, curXmlTextID);
 				}
 				
 			}
-		
+
+			if (concatenateText != "")
+			{
+				textField.text = t + " " + concatenateText;
+			}
+			else
+			{
+				textField.text = t;
+			}
 		}
 	}
 
@@ -93,8 +110,12 @@ public class LanguageText : MonoBehaviour {
 	/// Should this text remain what is is?
 	/// </summary>
 	/// <param name="overrideThisText">True = don't reset, false = allow reset</param>
-	public void Overide(bool overrideThisText)
+	public void AddThisText(string addThisText = "")
 	{
-		overridden = overrideThisText;
+		Debug.Log("Add this Text " + addThisText);
+		concatenateText = addThisText;
+		UpdateText();
 	}
+
+	
 }

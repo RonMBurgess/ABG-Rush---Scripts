@@ -23,7 +23,7 @@ public class ReferenceDesk : OfficeObject {
 		{
 			referenceDeskUI.SetActive(false);
 		}
-		OfficeObject_Initialize();
+		OfficeObjectInitialize();
 		Highlight(true);
 	}
 
@@ -35,7 +35,13 @@ public class ReferenceDesk : OfficeObject {
 			
 			if (Input.GetMouseButtonUp(0))
 			{
-				Manager.MyNurse.Person_Move(location_Nurse, tag, false, this);
+				Manager.MyNurse.PersonMove(locationNurse, tag, false, this);
+
+				//Play a sound
+				if (SoundManager._SoundManager)
+				{
+					SoundManager._SoundManager.PlaySound("Click");
+				}
 			}
 		}
 

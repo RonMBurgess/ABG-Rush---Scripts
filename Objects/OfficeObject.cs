@@ -3,13 +3,14 @@ using System.Collections;
 
 public class OfficeObject : MonoBehaviour {
 
-    public Vector2 location_Nurse;
-    private Animator anim;
-	private int hash_Highlight = Animator.StringToHash("Highlight");
-    //private int hash_Ready = Animator.StringToHash("Ready");
-    //private int hash_MouseOver = Animator.StringToHash("MouseOver");
-    //not sure if state_ready is needed at the moment, but ill keep it for now
-    private bool state_Ready, state_MouseOver;//am I idle, or am I ready. Am I currently being moused over?
+    public Vector2 locationNurse;
+	[HideInInspector]
+    public Animator anim;
+	private int hashHighlight = Animator.StringToHash("Highlight");
+    //private int hashReady = Animator.StringToHash("Ready");
+    //private int hashMouseOver = Animator.StringToHash("MouseOver");
+    //not sure if stateready is needed at the moment, but ill keep it for now
+    private bool stateReady, stateMouseOver;//am I idle, or am I ready. Am I currently being moused over?
     private Manager manager;
 
 
@@ -21,7 +22,7 @@ public class OfficeObject : MonoBehaviour {
         get { return manager; }
     }
 
-    public void OfficeObject_Initialize()
+    public void OfficeObjectInitialize()
     {
         anim = GetComponent<Animator>();
         if(GameObject.Find("Manager")) manager = GameObject.Find("Manager").GetComponent<Manager>();
@@ -29,19 +30,19 @@ public class OfficeObject : MonoBehaviour {
 
     
 
-    public Vector2 OfficeObject_LocationNurse()
+    public Vector2 OfficeObjectLocationNurse()
     {
-        return location_Nurse;
+        return locationNurse;
     }
 
-    public bool OfficeObject_MousedOver()
+    public bool OfficeObjectMousedOver()
     {
-        return state_MouseOver;
+        return stateMouseOver;
     }
 
-    public bool OfficeObject_Ready()
+    public bool OfficeObjectReady()
     {
-        return state_Ready;
+        return stateReady;
     }
 
 	/// <summary>
@@ -52,7 +53,7 @@ public class OfficeObject : MonoBehaviour {
 	{
 		if (anim)
 		{
-			anim.SetBool(hash_Highlight, on);
+			anim.SetBool(hashHighlight, on);
 		}
 	}
 
@@ -60,12 +61,12 @@ public class OfficeObject : MonoBehaviour {
 	/// Set the object as ready or idle
 	/// </summary>
 	/// <param name="ready">True = ready, false = idle</param>
-	public void OfficeObject_SetReadyState(bool ready)
+	public void OfficeObjectSetReadyState(bool ready)
 	{
-		state_Ready = ready;
+		stateReady = ready;
 		//if (anim != null)
 		//{
-		//	anim.SetBool(hash_Ready, ready);
+		//	anim.SetBool(hashReady, ready);
 		//}
 
 	}
@@ -73,12 +74,12 @@ public class OfficeObject : MonoBehaviour {
 	///// <summary>
 	///// Inform the OfficeObject that it's patient is currently being moused over.
 	///// </summary>
-	//public void OfficeObject_MouseEnter()
+	//public void OfficeObjectMouseEnter()
 	//{
-	//	state_MouseOver = true;
+	//	stateMouseOver = true;
 	//	if (anim != null)
 	//	{
-	//		anim.SetBool(hash_MouseOver, true);
+	//		anim.SetBool(hashMouseOver, true);
 	//	}
         
 	//}
@@ -86,12 +87,12 @@ public class OfficeObject : MonoBehaviour {
 //	/// <summary>
 //	/// Inform the OfficeObject that it's patient is no longer being moused over.
 //	/// </summary>
-//	public void OfficeObject_MouseExit()
+//	public void OfficeObjectMouseExit()
 //	{
-//		state_MouseOver = false;
+//		stateMouseOver = false;
 //		if (anim != null)
 //		{
-//			anim.SetBool(hash_MouseOver, false);
+//			anim.SetBool(hashMouseOver, false);
 //		}
 //	}
 }

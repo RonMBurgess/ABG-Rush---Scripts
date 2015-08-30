@@ -19,12 +19,15 @@ public class ABG{
 	private string fileLocation;//, fileName;
 	private XmlReaderSettings xmlreaderSettings;
 
-    private List<string> test_Stories_L, test_Stories_S, test_Medications_1, test_Medications_2, test_Medications_3, test_Medications_4, test_Symptoms_1, test_Symptoms_2, test_Symptoms_3, test_Symptoms_4, test_Conditions_1, test_Conditions_2, test_Conditions_3, test_Conditions_4;
+    private List<string> testStoriesL, testStoriesS, testMedications1, testMedications2, testMedications3, testMedications4, testSymptoms1, testSymptoms2, testSymptoms3, testSymptoms4, testConditions1, testConditions2, testConditions3, testConditions4;
 
     private List<Diagnosis> diagnoses, diagnosesInUse;
-    private float val_PH_Lowest = 7.24f, val_PH_Neutral_Low = 7.35f, val_PH_Neutral_High = 7.45f, val_PH_Highest = 7.58f;//PH Values
-    private float val_CO2_Lowest = 20f, val_CO2_Neutral_Low = 35f, val_CO2_Neutral_High = 45f, val_CO2_Highest = 64f;//CO2 Values
-    private float val_HCO3_Lowest = 14f, val_HCO3_Neutral_Low = 22f, val_HCO3_Neutral_High = 26f, val_HCO3_Highest = 42f;// HCO3 Values
+	private float valPHAcidMax = 7.24f, valPHAcidMin = 7.35f, valPHNeutral = 7.4f, valPHBasicMin = 7.45f, valPHBasicMax = 7.58f;
+	private float valCO2AcidMax = 64f, valCO2AcidMin = 45f, valCO2Neutral = 40f, valCO2BasicMin = 35f, valCO2BasicMax = 20f;
+	private float valHCO3AcidMax = 14f, valHCO3AcidMin = 22f, valHCO3Neutral = 24f, valHCO3BasicMin = 26f, valHCO3BasicMax = 42f;
+    //private float valPHLowest = 7.24f, valPHNeutralLow = 7.35f, valPHNeutralHigh = 7.45f, valPHHighest = 7.58f;//PH Values
+    //private float valCO2Lowest = 20f, valCO2NeutralLow = 35f, valCO2NeutralHigh = 45f, valCO2Highest = 64f;//CO2 Values
+    //private float valHCO3Lowest = 14f, valHCO3NeutralLow = 22f, valHCO3NeutralHigh = 26f, valHCO3Highest = 42f;// HCO3 Values
 
 
 	private int diagnosesUsed;
@@ -52,7 +55,7 @@ public class ABG{
 			xmlreaderSettings.IgnoreComments = true;
 
 			LoadDiagnosesFromXML();
-			Debug.Log("The total amount of interventions is: " + diagnoses.Count);
+			//Debug.Log("The total amount of interventions is: " + diagnoses.Count);
 
 			//foreach (Diagnosis d in diagnoses)
 			//{
@@ -64,6 +67,16 @@ public class ABG{
 			CreateDiagnoses();
 		}
 
+
+		//prepare / shuffle diagnoses
+		//prepare the patients.
+		for (int i = 0; i < diagnoses.Count; i++)
+		{
+			Diagnosis temp = diagnoses[i];
+			int rand = Random.Range(0, diagnoses.Count);
+			diagnoses[i] = diagnoses[rand];
+			diagnoses[rand] = temp;
+		}
 		diagnosesUsed = 0;
     }
 	
@@ -83,7 +96,7 @@ public class ABG{
         
         
         //if the diagnosis does not have set answers, give it some.
-        if (d.Answer_Respiratory_Metabolic == "")
+        if (d.AnswerRespiratoryMetabolic == "")
         {
             int r = Random.Range(0, 12);
 			//create strings to hold the answer values.
@@ -108,18 +121,18 @@ public class ABG{
 			// Don't need to translate here, or ever because the answer is returned in it's translated form.
 
 			////if language manager is available
-			//if (LanguageManager._LanguageManager)
+			//if (LanguageManager.LanguageManager)
 			//{
-			//	LanguageManager lm = LanguageManager._LanguageManager;
+			//	LanguageManager lm = LanguageManager.LanguageManager;
 			//	//translate to current language
 			//	rm = lm.DirectTranslation("ABG", rm);
 			//	aa = lm.DirectTranslation("ABG", aa);
 			//	c = lm.DirectTranslation("ABG", c);
 			//}
 
-			d.Answer_Respiratory_Metabolic = rm;
-			d.Answer_Acidosis_Alkalosis = aa;
-			d.Answer_Compensation = c;
+			d.AnswerRespiratoryMetabolic = rm;
+			d.AnswerAcidosisAlkalosis = aa;
+			d.AnswerCompensation = c;
 			
 
             //go through the gauntlet again but this time, pick up the number values.
@@ -127,7 +140,7 @@ public class ABG{
         }
         else
         {
-			string rm = d.Answer_Respiratory_Metabolic, aa = d.Answer_Acidosis_Alkalosis, comp = d.Answer_Compensation;
+			string rm = d.AnswerRespiratoryMetabolic, aa = d.AnswerAcidosisAlkalosis, comp = d.AnswerCompensation;
 			//prepare our comparison values.
 			string r = "Respiratory", m = "Metabolic", alk = "Alkalosis", aci = "Acidosis", uc = "Uncompensated", pc = "Partial Compensation", c = "Compensated";
 
@@ -147,51 +160,54 @@ public class ABG{
             //since we have set answers, set the number values
             if (rm == r && aa == aci && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
+				//Debug.Log("Resp Aci UC");
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == r && aa == aci && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+				Debug.Log("Resp Aci PC");
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == r && aa == aci && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+				//Debug.Log("Resp Aci Comp");
+                d.PH = GenerateDiagnosisValues("PH", -1); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == r && aa == alk && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == r && aa == alk && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == r && aa == alk && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == alk && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == m && aa == alk && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == m && aa == alk && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
 
             return d;
@@ -208,48 +224,124 @@ public class ABG{
     /// Generate number values for each of the variables.
     /// </summary>
     /// <param name="value">name of the value ie. PH, CO2, HCO3</param>
-    /// <param name="LowMedHigh">0 for acid, 1 for neutral, 2 for basic, 5 == Lower Neutral, 6 = Higher Neutral</param>
+    /// <param name="LowMedHigh">-2 for acid, 0 for neutral, 2 for basic, -1 for Lower Neutral, 1 = Higher Neutral</param>
     /// <returns></returns>
-    private float GenerateDiagnosisValues(string value, int LowMedHigh)
+    private float GenerateDiagnosisValues(string value, int acidneutralbasic)
     {
-        float lowest = 0f, low = 0f, lowMed = 0f, medHigh = 0f, high = 0f, highest = 0f;
+		//The variables that will be used for our check.
+		float acidMax = 0f, acidMin = 0f, neutral = 0f, basicMin = 0f, basicMax = 0f;
+		float randomVariance = 0f;	
+		float finalValue = -90f;
+		
+		
         if (value == "PH")
         {
-			lowest = val_PH_Lowest; low = val_PH_Neutral_Low; high = val_PH_Neutral_High; highest = val_PH_Highest; lowMed = 7.395f; medHigh = 7.405f;
+			Debug.Log("Generating a Diagnosis Value for: " + value + " in range: " + acidneutralbasic);
+			acidMax = valPHAcidMax;//Should be 7.24
+			acidMin = valPHAcidMin;//should be 7.35
+			neutral = valPHNeutral;//should be 7.40
+			basicMin = valPHBasicMin;//should be 7.45
+			basicMax = valPHBasicMax;//should be 7.58
+			randomVariance = .01f;
+			
         }
         else if (value == "CO2")
         {
-            lowest = val_CO2_Lowest; low = val_CO2_Neutral_Low; high = val_CO2_Neutral_High; highest = val_CO2_Highest;
+			acidMax = valCO2AcidMax;//64
+			acidMin = valCO2AcidMin;//45
+			neutral = valCO2Neutral;//40
+			basicMin = valCO2BasicMin;//35
+			basicMax = valCO2BasicMax;//20
+			randomVariance = 1f;
+
+			
         }
         else if (value == "HCO3")
         {
-            lowest = val_HCO3_Lowest; low = val_HCO3_Neutral_Low; high = val_HCO3_Neutral_High; highest = val_HCO3_Highest;
+			acidMax = valHCO3AcidMax;//14
+			acidMin = valHCO3AcidMin;//22
+			neutral = valHCO3Neutral;//24
+			basicMin = valHCO3BasicMin;//26
+			basicMax = valHCO3BasicMax;//42
+			randomVariance = 1f;
+
+			
         }
 
-
-        if (LowMedHigh == 0)
-        {
-            return Random.Range(lowest, low);
-        }
-        else if (LowMedHigh == 1)
-        {
-            return Random.Range(low, high);
-        }
-        else if (LowMedHigh == 2)
-        {
-            return Random.Range(high, highest);
-        }
-		else if (LowMedHigh == 5)
+		//Acidic Range
+		if (acidneutralbasic == -2)
 		{
-			return Random.Range(low, lowMed);
+			Debug.Log("-2 Range is: " + (acidMax + randomVariance) + " , " + (acidMin - randomVariance));
+			if (acidMax > acidMin)
+			{
+				//CO2
+				finalValue = Random.Range(acidMin + randomVariance, acidMax -randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMax + randomVariance, acidMin - randomVariance);
+			}
+			
 		}
-		else if (LowMedHigh == 6)
+			//Neutral Acidic Range
+		else if (acidneutralbasic == -1)
 		{
-			return Random.Range(medHigh, high);
+			if (acidMin > neutral)
+			{
+				finalValue = Random.Range(neutral + randomVariance, acidMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMin + randomVariance, neutral - randomVariance);
+			}
+
+			//Debug.Log("Neutral Acidic Range for " + value + " is: " + finalValue);
+			
+		}
+			//Neutral Range
+		else if (acidneutralbasic == 0)
+		{
+			if (acidMin > basicMin)
+			{
+				//this should occur for CO2
+				finalValue = Random.Range(basicMin +randomVariance,acidMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMin + randomVariance, basicMin - randomVariance);
+			}
+			
+		}
+			//Neutral Basic Range
+		else if (acidneutralbasic == 1)
+		{
+			if (neutral > basicMin)
+			{
+				//this should occur for CO2
+				finalValue = Random.Range(basicMin + randomVariance, neutral -randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(neutral + randomVariance, basicMin - randomVariance);
+			}
+			//Debug.Log("Neutral Basic Range for " + value + " is: " + finalValue);
+			
+		}
+			//Basic Range
+		else if (acidneutralbasic == 2)
+		{
+			if (basicMin > basicMax)
+			{
+				finalValue = Random.Range(basicMax + randomVariance, basicMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(basicMin + randomVariance, basicMax - randomVariance);
+			}
+			
 		}
 
-        Debug.LogWarning("ABG: GenerateDiagnosisValues Did not receive a valid Param");
-        return -50f;
+		return finalValue;
     }
 
 
@@ -264,39 +356,39 @@ public class ABG{
 
         //Initialize Test Sample lists.
 
-		test_Stories_L = new List<string>(); test_Stories_S = new List<string>();
-		test_Symptoms_1 = new List<string>(); test_Symptoms_2 = new List<string>(); test_Symptoms_3 = new List<string>(); test_Symptoms_4 = new List<string>();
-		test_Conditions_1 = new List<string>(); test_Conditions_2 = new List<string>(); test_Conditions_3 = new List<string>(); test_Conditions_4 = new List<string>();
-		test_Medications_1 = new List<string>(); test_Medications_2 = new List<string>(); test_Medications_3 = new List<string>(); test_Medications_4 = new List<string>();
+		testStoriesL = new List<string>(); testStoriesS = new List<string>();
+		testSymptoms1 = new List<string>(); testSymptoms2 = new List<string>(); testSymptoms3 = new List<string>(); testSymptoms4 = new List<string>();
+		testConditions1 = new List<string>(); testConditions2 = new List<string>(); testConditions3 = new List<string>(); testConditions4 = new List<string>();
+		testMedications1 = new List<string>(); testMedications2 = new List<string>(); testMedications3 = new List<string>(); testMedications4 = new List<string>();
 
 		//populate the test sample lists.
 		//long stories
-		test_Stories_L.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident."); test_Stories_L.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach."); test_Stories_L.Add("I was on my way to an important meeting for work when I realized I forgot several essential documents. I became anxious and started hyperventilating. Then I became dizzy and felt tingling in my fingertips."); test_Stories_L.Add("My child has been very difficult to feed and has had very frequent runny poops for the past 3 days. My child also seems to be breathing fast.");
+		testStoriesL.Add("I fell off a ladder yesterday afternoon while trimming my hedges and have been taking a narcotic pain reliever since shortly after the accident."); testStoriesL.Add("I woke up in the middle of the night with stomach cramps and feeling nauseous after eating at a delicatessen yesterday. I vomited lots of green fluid 3 times and I feel weak and sick to my stomach."); testStoriesL.Add("I was on my way to an important meeting for work when I realized I forgot several essential documents. I became anxious and started hyperventilating. Then I became dizzy and felt tingling in my fingertips."); testStoriesL.Add("My child has been very difficult to feed and has had very frequent runny poops for the past 3 days. My child also seems to be breathing fast.");
 
 
 		//short stories
-		test_Stories_S.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); test_Stories_S.Add("I woke up in the middle of the night with stomach cramps"); test_Stories_S.Add("I became anxious on the way to work and started hyperventilating!!"); test_Stories_S.Add("My child has been difficult to feed and has had runny poops for days.");
+		testStoriesS.Add("I fell off a ladder yesterday afternoon while trimming my hedges."); testStoriesS.Add("I woke up in the middle of the night with stomach cramps"); testStoriesS.Add("I became anxious on the way to work and started hyperventilating!!"); testStoriesS.Add("My child has been difficult to feed and has had runny poops for days.");
 
 		//symptoms
-        test_Symptoms_1.Add("Severe Pain"); test_Symptoms_1.Add("Cyanotic Fingers");
-        test_Symptoms_2.Add("Stomach Cramps"); test_Symptoms_2.Add("Weak & Fainty");
-		test_Symptoms_3.Add("Hyperventilation"); test_Symptoms_3.Add("Dizziness"); test_Symptoms_3.Add("Palpitations"); test_Symptoms_3.Add("Tingling in arms");
-		test_Symptoms_4.Add("Tachypnea"); test_Symptoms_4.Add("Depressed anterior fontanel");
+        testSymptoms1.Add("Severe Pain"); testSymptoms1.Add("Cyanotic Fingers");
+        testSymptoms2.Add("Stomach Cramps"); testSymptoms2.Add("Weak & Fainty");
+		testSymptoms3.Add("Hyperventilation"); testSymptoms3.Add("Dizziness"); testSymptoms3.Add("Palpitations"); testSymptoms3.Add("Tingling in arms");
+		testSymptoms4.Add("Tachypnea"); testSymptoms4.Add("Depressed anterior fontanel");
 
 		//conditions
-        test_Conditions_1.Add("Asthma"); test_Conditions_1.Add("Lung Disease");
-        test_Conditions_2.Add("Stomach Polyps"); test_Conditions_2.Add("Peptic Ulcer Disease");
+        testConditions1.Add("Asthma"); testConditions1.Add("Lung Disease");
+        testConditions2.Add("Stomach Polyps"); testConditions2.Add("Peptic Ulcer Disease");
 
 		//medications
-        test_Medications_1.Add("Alleve"); test_Medications_1.Add("Zyrtec");
-        test_Medications_2.Add("Pepto-Bismol"); test_Medications_2.Add("Tums");
+        testMedications1.Add("Alleve"); testMedications1.Add("Zyrtec");
+        testMedications2.Add("Pepto-Bismol"); testMedications2.Add("Tums");
 
 		//generate the diagnoses
-        Diagnosis d = new Diagnosis("Respiratory", "Acidosis", "Uncompensated", test_Stories_L[0], test_Stories_S[0], test_Medications_1, test_Symptoms_1, test_Conditions_1);
-        Diagnosis e = new Diagnosis("Metabolic", "Alkalosis", "Compensated", test_Stories_L[1], test_Stories_S[1], test_Medications_2, test_Symptoms_2, test_Conditions_2);
+        Diagnosis d = new Diagnosis("Respiratory", "Acidosis", "Uncompensated", testStoriesL[0], testStoriesS[0], testMedications1, testSymptoms1, testConditions1);
+        Diagnosis e = new Diagnosis("Metabolic", "Alkalosis", "Compensated", testStoriesL[1], testStoriesS[1], testMedications2, testSymptoms2, testConditions2);
         
-		Diagnosis f = new Diagnosis("Respiratory", "Alkalosis", "Uncompensated", test_Stories_L[2], test_Stories_S[2], test_Medications_3, test_Symptoms_3, test_Medications_3);
-		Diagnosis g = new Diagnosis("Metabolic", "Acidosis", "Compensated", test_Stories_L[3], test_Stories_S[3], test_Medications_4, test_Symptoms_4, test_Conditions_4);
+		Diagnosis f = new Diagnosis("Respiratory", "Alkalosis", "Uncompensated", testStoriesL[2], testStoriesS[2], testMedications3, testSymptoms3, testMedications3);
+		Diagnosis g = new Diagnosis("Metabolic", "Acidosis", "Compensated", testStoriesL[3], testStoriesS[3], testMedications4, testSymptoms4, testConditions4);
 
 		//add the new diagnoses to the list.
 		diagnoses.Add(d); diagnoses.Add(e); diagnoses.Add(f); diagnoses.Add(g);

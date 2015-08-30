@@ -41,9 +41,17 @@ public class UI_Patient : MonoBehaviour {
 
 
 
-    public void Close()
+    public void Close(bool continuePatient = false)
     {
-        MyPatient.Patient_ToggleCountdown(false);
+        MyPatient.PatientToggleCountdown(false);
+
+		//make sure nurse's hands are dirty since they are no longer continuing with us. 
+		if (!continuePatient)
+		{
+			MyManager.MyNurse.IsClean(-1);
+		}
+		
+
         gameObject.SetActive(false);
     }
 
@@ -54,31 +62,31 @@ public class UI_Patient : MonoBehaviour {
     /// <summary>
     /// Called by button press to send a patient home
     /// </summary>
-    public void Send_Away()
+    public void SendAway()
     {
-        MyPatient.Patient_Leave();
+        MyPatient.PatientLeave();
         Close();
     }
 
-    public void Send_WaitingRoom()
+    public void SendWaitingRoom()
     {
         //verify that there is an open waiting chair
-        WaitingChair wc = MyManager.Manager_Empty_WaitingChair();
+        WaitingChair wc = MyManager.ManagerEmptyWaitingChair();
         if (wc != null)
         {
             //remove my patient from it's current hotspot
-            MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
+            MyPatient.PatientHotspotGet().PatientObjectPatientRemove();
 
             //add patient to it's new hotspot
-            wc.PatientObject_Patient_Add(MyPatient);
+            wc.PatientObjectPatientAdd(MyPatient);
 
             //move the patient to the proper location of it's new hotspot
-            MyPatient.Person_Move(wc.PatientObject_LocationPatient(), wc.tag);
+            MyPatient.PersonMove(wc.PatientObjectLocationPatient(), wc.tag);
 
 
             Debug.Log("Patient has been given to: " + wc.name);
-
-            Close();
+			//inform the nurse to keep their hands in their current state if clean.
+            Close(true);
         }
 
     }
@@ -88,43 +96,56 @@ public class UI_Patient : MonoBehaviour {
     /// <summary>
     /// Send the patient to an open exam room. Only called by a button click
     /// </summary>
-    public void Send_ExamRoom()
+    public void SendExamRoom()
     {
         //verify that there is an open room
-        ExamRoom e = MyManager.Manager_Empty_ExamRoom();
+        ExamRoom e = MyManager.ManagerEmptyExamRoom();
         if (e != null)
         {
             //remove my patient from it's current hotspot
-            MyPatient.Patient_Hotspot_Get().PatientObject_Patient_Remove();
+            MyPatient.PatientHotspotGet().PatientObjectPatientRemove();
 
             //add the patient to it's new hotspot
-            e.PatientObject_Patient_Add(MyPatient);
+            e.PatientObjectPatientAdd(MyPatient);
 
 			//make the patient update the player's score.
-			MyPatient.Patient_PatienceScore();
+			//MyPatient.PatientPatienceScore();
 
             //make the patient move to the proper location of it's new hotspot
-            MyPatient.Person_Move(e.PatientObject_LocationPatient(), e.tag,true,e);
+            MyPatient.PersonMove(e.PatientObjectLocationPatient(), e.tag,true,e);
 
 			//make the nurse move to the proper location of the exam room's computer.
-			manager.MyNurse.Person_Move(e.Computer().OfficeObject_LocationNurse(),e.Computer().tag, false, e.Computer());
+			manager.MyNurse.DelayedPersonMove(.75f,e.Computer().OfficeObjectLocationNurse(),e.Computer().tag, false, e.Computer());
             
             Debug.Log("Patient has been given to: " + e.name);
 
-            Close();
+
+
+			//inform the nurse to keep their hands in their current state if clean.
+            Close(true);
         }
     }
+
 
     public void Pacify()
     {
-        if (MyPatient.Patient_Pacify_AmountLeft() > 0)
+        if (MyPatient.PatientPacifyAmountLeft() > 0)
         {
-            MyPatient.Patient_Pacify();
+            MyPatient.PatientPacify();
             Debug.Log(MyPatient.name + " has been pacified");
-            Close();
+            Close(false);
         }
 
     }
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
+	}
 
 
     #endregion

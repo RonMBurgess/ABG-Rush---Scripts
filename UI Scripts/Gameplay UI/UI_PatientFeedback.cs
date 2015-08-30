@@ -7,11 +7,12 @@ public class UI_PatientFeedback : MonoBehaviour {
 
 	public GameObject correctInitialAssessmentObject;// This object will be turned on/Off depending on whether or not the initial assessment was correct.
 	public Sprite spriteCorrect, spriteIncorrect;
-	public Image imageInitial, imageDiagnosis;
-	public Text textfieldName, textfieldInitialRM, textfieldInitialAA, textfieldDiagnosisRM, textfieldDiagnosisAA, textfieldDiagnosisC;
-	public LanguageText successLevel;
+	public Image imagePatientID, imageInitial, imageDiagnosis;
+	public Text textfieldName, textfieldInitialAssessment, textfieldDiagnosisFinal;
+	public LanguageText languagetextSuccessLevel, languagetextTitle;
 
 	public Color colorCorrect, colorWrong;
+	public string hexColorCorrect = "#8EBD00", hexColorWrong = "#FF0000";
 
 	private bool timebonus = false;
 	// Use this for initialization
@@ -38,31 +39,42 @@ public class UI_PatientFeedback : MonoBehaviour {
 
 	public void PatientFeedback(Patient p, bool initRMCorrect, bool initAACorrect)
 	{
-		textfieldName.text = p.name;
-		textfieldInitialRM.text = p.InitialAssessmentGetRM();
-		textfieldInitialAA.text = p.InitialAssessmentGetAA();
+
+		string colorRM, colorAA;
+
+		//inform the title to add the name of the patient to it's text.
+		languagetextTitle.AddThisText(p.name);
+
+		//textfieldName.text = p.name;
+
+		
+		imagePatientID.sprite = p.PatientPhotoID();
 
 		if (initRMCorrect)
 		{
-			textfieldInitialRM.color = colorCorrect;
+			colorRM = hexColorCorrect;
+			//textfieldInitialRM.color = colorCorrect;
 		}
 		else
 		{
-			textfieldInitialRM.color = colorWrong;
+			colorRM = hexColorWrong;
+			//textfieldInitialRM.color = colorWrong;
 		}
 
 		if (initAACorrect)
 		{
-			textfieldInitialAA.color = colorCorrect;
+			colorAA = hexColorCorrect;
+			//textfieldInitialAA.color = colorCorrect;
 		}
 		else
 		{
-			textfieldInitialAA.color = colorWrong;
+			colorAA = hexColorWrong;
+			//textfieldInitialAA.color = colorWrong;
 		}
 
 		if (initRMCorrect && initAACorrect)
 		{
-			successLevel.SwitchCurrentText(2);
+			languagetextSuccessLevel.SwitchCurrentText(2);
 
 			//display the correct sprite
 			imageInitial.sprite = spriteCorrect;
@@ -73,7 +85,7 @@ public class UI_PatientFeedback : MonoBehaviour {
 		}
 		else
 		{
-			successLevel.SwitchCurrentText(1);
+			languagetextSuccessLevel.SwitchCurrentText(1);
 			//display the incorrect initial sprite
 			imageInitial.sprite = spriteIncorrect;
 			//deactivate the correct object
@@ -82,16 +94,25 @@ public class UI_PatientFeedback : MonoBehaviour {
 			timebonus = false;
 		}
 
+		//display the initial diagnosis text.
+		textfieldInitialAssessment.text = "<color=" + colorRM +">" + p.InitialAssessmentGetRM() + "</color> " + "<color=" + colorAA + ">" + p.InitialAssessmentGetAA() + "</color>";
+
+		//textfieldInitialRM.text = p.InitialAssessmentGetRM();
+		//textfieldInitialAA.text = p.InitialAssessmentGetAA();
+
 		//display the correct answer for the final diagnosis
-		textfieldDiagnosisRM.text = p.MyDiagnosis().Answer_Respiratory_Metabolic;
-		textfieldDiagnosisAA.text = p.MyDiagnosis().Answer_Acidosis_Alkalosis;
-		textfieldDiagnosisC.text = p.MyDiagnosis().Answer_Compensation;
-		//make sure that the diagnosis text fields are the correct color
-		textfieldDiagnosisRM.color = colorCorrect;
-		textfieldDiagnosisAA.color = colorCorrect;
-		textfieldDiagnosisC.color = colorCorrect;
+		textfieldDiagnosisFinal.text ="<color=" + hexColorCorrect +">" + p.MyDiagnosis().AnswerRespiratoryMetabolic + " " + p.MyDiagnosis().AnswerAcidosisAlkalosis + " " + p.MyDiagnosis().AnswerCompensation + "</color>";
 
 		//make sure that the final diagnosis sprite always displays correct.
 		imageDiagnosis.sprite = spriteCorrect;
+	}
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
 	}
 }

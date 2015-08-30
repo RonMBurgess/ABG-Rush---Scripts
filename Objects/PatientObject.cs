@@ -4,7 +4,7 @@ using System.Collections;
 public class PatientObject : OfficeObject {
 
 
-    public Vector2 location_Patient;
+    public Vector2 locationPatient;
     private Patient patient;
     private UI_Patient ui;
 
@@ -30,14 +30,14 @@ public class PatientObject : OfficeObject {
     /// Add a new patient
     /// </summary>
     /// <param name="p">Patient</param>
-    public void PatientObject_Patient_Add(Patient p)
+    public void PatientObjectPatientAdd(Patient p)
     {
         patient = p;
-        p.Patient_Hotspot(this);
-        p.Person_Move(location_Patient, tag, true, this);
+        p.PatientHotspot(this);
+        p.PersonMove(locationPatient, tag, true, this);
 
 		Debug.Log(gameObject + " has added patient " + p);
-        OfficeObject_SetReadyState(true); //handled inside of the person class now.
+        OfficeObjectSetReadyState(true); //handled inside of the person class now.
 
 		//Hotfix for now. Ron Come back and change this!!!
 		if (CompareTag("ExamRoom"))
@@ -49,15 +49,16 @@ public class PatientObject : OfficeObject {
     /// <summary>
     /// Remove the current patient
     /// </summary>
-    public void PatientObject_Patient_Remove()
+    public void PatientObjectPatientRemove()
     {
         patient = null;
-        OfficeObject_SetReadyState(false);
+        OfficeObjectSetReadyState(false);
 
 		//Hotfix for now. Ron Come back and change this!!!
 		if (CompareTag("ExamRoom"))
 		{
 			(this as ExamRoom).Computer().Highlight(false);
+			(this as ExamRoom).Computer().ResetBloodwork();
 		}
     }
 
@@ -65,7 +66,7 @@ public class PatientObject : OfficeObject {
     /// Is this object occupied?
     /// </summary>
     /// <returns>True - occupied, false - free</returns>
-    public bool PatientObject_Occupied()
+    public bool PatientObjectOccupied()
     {
         return patient != null;
     }
@@ -76,16 +77,16 @@ public class PatientObject : OfficeObject {
     /// The location the patient should move to
     /// </summary>
     /// <returns></returns>
-    public Vector2 PatientObject_LocationPatient()
+    public Vector2 PatientObjectLocationPatient()
     {
-        return location_Patient;
+        return locationPatient;
     }
 
 
     /// <summary>
     /// Open up the UI for whatever the player has recently clicked on.
     /// </summary>
-    public void PatientObject_OpenUI()
+    public void PatientObjectOpenUI()
     {
         //set the patient information for the UI
         Debug.Log("Patient's name is " + patient.name);

@@ -37,6 +37,8 @@ public class DiagnosisTool : MonoBehaviour {
 	public void Initialize(bool gamemode, UI_ExamRoomComputer ui = null )
 	{
 		if(gamemode){
+			//make sure the help panel is off.
+			panelHelp.SetActive(false);
 			if (ui) { ercUI = ui; practice = false; }
 		}
 		else
@@ -169,6 +171,12 @@ public class DiagnosisTool : MonoBehaviour {
 				}
 				else
 				{
+					//play Correct Diagnosis sound
+					if (SoundManager._SoundManager)
+					{
+						SoundManager._SoundManager.PlaySound("PatientDiagnosed");
+					}
+
 					if (practice)
 					{
 						//reset the tool
@@ -233,8 +241,11 @@ public class DiagnosisTool : MonoBehaviour {
 	/// </summary>
 	public void Submit()
 	{
+
+
 		bool a = false, b = false, c = false;
-		if (ansAA.text == diagnosis.Answer_Acidosis_Alkalosis)
+
+		if (ansAA.text == diagnosis.AnswerAcidosisAlkalosis)
 		{
 			a = true;
 			imageAA.color = colCorrect;
@@ -243,7 +254,7 @@ public class DiagnosisTool : MonoBehaviour {
 		{
 			imageAA.color = colWrong;
 		}
-		if (ansRM.text == diagnosis.Answer_Respiratory_Metabolic)
+		if (ansRM.text == diagnosis.AnswerRespiratoryMetabolic)
 		{
 			b = true;
 			imageRM.color = colCorrect;
@@ -252,7 +263,7 @@ public class DiagnosisTool : MonoBehaviour {
 		{
 			imageRM.color = colWrong;
 		}
-		if (ansC.text == diagnosis.Answer_Compensation)
+		if (ansC.text == diagnosis.AnswerCompensation)
 		{
 			c = true;
 			imageC.color = colCorrect;
@@ -262,43 +273,6 @@ public class DiagnosisTool : MonoBehaviour {
 			imageC.color = colWrong;
 		}
 
-		//inform the ui and manager about the answer
-		//if (a && b && c)
-		//{
-		//	//if this is practice mode
-		//	if (practice)
-		//	{
-		//		//display the new diagnosis button.
-		//		//Click this button to reset the tool
-
-		//	}
-		//	else
-		//	{
-		//		//tell the manager to add points
-		//		//Ron Come Back and Change This
-
-		//		//inform the patient that they can leave, and tell the UI to close after a moment 
-		//		Debug.Log("The submitted Answer is correct");
-		//		ercUI.FinishDiagnosis();
-
-
-		//	}
-
-		//}
-		//else
-		//{
-		//	//disable the submit button
-		//	btnSubmit.interactable = false;
-
-		//	//start the timer
-		//	answerTimerUsed = 0;
-
-		//	//and if in practice mode, lose points
-		//	if (!practice)
-		//	{
-		//		//lose points
-		//	}
-		//}
 
 		//Set the timer and values
 		
@@ -309,7 +283,7 @@ public class DiagnosisTool : MonoBehaviour {
 
 			if (!answerCorrect)
 			{
-				Manager._manager.UpdateSatisfactionScore(-15);
+				Manager._manager.UpdateSatisfactionScore(-25);
 			}
 			else
 			{
@@ -344,8 +318,16 @@ public class DiagnosisTool : MonoBehaviour {
 	/// </summary>
 	public void ResetTool()
 	{
-		Debug.Log("Reset has been called.");
 		Reset();
+	}
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
 	}
 	#endregion
 }
