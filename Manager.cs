@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Manager : MonoBehaviour {
 
     //change this later to private and load from resource folder
-    public GameObject prefabPatient;
+    public GameObject[] prefabPatients;
     public Transform locationEntrance, locationExit;
     public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
 	public GameplayUIScript gameplayUI;
@@ -21,7 +21,7 @@ public class Manager : MonoBehaviour {
     private List<WaitingChair> listWaitingChairs;
     private List<ExamRoom> listExamRooms;
 	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients, scorePatientsSeen;
-	private int currentPatients;
+	private int currentPatients, patientPrefabsUsed;
     private float scoreSatisfaction;
 	private float timerSpawnUsed;
     private Nurse nurse;
@@ -41,10 +41,15 @@ public class Manager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.P))
-        {
-            ManagerPatientSpawn();
-        }
+		if (Input.GetKeyUp(KeyCode.P))
+		{
+			ManagerPatientSpawn();
+		}
+
+		if (Input.GetKeyUp(KeyCode.D))
+		{
+			UpdateSatisfactionScore(-100);
+		}
 
 		if (timerSpawnUsed > 0)
 		{
@@ -62,6 +67,7 @@ public class Manager : MonoBehaviour {
 			gameplayUI.satisfaction.SatisfactionUpdate(scoreSatisfaction);
 			if (scoreSatisfaction <= 0)
 			{
+				Debug.Log("Update Gameover");
 				GameOver();
 			}
 		}
@@ -78,6 +84,12 @@ public class Manager : MonoBehaviour {
     /// <param name="p">The Patient leaving</param>
     public void ManagerPatientStormOut(Patient p)
     {
+		//play Leave Angry sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("PatientLeave");
+		}
+
 		//update the amount of patients.
 		currentPatients--;
 		//update the amount of patients that have been seen.
@@ -227,6 +239,15 @@ public class Manager : MonoBehaviour {
 		//Find the Sink
 		sink = GameObject.FindGameObjectWithTag("Sink").GetComponent<Sink>();
 
+		//prepare the patients.
+		for (int i = 0; i < prefabPatients.Length; i++)
+		{
+			GameObject temp = prefabPatients[i];
+			int rand = Random.Range(0, prefabPatients.Length);
+			prefabPatients[i] = prefabPatients[rand];
+			prefabPatients[rand] = temp;
+		}
+
 		//Reset the score
         scorePatientsSeen = 0;
 		scoreAngryPatients = 0;
@@ -249,45 +270,62 @@ public class Manager : MonoBehaviour {
     {
 		//prepare a dob
 		string dob = Random.Range(1, 13).ToString() + "/" + Random.Range(1, 29).ToString() + "/" + Random.Range(1940, 2000).ToString();
+		GameObject newPatient = NewPatientPrefab();
 
-        Patient p = (Instantiate(prefabPatient,locationEntrance.position, prefabPatient.transform.rotation) as GameObject).GetComponent<Patient>();
+        Patient p = (Instantiate(newPatient,locationEntrance.position,newPatient.transform.rotation) as GameObject).GetComponent<Patient>();
 
 		p.PatientSetup(namesFirst[Random.Range(0, namesFirst.Count)] + " " + namesLast[Random.Range(0, namesLast.Count)], dob, abg.PatientDiagnosis());
-        //Debug.Log(p);
-        //Debug.Log(triage.locationPatient);
-        //p.PersonMove(triage.locationPatient, "Triage");
-        //Debug.Log("Adding Patient to the triage");
-        //triage.PatientObjectPatientAdd(p);
+
         triage.TriagePatientAdd(p);
 		currentPatients++;
 
-		timerSpawn -= timerSpawnRate;
+		timerSpawn *= timerSpawnRate;
 		timerSpawn = Mathf.Clamp(timerSpawn, timerSpawnDelayMin, 120f);
 		//allow patient to spawn either 10 seconds sooner or 10 seconds after base time
-		timerSpawnUsed = Random.Range(-10, 11);
+		timerSpawnUsed = Random.Range(-3, 3);
 		timerSpawnUsed += timerSpawn;
     }
 
-    /// <summary>
-    /// Change the cursor based on what is currently moused over.
-    /// </summary>
-    /// <param name="enter"></param>
-    public void ManagerMouseOver(bool enter)
-    {
-        //come back and update this later to accept parameters to use multiple cursors. Will most likely accept a string and look through a dictionary.
-        if (enter)
-        {
-            Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
-        }
-        else
-        {
-            Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
-        }
+	///// <summary>
+	///// Change the cursor based on what is currently moused over.
+	///// </summary>
+	///// <param name="enter"></param>
+	//public void ManagerMouseOver(bool enter)
+	//{
+	//	//come back and update this later to accept parameters to use multiple cursors. Will most likely accept a string and look through a dictionary.
+	//	if (enter)
+	//	{
+	//		Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
+	//	}
+	//	else
+	//	{
+	//		Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+	//	}
         
-    }
+	//}
 
 
+	/// <summary>
+	/// Called during any/all interactions involving the nurse and a patient.
+	/// </summary>
+	public void CleanHandsCheck()
+	{
+		bool clean = false;
 
+		if (nurse)
+		{
+			clean = nurse.IsClean();
+		}
+
+		if (clean)
+		{
+			UpdateSatisfactionScore(2);
+		}
+		else
+		{
+			UpdateSatisfactionScore(-3);
+		}
+	}
 
 
 	public GameplayUIScript GamePlayUI()
@@ -301,9 +339,11 @@ public class Manager : MonoBehaviour {
 		scoreSatisfaction = Mathf.Clamp(scoreSatisfaction, 0f, 100f);
 
 		gameplayUI.satisfaction.SatisfactionModify(s);
+		gameplayUI.satisfaction.SatisfactionUpdate(scoreSatisfaction);
 
 		if (scoreSatisfaction <= 0)
 		{
+			Debug.Log("SatisfactionScore Gameover");
 			GameOver();
 		}
 	}
@@ -323,9 +363,42 @@ public class Manager : MonoBehaviour {
 
 	private void GameOver()
 	{
-		gameplayUI.GameOverUI().GameOver(scoreAngryPatients,scoreCorrectDiagnoses,scoreCorrectInitialAssessment);
-		Time.timeScale = 0;
-		gameplayUI.GameOverUI().gameObject.SetActive(true);
+		Debug.Log("GameOver Called");
+		bool delayGO = false;
+
+		if (gameplayUI.ExamRoomComputerUI().gameObject.activeInHierarchy)
+		{
+			delayGO = true;
+		}
 		
+
+		gameplayUI.GameOverUI().GameOver(delayGO, scoreAngryPatients,scoreCorrectDiagnoses,scoreCorrectInitialAssessment);
+		
+		gameplayUI.GameOverUI().gameObject.SetActive(true);
+		Debug.Log("Paused");
+		Time.timeScale = 0;
+		
+	}
+
+	private GameObject NewPatientPrefab()
+	{
+		if (patientPrefabsUsed == prefabPatients.Length)
+		{
+			//shuffle the patients
+			for (int i = 0; i < prefabPatients.Length; i++)
+			{
+				GameObject temp = prefabPatients[i];
+				int rand = Random.Range(i, prefabPatients.Length);
+				prefabPatients[i] = prefabPatients[rand];
+				prefabPatients[rand] = temp;
+			}
+			//reset the patients Used
+			patientPrefabsUsed = 0;
+		}
+
+		GameObject p = prefabPatients[patientPrefabsUsed];
+		patientPrefabsUsed++;
+
+		return p;
 	}
 }

@@ -128,6 +128,12 @@ public class UIReferenceDesk : MonoBehaviour {
 		{
 			//pause the game.
 			Time.timeScale = 0;
+
+			//play computer sound
+			if (SoundManager._SoundManager)
+			{
+				SoundManager._SoundManager.PlaySound("UseComputer");
+			}
 		}
 
 		TabSwap("Reference");
@@ -150,6 +156,25 @@ public class UIReferenceDesk : MonoBehaviour {
 
 	public void Close()
 	{
+		//Dirty the Nurse's hands.
+		if (Application.loadedLevelName == "Scn_Play")
+		{
+			if (Manager._manager)
+			{
+				Manager._manager.MyNurse.IsClean(-1);
+			}
+		}
+
+
 		gameObject.SetActive(false);
+	}
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
 	}
 }

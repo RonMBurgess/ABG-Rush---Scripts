@@ -36,6 +36,12 @@ public class ReferenceDesk : OfficeObject {
 			if (Input.GetMouseButtonUp(0))
 			{
 				Manager.MyNurse.PersonMove(locationNurse, tag, false, this);
+
+				//Play a sound
+				if (SoundManager._SoundManager)
+				{
+					SoundManager._SoundManager.PlaySound("Click");
+				}
 			}
 		}
 

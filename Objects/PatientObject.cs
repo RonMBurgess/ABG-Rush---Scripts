@@ -58,6 +58,7 @@ public class PatientObject : OfficeObject {
 		if (CompareTag("ExamRoom"))
 		{
 			(this as ExamRoom).Computer().Highlight(false);
+			(this as ExamRoom).Computer().ResetBloodwork();
 		}
     }
 

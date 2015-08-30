@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (LanguageSprite))]
+
 public class Sink : OfficeObject {
 
-	public SpriteRenderer cleanhandsRenderer;
-	public Sprite posterClean, posterDirty;
+	private LanguageSprite langSprite;
+
+	void Awake()
+	{
+		langSprite = GetComponent<LanguageSprite>();
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -28,6 +34,12 @@ public class Sink : OfficeObject {
 			if (Input.GetMouseButtonUp(0))
 			{
 				Manager.MyNurse.PersonMove(locationNurse, "Sink", false, this);
+
+				//Play a sound
+				if (SoundManager._SoundManager)
+				{
+					SoundManager._SoundManager.PlaySound("Click");
+				}
 			}
 		}
         
@@ -47,15 +59,16 @@ public class Sink : OfficeObject {
 	public void CleanHandsPoster(bool clean)
 	{
 		//make sure we have access to renderer
-		if (cleanhandsRenderer)
+		if (langSprite)
 		{
 			if (clean)
 			{
-				cleanhandsRenderer.sprite = posterClean;
+				//the clean sprite should be in slot 0.
+				langSprite.SwapSprite(0);
 			}
 			else
 			{
-				cleanhandsRenderer.sprite = posterDirty;
+				langSprite.SwapSprite(1);
 			}
 		}
 	}

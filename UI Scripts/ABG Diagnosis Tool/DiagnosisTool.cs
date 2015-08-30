@@ -171,6 +171,12 @@ public class DiagnosisTool : MonoBehaviour {
 				}
 				else
 				{
+					//play Correct Diagnosis sound
+					if (SoundManager._SoundManager)
+					{
+						SoundManager._SoundManager.PlaySound("PatientDiagnosed");
+					}
+
 					if (practice)
 					{
 						//reset the tool
@@ -235,7 +241,10 @@ public class DiagnosisTool : MonoBehaviour {
 	/// </summary>
 	public void Submit()
 	{
+
+
 		bool a = false, b = false, c = false;
+
 		if (ansAA.text == diagnosis.AnswerAcidosisAlkalosis)
 		{
 			a = true;
@@ -264,43 +273,6 @@ public class DiagnosisTool : MonoBehaviour {
 			imageC.color = colWrong;
 		}
 
-		//inform the ui and manager about the answer
-		//if (a && b && c)
-		//{
-		//	//if this is practice mode
-		//	if (practice)
-		//	{
-		//		//display the new diagnosis button.
-		//		//Click this button to reset the tool
-
-		//	}
-		//	else
-		//	{
-		//		//tell the manager to add points
-		//		//Ron Come Back and Change This
-
-		//		//inform the patient that they can leave, and tell the UI to close after a moment 
-		//		Debug.Log("The submitted Answer is correct");
-		//		ercUI.FinishDiagnosis();
-
-
-		//	}
-
-		//}
-		//else
-		//{
-		//	//disable the submit button
-		//	btnSubmit.interactable = false;
-
-		//	//start the timer
-		//	answerTimerUsed = 0;
-
-		//	//and if in practice mode, lose points
-		//	if (!practice)
-		//	{
-		//		//lose points
-		//	}
-		//}
 
 		//Set the timer and values
 		
@@ -311,7 +283,7 @@ public class DiagnosisTool : MonoBehaviour {
 
 			if (!answerCorrect)
 			{
-				Manager._manager.UpdateSatisfactionScore(-15);
+				Manager._manager.UpdateSatisfactionScore(-25);
 			}
 			else
 			{
@@ -346,8 +318,16 @@ public class DiagnosisTool : MonoBehaviour {
 	/// </summary>
 	public void ResetTool()
 	{
-		Debug.Log("Reset has been called.");
 		Reset();
+	}
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
 	}
 	#endregion
 }

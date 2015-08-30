@@ -43,7 +43,7 @@ public class Triage : PatientObject {
         myAnim = GetComponent<Animator>();
 
         newPatient = false;
-        stageGreetingTotal = 5;
+        stageGreetingTotal = 3;
         stageGreeting = 0;
 
         timeGreeting = setTimeGreeting / stageGreetingTotal;
@@ -106,20 +106,23 @@ public class Triage : PatientObject {
             if (timeGreeting <= 0)
             {
                 //the process should go R,P,R,P,R. The Initial R is handled above.
-                switch (stageGreeting)
+                switch (stageGreeting % 2)
                 {
                     case 1: patients[0].PatientAnimation("Talking", false, true); myAnim.SetBool(hashTalking, false); break;
-                    case 2: patients[0].PatientAnimation("Talking", false, false); myAnim.SetBool(hashTalking, true); break;
-                    case 3: patients[0].PatientAnimation("Talking", false, true); myAnim.SetBool(hashTalking, false); break;
-                    case 4: patients[0].PatientAnimation("Talking", false, false); myAnim.SetBool(hashTalking, true); break;
+                    case 0: patients[0].PatientAnimation("Talking", false, false); myAnim.SetBool(hashTalking, true); break;
+					//case 3: patients[0].PatientAnimation("Talking", false, true); myAnim.SetBool(hashTalking, false); break;
+					//case 4: patients[0].PatientAnimation("Talking", false, false); myAnim.SetBool(hashTalking, true); break;
                 }
                 stageGreeting++;
-                if (stageGreeting < stageGreetingTotal)
+                if (stageGreeting <= stageGreetingTotal)
                 {
                     timeGreeting = setTimeGreeting / stageGreetingTotal;
                 }
                 else
                 {
+					//tell the patient to stop talking
+					patients[0].PatientAnimation("Talking", false, false);
+
                     //send the patient to an open waiting chair.
                     WaitingChair wc = Manager.ManagerEmptyWaitingChair();
                     if (wc)

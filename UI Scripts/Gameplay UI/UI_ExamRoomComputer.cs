@@ -48,6 +48,14 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			//inform the nurse that they are currently busy and should not be able to perform actions outside of this UI.
 			manager.MyNurse.IsBusy(1);
 		}
+
+		//play computer sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("UseComputer");
+		}
+
+
 		Debug.Log("ExamRoomComputer " + patient);
 		if (patient)
 		{
@@ -66,6 +74,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 			textfieldDOB.text = patient.DateOfBirth(); //Random.Range(1960, 2001).ToString();
 			
 			//Picture
+			imagePatient.sprite = patient.PatientPhotoID();
 
 			//setup patient history information ***RON COME BACK AND UNCOMMENT THIS***
 			DisplayHistoryAndSignsSymptoms();
@@ -427,6 +436,7 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 
 		buttonPatientHistory.interactable = !pHistory;
 		buttonPatientHistory.GetComponent<Animator>().SetBool("Focused", pHistory);
+
 	}
 
 	public void RequestBloodwork()
@@ -555,7 +565,10 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	/// </summary>
 	public void Close()
 	{
+		//make sure the nurse's hands are now dirty.
+		manager.MyNurse.IsClean(-1);
 		gameObject.SetActive(false);
+
 	}
 
 	#endregion
@@ -570,8 +583,12 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 	public void FinishDiagnosis()
 	{
 		Debug.Log("FinishDiagnosis");
+		manager.MyNurse.IsClean(-1);
 		gameObject.SetActive(false);
+		
 		patient.PatientStatusUpdate("DiagnosisComplete");
+
+		
 		//patient.Patient_Leave(); // this is now handled inside the patient.
 
 		//close since the diagnosis is complete
@@ -585,6 +602,15 @@ public class UI_ExamRoomComputer : MonoBehaviour {
 		if (gameObject.activeInHierarchy)
 		{
 			gameObject.SetActive(false);
+		}
+	}
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
 		}
 	}
 }

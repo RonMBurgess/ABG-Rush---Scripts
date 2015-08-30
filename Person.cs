@@ -17,6 +17,15 @@ public class Person : MonoBehaviour {
     private OfficeObject officeObject;
     private SpriteRenderer sr;
 
+	/// <summary>
+	/// The Variables used for when the movement of a person needs to be delayed.
+	/// </summary>
+	private Vector2 delayedMoveM;
+	private string delayedDName;
+	private bool delayedPObject = true;
+	private OfficeObject delayedOfficeobject = null;
+
+
 
     public Manager MyManager
     {
@@ -46,8 +55,28 @@ public class Person : MonoBehaviour {
         moving = false;
     }
 
+	#region Movement
 
-    /// <summary>
+	public void DelayedPersonMove(float time, Vector2 m, string dName, bool pObject = true, OfficeObject officeobject = null)
+	{
+		//set the value of each variable.
+		delayedMoveM = m;
+		delayedDName = dName;
+		delayedPObject = pObject;
+		delayedOfficeobject = officeobject;
+		//Perform the Delay.
+		StartCoroutine("DelayedMovement", time);
+	}
+
+	private IEnumerator DelayedMovement(float t)
+	{
+		//wait for the specific period of time.
+		yield return new WaitForSeconds(t);
+		//Execute movement.
+		PersonMove(delayedMoveM, delayedDName, delayedPObject, delayedOfficeobject);
+	}
+
+	/// <summary>
     /// Move to specified location. Called by Hotspot or Manager
     /// </summary>
     /// <param name="m">Location to move to</param>
@@ -60,6 +89,10 @@ public class Person : MonoBehaviour {
 		if (gameObject.CompareTag("Nurse"))
 		{
 			(this as Nurse).IsBusy(-1);
+			if (Vector2.Distance(m, transform.position) > Mathf.Abs(0.1f))
+			{
+				(this as Nurse).NurseAnimation("Walk", true, false);
+			}
 		}
 		else if (gameObject.CompareTag("Patient"))
 		{
@@ -123,8 +156,16 @@ public class Person : MonoBehaviour {
 
 				if (destinationName == "WaitingChair")
 				{
+					//Turn to the right
+					(this as Nurse).NurseAnimation("FaceRight",true,false);
+					Debug.Log("Turning to the right");
+
+					//Check for clean hands.
+					MyManager.CleanHandsCheck();
+					
 					//open the UI of the Waiting Chair
 					(officeObject as PatientObject).PatientObjectOpenUI();
+					
 					//Debug.Log("Opened the UI for " + officeObject.name);
 				}
 				else if (destinationName == "ExamRoom")
@@ -155,22 +196,28 @@ public class Person : MonoBehaviour {
 				Debug.Log("DestinationName : " + destinationName);
 				if (destinationName == "ExamRoomComputer")
 				{
+					//Make sure that the nurse faces the computer.
+					(this as Nurse).NurseAnimation("FaceBack", true, false);
+
 					//get the patient
-					Debug.Log("OfficeObject = " + officeObject);
+					//Debug.Log("OfficeObject = " + officeObject);
 					Patient p = (officeObject as ExamRoomComputer).MyExamRoom().MyPatient;
-					Debug.Log("The patient the nurse is seeing is: " + p + " and their status is " + p.Status());
+					//Debug.Log("The patient the nurse is seeing is: " + p + " and their status is " + p.Status());
 
 					//If the status is exam room or waiting chair, the patient is on their way and the nurse must setup and prepare the computer.
 					if (p.Status() == "ExamRoom" || p.Status() == "WaitingChair")
 					{
 						//same /similar process as vitals
 						//(this as Nurse).NursePerformAction("ExamRoomSetup", officeObject, p);
-						Debug.Log("Nurse setting up arrival");
+						//Debug.Log("Nurse setting up arrival");
 						(this as Nurse).NurseExamRoomArrival(this, officeObject);
 						
 					}
 					else
 					{
+						//Check for clean hands.
+						MyManager.CleanHandsCheck();
+
 						//Open up the Interface for the computer.
 						manager.GamePlayUI().ExamRoomComputerUI().SetPatient((officeObject as ExamRoomComputer).MyExamRoom().MyPatient);
 						manager.GamePlayUI().ExamRoomComputerUI().gameObject.SetActive(true);
@@ -190,6 +237,9 @@ public class Person : MonoBehaviour {
 				}
 				else if (destinationName == "ReferenceDesk")
 				{
+					//Make sure that the nurse is facing the reference desk
+					(this as Nurse).NurseAnimation("FaceFront", true, false);
+
 					//open up the reference desk
 					(officeObject as ReferenceDesk).OpenReferenceDesk();
 					//pause the game?
@@ -210,7 +260,9 @@ public class Person : MonoBehaviour {
         return moving;
     }
 
-    public void PersonUpdate(SpriteRenderer r = null)
+	#endregion
+
+	public void PersonUpdate(SpriteRenderer r = null)
     {
         //if (moving)
         //{

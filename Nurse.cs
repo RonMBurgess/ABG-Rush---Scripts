@@ -6,6 +6,10 @@ public class Nurse : Person {
 	private bool clean = false, waitingAtExamRoom;//Are hands clean. //Is the nurse waiting at the exam room for the patient?
 	private Animator anim;
 	private int hashTalking = Animator.StringToHash("Talking");
+	private int hashFaceFront = Animator.StringToHash("FaceFront");
+	private int hashFaceRight = Animator.StringToHash("FaceRight");
+	private int hashFaceBack = Animator.StringToHash("FaceBack");
+	private int hashWalk = Animator.StringToHash("Walk");
 	private int busy;//Busy is an int and not a bool because it's possible that more than one update to the busy state to occur within a short period of time. So using an integer and checking for 0 will be most efficient.
 	private OfficeObject currentOfficeObject;
 	private Patient currentPatient;
@@ -41,16 +45,32 @@ public class Nurse : Person {
 	/// <summary>
 	/// A copy of the Function found in the Patient Class. 
 	/// </summary>
-	/// <param name="animation">Name of the Animation</param>
+	/// <param name="animation">Talking, FaceFront, FaceRight, FaceBack, Walk</param>
 	/// <param name="isTrigger">Is the animation a trigger</param>
 	/// <param name="tru">On or Off</param>
-	private void NurseAnimation(string animation, bool isTrigger, bool tru)
+	public void NurseAnimation(string animation, bool isTrigger, bool tru)
 	{
 		if (anim)
 		{
 			if (isTrigger)
 			{
-				anim.SetTrigger(animation);
+				Debug.Log("Performing animation: " + animation);
+				if (animation == "FaceFront")
+				{
+					anim.SetTrigger(hashFaceFront);
+				}
+				else if (animation == "FaceRight")
+				{
+					anim.SetTrigger(hashFaceRight);
+				}
+				else if (animation == "FaceBack")
+				{
+					anim.SetTrigger(hashFaceBack);
+				}
+				else if (animation == "Walk")
+				{
+					anim.SetTrigger(hashWalk);
+				}
 			}
 			else
 			{
@@ -72,12 +92,12 @@ public class Nurse : Person {
 			StartCoroutine("WashHands");
 			
 		}
-		else if (action == "Vitals")
-		{
-			currentOfficeObject = o;
-			currentPatient = p;
-			StartCoroutine("CheckVitals");
-		}
+		//else if (action == "Vitals")
+		//{
+		//	currentOfficeObject = o;
+		//	currentPatient = p;
+		//	StartCoroutine("CheckVitals");
+		//}
 		else if (action == "ExamRoomSetup")
 		{
 			currentOfficeObject = o;
@@ -95,6 +115,9 @@ public class Nurse : Person {
 		//This is virtually the same as check vitals except for 1-2 differences. If there is no need to keep them differentiated at the end, change them.
 		//set busy to true so no actions can be taken/made
 		IsBusy(1);
+
+		//Make sure that the nurse is facing the computer/patient.
+		(this as Nurse).NurseAnimation("FaceBack", true, false);
 
 		//tell the patient to stop losing patience
 		currentPatient.PatientToggleCountdown(true);
@@ -154,75 +177,78 @@ public class Nurse : Person {
 	/// Converse with the patient for a period of time, and then open UI
 	/// </summary>
 	/// <returns></returns>
-	private IEnumerator CheckVitals()
-	{
-		//set busy to true so no actions can be taken/made
-		IsBusy(1);
+	//private IEnumerator CheckVitals()
+	//{
+	//	//set busy to true so no actions can be taken/made
+	//	IsBusy(1);
 
-		//make the patient update the player's score.
-		currentPatient.PatientPatienceScore();
+	//	//make the patient update the player's score.
+	//	currentPatient.PatientPatienceScore();
 
-		//tell the patient to stop losing patience
-		currentPatient.PatientToggleCountdown(true);
+	//	//Make sure that the nurse is facing the computer/patient.
+	//	(this as Nurse).NurseAnimation("FaceBack", true, false);
 
-		//check if hands are clean. Gain/Lose points based on result.
-		if (MyManager)
-		{
+	//	//tell the patient to stop losing patience
+	//	currentPatient.PatientToggleCountdown(true);
 
-			if (clean)
-			{
-				MyManager.UpdateSatisfactionScore(1);
-			}
-			else
-			{
-				MyManager.UpdateSatisfactionScore(-2);
-			}
-		}
+	//	//check if hands are clean. Gain/Lose points based on result.
+	//	if (MyManager)
+	//	{
+
+	//		if (clean)
+	//		{
+	//			MyManager.UpdateSatisfactionScore(1);
+	//		}
+	//		else
+	//		{
+	//			MyManager.UpdateSatisfactionScore(-2);
+	//		}
+	//	}
 		
-		//make sure the patient is no longer highlighted
-		currentPatient.PatientAnimation("Highlight", false, false);
+	//	//make sure the patient is no longer highlighted
+	//	currentPatient.PatientAnimation("Highlight", false, false);
 
-		for (int i = 0; i < 2; i++)
-		{
-			//make sure the patient's speech bubble is off.
-			currentPatient.PatientAnimation("Talking", false, false);
+	//	for (int i = 0; i < 2; i++)
+	//	{
+	//		//make sure the patient's speech bubble is off.
+	//		currentPatient.PatientAnimation("Talking", false, false);
 
-			//Nurse says something to patient
-			NurseAnimation("Talking", false, true);
+	//		//Nurse says something to patient
+	//		NurseAnimation("Talking", false, true);
 			
-			//wait for time
-			yield return new WaitForSeconds(.75f);
+	//		//wait for time
+	//		yield return new WaitForSeconds(.75f);
 			
-			//make sure the nurse's speech bubble is off
-			NurseAnimation("Talking", false, false);
+	//		//make sure the nurse's speech bubble is off
+	//		NurseAnimation("Talking", false, false);
 			
-			//patient responds to nurse
-			currentPatient.PatientAnimation("Talking", false, true);
+	//		//patient responds to nurse
+	//		currentPatient.PatientAnimation("Talking", false, true);
 			
-			//wait for time
-			yield return new WaitForSeconds(.75f);
-		}
+	//		//wait for time
+	//		yield return new WaitForSeconds(.75f);
+	//	}
 		
-		//turn both animations off just in case.
-		currentPatient.PatientAnimation("Talking", false, false);
-		NurseAnimation("Talking", false, false);
+	//	//turn both animations off just in case.
+	//	currentPatient.PatientAnimation("Talking", false, false);
+	//	NurseAnimation("Talking", false, false);
 
-		//set hands to dirty
-		IsClean(-1);
+	//	//set hands to dirty
+	//	IsClean(-1);
 		
-		//update the patient's status
-		currentPatient.PatientStatusUpdate("VitalsComplete");
+	//	//update the patient's status
+	//	currentPatient.PatientStatusUpdate("VitalsComplete");
 
-		//Move over to Exam Room Computer, and open the popup.
-		PersonMove((currentOfficeObject as ExamRoom).Computer().OfficeObjectLocationNurse(),"ExamRoomComputer",false, (currentOfficeObject as ExamRoom).Computer());
+	//	//Move over to Exam Room Computer, and open the popup.
+	//	PersonMove((currentOfficeObject as ExamRoom).Computer().OfficeObjectLocationNurse(),"ExamRoomComputer",false, (currentOfficeObject as ExamRoom).Computer());
 		
-		//remove a busy counter
-		IsBusy(-1);
+	//	//remove a busy counter
+	//	IsBusy(-1);
 
-		currentOfficeObject = null;
-		currentPatient = null;
+	//	currentOfficeObject = null;
+	//	currentPatient = null;
 		
-	}
+	//}
 
 
 	/// <summary>
@@ -240,8 +266,16 @@ public class Nurse : Person {
 		if (anim)
 		{
 			//turn to face the sink
-			//Ron Come Back and Update This!!!
+			(this as Nurse).NurseAnimation("FaceBack", true, false);
+			
 		}
+
+		//Play hand washing sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("WashHands");
+		}
+
 		//wait for time
 		yield return new WaitForSeconds(.5f);
 		//set clean hands to true.
@@ -249,7 +283,7 @@ public class Nurse : Person {
 		if (anim)
 		{
 			//return to normal animation
-			//Ron Come Back and Update This!!!!
+			(this as Nurse).NurseAnimation("FaceFront", true, false);
 		}
 
 		if (currentOfficeObject)
@@ -271,20 +305,20 @@ public class Nurse : Person {
 	{
 		if (p.tag == "Patient")
 		{
-			Debug.Log("ExamRoomArrival : Patient " + p.gameObject + " for the Nurse " + gameObject);
+			//Debug.Log("ExamRoomArrival : Patient " + p.gameObject + " for the Nurse " + gameObject);
 			currentPatient = (p as Patient);
 			if (o) { currentOfficeObject = o; }
 		}
 		else if (p.tag == "Nurse")
 		{
-			Debug.Log("ExamRoomArrival : Nurse " + gameObject);
+			//Debug.Log("ExamRoomArrival : Nurse " + gameObject);
 			waitingAtExamRoom = true;
 			if (o) { currentOfficeObject = o; }
 		}
 
 		if (currentPatient && waitingAtExamRoom)
 		{
-			Debug.Log("ExamRoomArrival: Both Conditions have been met");
+			//Debug.Log("ExamRoomArrival: Both Conditions have been met");
 			NursePerformAction("ExamRoomSetup", currentOfficeObject, currentPatient);
 		}
 	}

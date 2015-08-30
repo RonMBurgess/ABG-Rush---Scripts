@@ -33,6 +33,7 @@ public class SatisfactionBarScript : MonoBehaviour {
     public void SatisfactionUpdate(float value)
     {
         satisfactionbar.value = value;
+		Debug.Log("Bar Value has changed to " + value);
 		displayText.text = Mathf.CeilToInt(value).ToString();
     }
 
@@ -87,7 +88,7 @@ public class SatisfactionBarScript : MonoBehaviour {
 		//if the player does not have a perfect score, display a fraction.
 		else if (seen > treated)
 		{
-			display = treated.ToString() + " / " + seen.ToString();
+			display = treated.ToString() + "/" + seen.ToString();
 		}
 
 		treatedPatientsText.text = display;

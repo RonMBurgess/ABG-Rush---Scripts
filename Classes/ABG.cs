@@ -22,9 +22,12 @@ public class ABG{
     private List<string> testStoriesL, testStoriesS, testMedications1, testMedications2, testMedications3, testMedications4, testSymptoms1, testSymptoms2, testSymptoms3, testSymptoms4, testConditions1, testConditions2, testConditions3, testConditions4;
 
     private List<Diagnosis> diagnoses, diagnosesInUse;
-    private float valPHLowest = 7.24f, valPHNeutralLow = 7.35f, valPHNeutralHigh = 7.45f, valPHHighest = 7.58f;//PH Values
-    private float valCO2Lowest = 20f, valCO2NeutralLow = 35f, valCO2NeutralHigh = 45f, valCO2Highest = 64f;//CO2 Values
-    private float valHCO3Lowest = 14f, valHCO3NeutralLow = 22f, valHCO3NeutralHigh = 26f, valHCO3Highest = 42f;// HCO3 Values
+	private float valPHAcidMax = 7.24f, valPHAcidMin = 7.35f, valPHNeutral = 7.4f, valPHBasicMin = 7.45f, valPHBasicMax = 7.58f;
+	private float valCO2AcidMax = 64f, valCO2AcidMin = 45f, valCO2Neutral = 40f, valCO2BasicMin = 35f, valCO2BasicMax = 20f;
+	private float valHCO3AcidMax = 14f, valHCO3AcidMin = 22f, valHCO3Neutral = 24f, valHCO3BasicMin = 26f, valHCO3BasicMax = 42f;
+    //private float valPHLowest = 7.24f, valPHNeutralLow = 7.35f, valPHNeutralHigh = 7.45f, valPHHighest = 7.58f;//PH Values
+    //private float valCO2Lowest = 20f, valCO2NeutralLow = 35f, valCO2NeutralHigh = 45f, valCO2Highest = 64f;//CO2 Values
+    //private float valHCO3Lowest = 14f, valHCO3NeutralLow = 22f, valHCO3NeutralHigh = 26f, valHCO3Highest = 42f;// HCO3 Values
 
 
 	private int diagnosesUsed;
@@ -52,7 +55,7 @@ public class ABG{
 			xmlreaderSettings.IgnoreComments = true;
 
 			LoadDiagnosesFromXML();
-			Debug.Log("The total amount of interventions is: " + diagnoses.Count);
+			//Debug.Log("The total amount of interventions is: " + diagnoses.Count);
 
 			//foreach (Diagnosis d in diagnoses)
 			//{
@@ -64,6 +67,16 @@ public class ABG{
 			CreateDiagnoses();
 		}
 
+
+		//prepare / shuffle diagnoses
+		//prepare the patients.
+		for (int i = 0; i < diagnoses.Count; i++)
+		{
+			Diagnosis temp = diagnoses[i];
+			int rand = Random.Range(0, diagnoses.Count);
+			diagnoses[i] = diagnoses[rand];
+			diagnoses[rand] = temp;
+		}
 		diagnosesUsed = 0;
     }
 	
@@ -147,51 +160,54 @@ public class ABG{
             //since we have set answers, set the number values
             if (rm == r && aa == aci && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
+				//Debug.Log("Resp Aci UC");
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == r && aa == aci && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+				Debug.Log("Resp Aci PC");
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == r && aa == aci && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+				//Debug.Log("Resp Aci Comp");
+                d.PH = GenerateDiagnosisValues("PH", -1); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == r && aa == alk && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 1);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
             }
             else if (rm == r && aa == alk && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == r && aa == alk && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 0); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == aci && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 5); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 0);
+                d.PH = GenerateDiagnosisValues("PH", -1); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", -2);
             }
             else if (rm == m && aa == alk && comp == uc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 1); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 0); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == m && aa == alk && comp == pc)
             {
-                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 2); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
             else if (rm == m && aa == alk && comp == c)
             {
-                d.PH = GenerateDiagnosisValues("PH", 6); d.CO2 = GenerateDiagnosisValues("CO2", 2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
+                d.PH = GenerateDiagnosisValues("PH", 1); d.CO2 = GenerateDiagnosisValues("CO2", -2); d.HCO3 = GenerateDiagnosisValues("HCO3", 2);
             }
 
             return d;
@@ -208,48 +224,124 @@ public class ABG{
     /// Generate number values for each of the variables.
     /// </summary>
     /// <param name="value">name of the value ie. PH, CO2, HCO3</param>
-    /// <param name="LowMedHigh">0 for acid, 1 for neutral, 2 for basic, 5 == Lower Neutral, 6 = Higher Neutral</param>
+    /// <param name="LowMedHigh">-2 for acid, 0 for neutral, 2 for basic, -1 for Lower Neutral, 1 = Higher Neutral</param>
     /// <returns></returns>
-    private float GenerateDiagnosisValues(string value, int LowMedHigh)
+    private float GenerateDiagnosisValues(string value, int acidneutralbasic)
     {
-        float lowest = 0f, low = 0f, lowMed = 0f, medHigh = 0f, high = 0f, highest = 0f;
+		//The variables that will be used for our check.
+		float acidMax = 0f, acidMin = 0f, neutral = 0f, basicMin = 0f, basicMax = 0f;
+		float randomVariance = 0f;	
+		float finalValue = -90f;
+		
+		
         if (value == "PH")
         {
-			lowest = valPHLowest; low = valPHNeutralLow; high = valPHNeutralHigh; highest = valPHHighest; lowMed = 7.395f; medHigh = 7.405f;
+			Debug.Log("Generating a Diagnosis Value for: " + value + " in range: " + acidneutralbasic);
+			acidMax = valPHAcidMax;//Should be 7.24
+			acidMin = valPHAcidMin;//should be 7.35
+			neutral = valPHNeutral;//should be 7.40
+			basicMin = valPHBasicMin;//should be 7.45
+			basicMax = valPHBasicMax;//should be 7.58
+			randomVariance = .01f;
+			
         }
         else if (value == "CO2")
         {
-            lowest = valCO2Lowest; low = valCO2NeutralLow; high = valCO2NeutralHigh; highest = valCO2Highest;
+			acidMax = valCO2AcidMax;//64
+			acidMin = valCO2AcidMin;//45
+			neutral = valCO2Neutral;//40
+			basicMin = valCO2BasicMin;//35
+			basicMax = valCO2BasicMax;//20
+			randomVariance = 1f;
+
+			
         }
         else if (value == "HCO3")
         {
-            lowest = valHCO3Lowest; low = valHCO3NeutralLow; high = valHCO3NeutralHigh; highest = valHCO3Highest;
+			acidMax = valHCO3AcidMax;//14
+			acidMin = valHCO3AcidMin;//22
+			neutral = valHCO3Neutral;//24
+			basicMin = valHCO3BasicMin;//26
+			basicMax = valHCO3BasicMax;//42
+			randomVariance = 1f;
+
+			
         }
 
-
-        if (LowMedHigh == 0)
-        {
-            return Random.Range(lowest, low);
-        }
-        else if (LowMedHigh == 1)
-        {
-            return Random.Range(low, high);
-        }
-        else if (LowMedHigh == 2)
-        {
-            return Random.Range(high, highest);
-        }
-		else if (LowMedHigh == 5)
+		//Acidic Range
+		if (acidneutralbasic == -2)
 		{
-			return Random.Range(low, lowMed);
+			Debug.Log("-2 Range is: " + (acidMax + randomVariance) + " , " + (acidMin - randomVariance));
+			if (acidMax > acidMin)
+			{
+				//CO2
+				finalValue = Random.Range(acidMin + randomVariance, acidMax -randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMax + randomVariance, acidMin - randomVariance);
+			}
+			
 		}
-		else if (LowMedHigh == 6)
+			//Neutral Acidic Range
+		else if (acidneutralbasic == -1)
 		{
-			return Random.Range(medHigh, high);
+			if (acidMin > neutral)
+			{
+				finalValue = Random.Range(neutral + randomVariance, acidMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMin + randomVariance, neutral - randomVariance);
+			}
+
+			//Debug.Log("Neutral Acidic Range for " + value + " is: " + finalValue);
+			
+		}
+			//Neutral Range
+		else if (acidneutralbasic == 0)
+		{
+			if (acidMin > basicMin)
+			{
+				//this should occur for CO2
+				finalValue = Random.Range(basicMin +randomVariance,acidMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(acidMin + randomVariance, basicMin - randomVariance);
+			}
+			
+		}
+			//Neutral Basic Range
+		else if (acidneutralbasic == 1)
+		{
+			if (neutral > basicMin)
+			{
+				//this should occur for CO2
+				finalValue = Random.Range(basicMin + randomVariance, neutral -randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(neutral + randomVariance, basicMin - randomVariance);
+			}
+			//Debug.Log("Neutral Basic Range for " + value + " is: " + finalValue);
+			
+		}
+			//Basic Range
+		else if (acidneutralbasic == 2)
+		{
+			if (basicMin > basicMax)
+			{
+				finalValue = Random.Range(basicMax + randomVariance, basicMin - randomVariance);
+			}
+			else
+			{
+				finalValue = Random.Range(basicMin + randomVariance, basicMax - randomVariance);
+			}
+			
 		}
 
-        Debug.LogWarning("ABG: GenerateDiagnosisValues Did not receive a valid Param");
-        return -50f;
+		return finalValue;
     }
 
 

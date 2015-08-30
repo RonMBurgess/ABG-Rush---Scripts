@@ -9,7 +9,7 @@ public class GameplayUIScript : MonoBehaviour {
     ///
 
 
-    public ABGToolManagerScript abgTool;
+    //public ABGToolManagerScript abgTool;
     public NotificationManagerScript notifications;
     public SatisfactionBarScript satisfaction;
 	public UI_ExamRoomComputer examroomComputer;
@@ -21,7 +21,7 @@ public class GameplayUIScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         examroomComputer.gameObject.SetActive(false);
-        abgTool.gameObject.SetActive(false);
+        //abgTool.gameObject.SetActive(false);
 
 	}
 	

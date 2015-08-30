@@ -9,6 +9,7 @@ public class UI_WaitingChair : UI_Patient
     //0 - Send to Exam Room, 1 - Pacifiy, 2 - Exit/Cancel
     public Button[] buttonChoices;
     public Text textname, textStory;
+	public Image imagePatientID;
 
     //Add in Name
     //Add in DOB
@@ -52,7 +53,10 @@ public class UI_WaitingChair : UI_Patient
 			textname.text = MyPatient.name;
 			
 			//display portions of the history from the patient.
-			textStory.text = MyPatient.MyDiagnosis().Greeting(); ;
+			textStory.text = MyPatient.MyDiagnosis().Greeting();
+
+			//Image
+			imagePatientID.sprite = MyPatient.PatientPhotoID();
 		}
         
     }

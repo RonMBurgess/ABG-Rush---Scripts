@@ -74,20 +74,24 @@ public class LanguageManager : MonoBehaviour {
 				string translation = xmlDoc.SelectSingleNode(path).InnerText;
 				string translationFinal = "";
 
-				char[] delimiterCharacters = { ';' };//this will allow us to format.
+				//char[] delimiterCharacters = { ';' };//this will allow us to format.
 				string[] delimiterStrings = { "[NewLine]" };
 
 				//split up the string to format.
-				string[] substrings = translation.Split(delimiterStrings /*delimiterCharacters*/,System.StringSplitOptions.None);
-				Debug.Log(substrings.Length + " Substrings have been found");
+				string[] substrings = translation.Split(delimiterStrings,System.StringSplitOptions.None);
+				//Debug.Log(substrings.Length + " Substrings have been found");
 				foreach(string s in substrings){
-					Debug.Log("Substring: " + s);
+					//Debug.Log("Substring: " + s);
 					translationFinal += s;
 					if (substrings.Length > 1)
 					{
 						translationFinal += " \n";
 					}
 				}
+
+				//allow portions of string to be bold
+				translationFinal = translationFinal.Replace("[BoldS]", "<b>");
+				translationFinal = translationFinal.Replace("[BoldF]", "</b>");
 
 				//return what we found
 				
@@ -112,7 +116,7 @@ public class LanguageManager : MonoBehaviour {
 	/// <returns>The term translated for the current language</returns>
 	public string DirectTranslation(string section, string term)
 	{
-		Debug.Log("DirectTranslation for: " + section + " " + term);
+		//Debug.Log("DirectTranslation for: " + section + " " + term);
 		if (xmlDoc != null)
 		{
 			//create the path we will be following to find our term.

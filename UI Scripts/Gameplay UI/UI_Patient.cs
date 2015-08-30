@@ -41,9 +41,17 @@ public class UI_Patient : MonoBehaviour {
 
 
 
-    public void Close()
+    public void Close(bool continuePatient = false)
     {
         MyPatient.PatientToggleCountdown(false);
+
+		//make sure nurse's hands are dirty since they are no longer continuing with us. 
+		if (!continuePatient)
+		{
+			MyManager.MyNurse.IsClean(-1);
+		}
+		
+
         gameObject.SetActive(false);
     }
 
@@ -77,8 +85,8 @@ public class UI_Patient : MonoBehaviour {
 
 
             Debug.Log("Patient has been given to: " + wc.name);
-
-            Close();
+			//inform the nurse to keep their hands in their current state if clean.
+            Close(true);
         }
 
     }
@@ -101,19 +109,23 @@ public class UI_Patient : MonoBehaviour {
             e.PatientObjectPatientAdd(MyPatient);
 
 			//make the patient update the player's score.
-			MyPatient.PatientPatienceScore();
+			//MyPatient.PatientPatienceScore();
 
             //make the patient move to the proper location of it's new hotspot
             MyPatient.PersonMove(e.PatientObjectLocationPatient(), e.tag,true,e);
 
 			//make the nurse move to the proper location of the exam room's computer.
-			manager.MyNurse.PersonMove(e.Computer().OfficeObjectLocationNurse(),e.Computer().tag, false, e.Computer());
+			manager.MyNurse.DelayedPersonMove(.75f,e.Computer().OfficeObjectLocationNurse(),e.Computer().tag, false, e.Computer());
             
             Debug.Log("Patient has been given to: " + e.name);
 
-            Close();
+
+
+			//inform the nurse to keep their hands in their current state if clean.
+            Close(true);
         }
     }
+
 
     public void Pacify()
     {
@@ -121,10 +133,19 @@ public class UI_Patient : MonoBehaviour {
         {
             MyPatient.PatientPacify();
             Debug.Log(MyPatient.name + " has been pacified");
-            Close();
+            Close(false);
         }
 
     }
+
+	public void SoundClick()
+	{
+		//Play a sound
+		if (SoundManager._SoundManager)
+		{
+			SoundManager._SoundManager.PlaySound("Click");
+		}
+	}
 
 
     #endregion

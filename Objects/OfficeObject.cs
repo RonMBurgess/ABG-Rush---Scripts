@@ -4,7 +4,8 @@ using System.Collections;
 public class OfficeObject : MonoBehaviour {
 
     public Vector2 locationNurse;
-    private Animator anim;
+	[HideInInspector]
+    public Animator anim;
 	private int hashHighlight = Animator.StringToHash("Highlight");
     //private int hashReady = Animator.StringToHash("Ready");
     //private int hashMouseOver = Animator.StringToHash("MouseOver");

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Patient : Person {
 
 	public SpriteRenderer highlightRenderer = null;
+	public Sprite photoID;
 
     private float timerTriage, timerWaitingRoom, timerExamRoom, timerVitals, timerBloodwork, timerDiagnosis, timerDelayPacification, timerCurrent, timerCurrentSet;
     private int pacifyAmountLeft;//the amount will change if a patient is interacted with, but no action is taken. This will reduce the current timer by the pacification delay.
@@ -98,7 +99,7 @@ public class Patient : Person {
         timerWaitingRoom = 30f;//how long I will wait in the waiting room before leaving
         timerExamRoom = 30f;//how long I will wait in the exam room before leaving
 		timerVitals = 30f;
-		timerBloodwork = 30f;
+		timerBloodwork = 500f;//this is currently a state in which the player has no control over the patient, so this can be as long as necessary.
 		timerDiagnosis = 60f;
         timerCurrent = 10f;
         timerDelayPacification = 20f;
@@ -241,14 +242,15 @@ public class Patient : Person {
 				{
 					if (Input.GetMouseButtonUp(0))
 					{
+						bool snd = false;
 						//bool nextStep = false;
 						if (status == "ExamRoom" || status == "Vitals")
 						{
 							//tell the nurse to move to the proper location
 							//exam room should no longer be a status since it's automated now, but it currently remains since this is not final.
 
-							MyManager.MyNurse.PersonMove(hotspot.OfficeObjectLocationNurse(), "ExamRoom", true, hotspot);
-							PatientToggleCountdown(true);
+							//MyManager.MyNurse.PersonMove(hotspot.OfficeObjectLocationNurse(), "ExamRoom", true, hotspot);
+							//PatientToggleCountdown(true);
 							//nextStep = true;
 						}
 						else if (status == "BloodworkWaiting" || status == "Diagnosis" || status == "VitalsComplete" || status == "Assessment")
@@ -256,12 +258,15 @@ public class Patient : Person {
 							//tell the nurse to move to the exam room computer
 							MyManager.MyNurse.PersonMove((hotspot as ExamRoom).Computer().OfficeObjectLocationNurse(), "ExamRoomComputer", false, (hotspot as ExamRoom).Computer());
 							PatientToggleCountdown(true);
+
+							snd = true;
 							//nextStep = true;
 						}
 						else if (status == "WaitingChair")
 						{
 							MyManager.MyNurse.PersonMove(hotspot.OfficeObjectLocationNurse(), hotspot.tag, true, hotspot);
 							PatientToggleCountdown(true);
+							snd = true;
 							//nextStep = true;
 						}
 						//if (nextStep && !timerHalted)
@@ -269,6 +274,11 @@ public class Patient : Person {
 						//	if (timerCurrent / timerCurrentSet > .6) { Manager.UpdateSatisfactionScore(2); }
 						//	else if (timerCurrent / timerCurrentSet < .3) { Manager.UpdateSatisfactionScore(-1); }
 						//}
+
+						if (SoundManager._SoundManager && snd)
+						{
+							SoundManager._SoundManager.PlaySound("Click");
+						}
 					}
 
 				}
@@ -321,12 +331,16 @@ public class Patient : Person {
 			Debug.Log("Setting " + animationName + " to " + on);
 			if (animationName == "Waiting" || animationName == "Sitting" || animationName == "Walking" || animationName == "Turned")
 			{
+				anim.SetBool(animationName, on);
 				foreach (int i in animationPositions)
 				{
-					anim.SetBool(i, false);
+					if (Animator.StringToHash(animationName) != i)
+					{
+						anim.SetBool(i, false);
+					}
 				}
 				
-				anim.SetBool(animationName, on);
+				
 			}
 			if (animationName == "Talking")
 			{
@@ -348,6 +362,15 @@ public class Patient : Person {
 	public string Status()
 	{
 		return status;
+	}
+
+	/// <summary>
+	/// Return the sprite that Identifies this patient.
+	/// </summary>
+	/// <returns></returns>
+	public Sprite PatientPhotoID()
+	{
+		return photoID;
 	}
 
 	/// <summary>
