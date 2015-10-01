@@ -11,19 +11,25 @@ public class SoundManager : MonoBehaviour {
 	public bool muted;
 	public AudioClip acClick, acGameOver, acPatientDiagnosed, acPatientLeave, acUseComputer, acBloodworkComplete, acWashHands;
 
+	private MuteButton mutebutton;
+
 	void OnLevelWasLoaded(int level)
 	{
-		if (level > 0)
+		if (level > 0 && !mutebutton)
 		{
 			GameObject c = GameObject.Find("Canvas");
-			MuteButton mb = Instantiate(prefabMuteButton);
-			mb.transform.SetParent(c.transform);
+
+			mutebutton = Instantiate(prefabMuteButton);
+			mutebutton.transform.SetParent(c.transform);
 		}
 	}
 
 	// Use this for initialization
 	void Start () {
 		DontDestroyOnLoad(gameObject);
+		mutebutton = null;
+		
+		
 		_SoundManager = this;
 	}
 	

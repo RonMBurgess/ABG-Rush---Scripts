@@ -4,82 +4,15 @@ using UnityEngine.UI;
 
 public class MainMenuUIScript : MonoBehaviour {
 
-	public bool devCodes;
-	private bool ccA, ccB, ccC, ccD, ccE;
+	public GameObject goQuit;
 
 	// Use this for initialization
 	void Start () {
-		//Debug.Log("Random of 5,10: " + Random.Range(5, 10));
-		//Debug.Log("Random of 20,15: " + Random.Range(20, 15));
-		DevCodesReset();
-		#region ABG Values Test
-		//Test, Make sure to Delete after.
-		//ABG abg = new ABG("NursingInterventions");
-		//string r = "Respiratory", m = "Metabolic", aci = "Acidosis", alk = "Alkalosis", uc = "Uncompensated", pc =  "Partial Compensation", c = "Compensated";
-
-		//string diagnosisData = m + " " + alk + " " + c;
-		//for (int i = 0; i < 5; i++)
-		//{
-		//	Diagnosis d = new Diagnosis(m, alk, c);
-		//	abg.DiagnosisAnswerValues(d);
-		//	diagnosisData += "\nPH: " + d.PH.ToString("F2") + " CO2: " + d.CO2.ToString("F2") + " HCO3: " + d.HCO3.ToString("F2");
-			
-		//}
-		//Debug.Log(diagnosisData);
-		#endregion
-
-		
+		goQuit.SetActive(!Application.isWebPlayer);
 		
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		if (Application.isEditor)
-		{
-			if (devCodes)
-			{
-				bool code = false;
-
-				if (Input.GetKeyUp(KeyCode.A))
-				{
-					ccA = true;
-					code = true;
-				}
-				else if (Input.GetKeyUp(KeyCode.B) && ccA)
-				{
-					ccB = true;
-					code = true;
-				}
-				else if (Input.GetKeyUp(KeyCode.C) && ccB)
-				{
-					ccC = true;
-					code = true;
-				}
-				else if (Input.GetKeyUp(KeyCode.D) && ccC)
-				{
-					ccD = true;
-					code = true;
-				}
-				else if (Input.GetKeyUp(KeyCode.E) && ccD)
-				{
-					ccE = true;
-					code = true;
-				}
-
-				if (code)
-				{
-					if (ccA && ccB && ccC && ccD && ccE)
-					{
-						Application.LoadLevel("UI Tests");
-					}
-				}
-				else
-				{
-					
-				}
-			}
-		}
-	}
+	
 
     public void Practice()
     {
@@ -129,11 +62,6 @@ public class MainMenuUIScript : MonoBehaviour {
 		}
 	}
 
-
-	private void DevCodesReset()
-	{
-		ccA = false; ccB = false; ccC = false; ccD = false; ccE = false;
-	}
 
 	public void SoundClick()
 	{

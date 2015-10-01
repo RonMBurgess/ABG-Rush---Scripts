@@ -4,12 +4,20 @@ using UnityEngine.UI;
 
 public class MuteButton : MonoBehaviour {
 
-	public Vector2 position;
+	public Vector2 positionStandalone, positionWebplayer;
+
 
 	void Start()
 	{
-		gameObject.GetComponent<RectTransform>().anchoredPosition = position;
-		gameObject.GetComponent<RectTransform>().localScale = new Vector2(1, 1);
+		DontDestroyOnLoad(this.gameObject);
+		if(Application.isWebPlayer){
+			gameObject.GetComponent<RectTransform>().anchoredPosition = positionWebplayer;
+		}
+		else{
+			gameObject.GetComponent<RectTransform>().anchoredPosition = positionStandalone;
+		}
+		
+		gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 	}
 
 	private SoundManager GetSM()
