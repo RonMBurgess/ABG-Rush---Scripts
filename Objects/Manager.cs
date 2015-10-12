@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
 
-    //change this later to private and load from resource folder
+    
     public GameObject[] prefabPatients;
     public Transform locationEntrance, locationExit;
-    public Texture2D cursor; // change this to a dictionary later depending on how many cursors we have.
+   
 	public GameplayUIScript gameplayUI;
 	public float timerSpawn = 15f;
 	public float timerSpawnRate = 3f;
@@ -17,7 +17,7 @@ public class Manager : MonoBehaviour {
 
 	public List<string> namesFirst, namesLast;
     private Triage triage;
-    //private List<Patient> listPatients;
+   
     private List<WaitingChair> listWaitingChairs;
     private List<ExamRoom> listExamRooms;
 	private int scoreCorrectDiagnoses, scoreCorrectInitialAssessment, scoreAngryPatients, scorePatientsSeen;
@@ -34,22 +34,13 @@ public class Manager : MonoBehaviour {
         get { return nurse; }
     }
 
-	// Use this for initialization
+	
 	void Start () {
         ManagerInitialize();
 	}
 	
-	// Update is called once per frame
+	
 	void Update () {
-		if (Input.GetKeyUp(KeyCode.P))
-		{
-			ManagerPatientSpawn();
-		}
-
-		if (Input.GetKeyUp(KeyCode.D))
-		{
-			UpdateSatisfactionScore(-100);
-		}
 
 		if (timerSpawnUsed > 0)
 		{
@@ -76,7 +67,7 @@ public class Manager : MonoBehaviour {
 	}
 
     #region Patient Leaving
-    //I should definitely come back and revamp this. This can easily be simplified and molded into a single function depending on what we have each of them do.
+    //If time permits, come back and revamp this. These two methods may be similar enough near the end of the project that they can easily be simplified and molded into a single method depending on what we have each of them do.
 
     /// <summary>
     /// Leave the practice / emergency facility angrily. 
@@ -210,8 +201,6 @@ public class Manager : MonoBehaviour {
     {
 		//Initialize the ABG class and prepare all the diagnoses
 		abg = new ABG("NursingInterventions");
-
-		//Initialize the lists for waiting chairs, Examination rooms, and Patients.
         listWaitingChairs = new List<WaitingChair>();
         listExamRooms = new List<ExamRoom>();
         //listPatients = new List<Patient>();
@@ -285,25 +274,6 @@ public class Manager : MonoBehaviour {
 		timerSpawnUsed = Random.Range(-3, 3);
 		timerSpawnUsed += timerSpawn;
     }
-
-	///// <summary>
-	///// Change the cursor based on what is currently moused over.
-	///// </summary>
-	///// <param name="enter"></param>
-	//public void ManagerMouseOver(bool enter)
-	//{
-	//	//come back and update this later to accept parameters to use multiple cursors. Will most likely accept a string and look through a dictionary.
-	//	if (enter)
-	//	{
-	//		Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
-	//	}
-	//	else
-	//	{
-	//		Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
-	//	}
-        
-	//}
-
 
 	/// <summary>
 	/// Called during any/all interactions involving the nurse and a patient.
